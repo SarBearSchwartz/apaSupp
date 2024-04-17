@@ -1,0 +1,8 @@
+bibentry(
+  bibtype  = "Article",
+  title    = "apaSup: an R Package for Preparing Supplemental Material, APA 7th ed.",
+  author   = "Sarah E Schwartz",
+  journal  = "Open Science Framework",
+  year     = "2024",
+  doi      = "10.17605/OSF.IO/G38JN"
+)
