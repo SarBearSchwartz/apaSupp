@@ -1,0 +1,57 @@
+\contentsline {section}{BACKGROUND}{105}{section*.4}%
+\contentsline {subsection}{Motivation}{105}{section*.5}%
+\contentsline {subsection}{Research Questions}{105}{section*.6}%
+\contentsline {subsubsection}{RQ (1)}{105}{section*.7}%
+\contentsline {subsubsection}{RQ (2)}{105}{section*.8}%
+\contentsline {subsubsection}{RQ (3)}{105}{section*.9}%
+\contentsline {subsection}{Sample}{106}{section*.10}%
+\contentsline {subsection}{Variables}{106}{section*.11}%
+\contentsline {section}{PREPARATION}{107}{section*.12}%
+\contentsline {subsection}{Load Packages}{107}{section*.13}%
+\contentsline {subsection}{Default Settings}{107}{section*.14}%
+\contentsline {section}{DATA WRANGLING}{108}{section*.15}%
+\contentsline {subsection}{Load Data}{108}{section*.16}%
+\contentsline {subsection}{Declare Factors}{108}{section*.17}%
+\contentsline {section}{SUMMARY STATISTICS}{110}{section*.18}%
+\contentsline {subsection}{Sample Size}{110}{section*.19}%
+\contentsline {subsection}{Missing Data}{111}{section*.20}%
+\contentsline {subsection}{Descriptive Summary}{112}{section*.22}%
+\contentsline {subsection}{Correlations}{114}{section*.23}%
+\contentsline {section}{VISUALIZATIONS}{122}{section*.29}%
+\contentsline {subsection}{Univariable}{122}{section*.30}%
+\contentsline {subsubsection}{Weight Loss}{122}{section*.31}%
+\contentsline {subsubsection}{Program Time}{131}{section*.38}%
+\contentsline {subsubsection}{Effort Rating}{139}{section*.45}%
+\contentsline {subsection}{Bivariable}{146}{section*.52}%
+\contentsline {subsubsection}{Weight Loss by Program Time}{146}{section*.53}%
+\contentsline {subsubsection}{Weight Loss by Effort Rating}{147}{section*.55}%
+\contentsline {subsubsection}{Effort Rating by Program Time}{148}{section*.57}%
+\contentsline {section}{REGRESSION ANALYSIS}{149}{section*.59}%
+\contentsline {subsection}{Model Fitting}{149}{section*.60}%
+\contentsline {subsubsection}{Fit Nested Models}{149}{section*.61}%
+\contentsline {subsubsection}{Parameter Estimate Table}{150}{section*.62}%
+\contentsline {subsubsection}{Compare Model Fit}{152}{section*.64}%
+\contentsline {subsubsection}{Residual Diagnostics}{153}{section*.65}%
+\contentsline {subsection}{Final Model}{157}{section*.70}%
+\contentsline {subsubsection}{Anlaysis of Variance}{157}{section*.71}%
+\contentsline {subsubsection}{Parameter Estimates}{158}{section*.72}%
+\contentsline {subsubsection}{Simple Slopes Analysis}{159}{section*.73}%
+\contentsline {subsubsection}{Visualization}{160}{section*.74}%
+\contentsline {section}{FINAL RESULTS}{162}{section*.76}%
+\contentsline {subsection}{RQ (1)}{162}{section*.77}%
+\contentsline {subsubsection}{Constraints}{162}{section*.78}%
+\contentsline {subsubsection}{Inverse Estimation}{163}{section*.79}%
+\contentsline {subsubsection}{Visualization}{164}{section*.80}%
+\contentsline {subsubsection}{Conclusion}{166}{section*.82}%
+\contentsline {subsection}{RQ (2)}{167}{section*.83}%
+\contentsline {subsubsection}{Constraints}{167}{section*.84}%
+\contentsline {subsubsection}{Simple Slopes Analysis}{167}{section*.85}%
+\contentsline {subsubsection}{Visualize}{168}{section*.86}%
+\contentsline {subsubsection}{Conclusion}{170}{section*.88}%
+\contentsline {subsection}{RQ (3)}{171}{section*.89}%
+\contentsline {subsubsection}{Contraints}{171}{section*.90}%
+\contentsline {subsubsection}{Simple Slopes Analysis}{172}{section*.91}%
+\contentsline {subsubsection}{Visualize}{175}{section*.92}%
+\contentsline {subsubsection}{Conclusion}{177}{section*.94}%
+\contentsline {section}{SESSION INFORMATION}{178}{section*.95}%
+\contentsline {section}{BIBLIOGRAPHY}{180}{section*.96}%

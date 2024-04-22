@@ -1,0 +1,2057 @@
+---
+title:  "Appendix B"
+subtitle: "Complete R Code & Annotated Output"
+date:   "Compiled: `r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  pdf_document:
+    toc: FALSE
+    latex_engine: xelatex 
+    keep_tex: true
+geometry: "left=1.5in,right=1in,top=1in,bottom=1in"
+bibliography: packages.bib 
+csl: apa7.csl
+nocite: '@*'
+header-includes:
+   - \usepackage{floatrow}
+   - \usepackage{booktabs}
+   - \usepackage{siunitx}
+   - \usepackage{caption}
+   - \usepackage{longtable}
+   - \usepackage{colortbl}
+   - \usepackage{array}
+   - \usepackage{caption}
+   - \usepackage{setspace}
+   - \usepackage{fancyhdr}
+---
+
+
+\pagenumbering{arabic}
+\setcounter{page}{100}
+\fancypagestyle{plain}{%
+    \renewcommand{\headrulewidth}{0pt}%
+      \fancyhf{}%
+    \fancyhead[R]{\thepage}
+    \setlength\voffset{0.25in}
+    }
+\pagestyle{plain}
+
+
+
+\setcounter{figure}{0}
+\setcounter{table}{0}
+\captionsetup{labelfont=bf, 
+              textfont={it}, 
+              labelsep=newline,
+              justification=raggedright, 
+              singlelinecheck=false}
+\floatsetup[figure]{capposition=top}
+\floatsetup[table]{capposition=top}
+\renewcommand{\thefigure}{B.\arabic{figure}}
+\renewcommand{\thetable}{B.\arabic{table}}
+
+
+
+\clearpage
+\setcounter{tocdepth}{2}
+\tableofcontents    
+\clearpage
+\listoftables
+\clearpage
+\listoffigures
+\clearpage
+
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(comment     = "",
+                      echo        = TRUE,
+                      warning     = FALSE, 
+                      message     = FALSE,
+                      ft.align    ="left",
+                      fig.pos     = "hb",     
+                      fig.align   = "left",   
+                      fig.width   = 5,     
+                      fig.height  = 3)  
+```
+
+
+# BACKGROUND
+
+> This dataset if publicly available online as part of a seminar on "[DECOMPOSING, PROBING, AND PLOTTING INTERACTIONS IN R](https://stats.oarc.ucla.edu/r/seminars/interactions-r/)"
+> - UCLA Advanced Research Computing: Statistical Methods and Data Analysis
+
+## Motivation
+
+> Suppose you are doing a simple study on weight loss and notice that people who spend more time exercising lose more weight. Upon further analysis you notice that those who spend the same amount of time exercising lose more weight if they are more effortful. The more effort people put into their workouts, the less time they need to spend exercising. This is popular in workouts like high intensity interval training (HIIT).
+
+
+
+## Research Questions
+
+You know that hours spent exercising improves weight loss, but how does it interact with effort? Here are three questions you can ask based on hypothetical scenarios.
+
+### RQ (1) 
+
+I’m just starting out and don’t want to put in too much effort. 
+
+How many hours per week of exercise do I need to put in to lose 5 pounds?
+
+### RQ (2) 
+
+I’m moderately fit and can put in an average level of effort into my workout. 
+
+For every one hour increase per week in exercise, how much additional weight loss do I expect?
+
+### RQ (3) 
+
+I’m a crossfit athlete and can perform with the utmost intensity. 
+
+How much more weight loss would I expect for every one hour increase in exercise compared to the average amount of effort most people put in?
+
+Additionally, we can visualize the interaction to help us understand these relationships.
+
+\clearpage
+
+## Sample
+
+This is a hypothetical study of weight loss for **900 participants** in a year-long study of **3 different exercise programs**, a jogging program, a swimming program, and a reading program which serves as a control activity. 
+
+## Variables
+
+* `prog` 
+    + exercise program 
+    + categorical, nominal
+    + 1 = jogging
+    + 2 = swimming
+    + 3 = reading
+
+
+* `gender` 
+    + participant gender, self-report
+    + categorical, binary
+    + 1 = Male
+    + 2 = Female
+
+
+* `hours` 
+    + hours spent in program per week
+    + continuous, interval-ratio
+
+
+* `effort` 
+    + self-report effort during program
+    + continuous, interval-ratio
+    + 0 = minimal physical effort
+    + 50 = maximum effort
+
+
+* `loss` 
+    + final weight loss, pounds 
+    + continuous, interval-ratio
+    + positive = weight loss
+    + negative scores = weight gain
+
+
+\clearpage
+
+# PREPARATION
+
+## Load Packages
+
+
+```{r, eval=FALSE}
+library(devtools)
+devtools::install_github("SarBearSchwartz/apaSupp")
+```
+
+```{r, results='hide', message=FALSE, error=FALSE, warning=FALSE}
+library(apaSupp)
+library(tidyverse)
+library(furniture)
+library(psych)
+library(flextable)
+library(naniar)
+library(rstatix)
+library(ggpubr)
+library(MOTE)
+library(olsrr)
+library(DHARMa)
+library(texreg)
+library(emmeans)
+library(interactions)
+library(performance)
+```
+
+
+
+
+```{r, echo=FALSE, results='hide'}
+# Include the R programing language
+toBibtex(citation())  
+
+# Include specific packages
+# toBibtex(citation("geepack"))
+
+# write all citations to .bib file
+knitr::write_bib(c(.packages()), "packages.bib") 
+```
+
+
+
+
+## Default Settings 
+
+
+```{r}
+options(dplyr.summarise.inform = FALSE)
+
+flextable::set_flextable_defaults(theme_fun = "theme_apa",
+                                  font.size = 10,
+                                  layout = "autofit")
+
+ggplot2::theme_set(theme_bw())
+```
+
+
+
+
+
+
+
+
+
+
+
+\clearpage
+
+
+# DATA WRANGLING
+
+
+## Load Data
+
+This data is avalible online.
+
+```{r}
+df_raw <- read.csv("https://stats.idre.ucla.edu/wp-content/uploads/2019/03/exercise.csv")
+```
+
+
+```{r}
+tibble::glimpse(df_raw)
+```
+
+
+## Declare Factors
+
+```{r}
+df_use <- df_raw %>% 
+  dplyr::mutate(id = factor(id)) %>% 
+  dplyr::mutate(gender = factor(gender) %>% 
+                  forcats::fct_recode("Male"   = "1",
+                                      "Female" = "2")) %>% 
+  dplyr::mutate(prog = factor(prog) %>% 
+                  forcats::fct_recode("Jogging"  = "1",
+                                      "Swimming" = "2",
+                                      "Reading" = "3"))
+```
+
+```{r}
+tibble::glimpse(df_use)
+```
+
+
+
+
+\clearpage
+
+```{r}
+df_use %>% 
+  psych::headTail(top = 6) %>% 
+  flextable::flextable() %>% 
+  flextable::set_caption("Illustration of the Collected Data")
+```
+
+\clearpage
+
+# SUMMARY STATISTICS
+
+## Sample Size
+
+
+This experiment is hypothetical and the data was simulated, thus has no inclusion or exclusion criteria.
+
+Note: Program was randomized within gender to ensure balance.
+
+
+```{r}
+df_use %>% 
+  furniture::table1("Gender, observed" = gender,
+                    splitby = ~ prog,
+                    total = TRUE,
+                    na.rm = FALSE,
+                    output = "markdown",
+                    digits = 2,
+                    caption = "Sample Size by Program",
+                    export = "tab_sample_size")
+```
+
+
+
+\clearpage
+
+## Missing Data
+
+This experiment is hypothetical and the data was simulated, thus has no missing data.
+
+
+```{r, fig.cap="Amount of Missing Data by Variable"}
+df_use %>% 
+  naniar::gg_miss_var() +
+  theme_bw()
+```
+
+
+
+
+\clearpage
+
+## Descriptive Summary
+
+
+```{r}
+tab_5numsum <- df_use %>% 
+  dplyr::select_if(is.numeric) %>% 
+  psych::describe(quant = c(.25, .75)) %>% 
+  data.frame() %>% 
+  dplyr::mutate(n = as.character(n)) %>%
+  tibble::rownames_to_column(var = "Variable") %>% 
+  dplyr::mutate_if(is.numeric, apaSupp::apa2) %>% 
+  dplyr::select(Variable,
+                "n" = n, 
+                "Min" = min, 
+                "Q1" = Q0.25, 
+                "Mdn" = median, 
+                "Q3" = Q0.75, 
+                "Max" = max) %>% 
+  flextable::flextable() %>% 
+  flextable::set_caption("Five-Number Summary for Quantitative Measures")
+
+tab_5numsum
+```
+
+
+```{r, include=FALSE}
+tab_5numsum %>% 
+  flextable::save_as_docx(path = "tables/tab_5numsum.docx")
+```
+
+
+\clearpage
+
+
+```{r}
+df_use %>% 
+  furniture::table1("Gender" = gender,
+                    "Weight Loss, pounds" = loss,
+                    "Program Use, hours" = hours,
+                    "Program Effort, rating" = effort,
+                    splitby =  ~ prog,
+                    total = TRUE,
+                    test = TRUE,
+                    # na.rm = FALSE,
+                    output = "markdown",
+                    digits = 2,
+                    caption = "Descriptive Summary of Sample, by Program",
+                    export = "tab_descriptives")
+```
+
+\clearpage
+
+## Correlations
+
+```{r}
+tab_cor <- df_use %>% 
+  dplyr::select("Program Time" = hours, 
+                "Effort Rating" = effort, 
+                "Weight Loss" = loss) %>% 
+  rstatix::cor_mat() %>% 
+  rstatix::pull_lower_triangle() %>%
+  dplyr::rename(Variables = rowname) %>% 
+  flextable::flextable() %>% 
+  flextable::width(j = 1, width = 2, unit = "in") %>% 
+  flextable::width(j = 2:4, width = 1, unit = "in") %>% 
+  flextable::colformat_double(digits = 3) %>% 
+  flextable::set_caption("Correlation Matrix for Quantitative Measures, Pearson's Product Moment Correlation (r)")
+
+tab_cor
+```
+
+
+```{r, include=FALSE}
+tab_cor %>% 
+  flextable::save_as_docx(path = "tables/tab_cor.docx")
+```
+
+\clearpage
+
+
+```{r}
+tab_cor_gather <- df_use %>% 
+  dplyr::select("Hours" = hours, 
+                "Effort" = effort, 
+                "Loss" = loss) %>% 
+  rstatix::cor_mat() %>% 
+  rstatix::cor_gather() %>% 
+  dplyr::mutate(p = apaSupp::p_num(p)) %>% 
+  dplyr::filter(cor < 1) %>% 
+  dplyr::group_by(cor, p) %>% 
+  dplyr::slice(1) %>% 
+  dplyr::ungroup() %>% 
+  tidyr::unite(col = "Variables", var1, var2, sep = " & ") %>% 
+  dplyr::rename("r" = "cor") %>% 
+  flextable::flextable() %>% 
+  flextable::width(j = 1, width = 2, unit = "in") %>% 
+  flextable::width(j = 2:3, width = 1.5, unit = "in") %>% 
+  flextable::colformat_double(digits = 3) %>% 
+  flextable::set_caption("Correlations for Quantitative Measurse, Pearson's Product Moment Correlation (r) and Statistical Significance (p)")
+
+tab_cor_gather
+```
+
+
+
+
+```{r, include=FALSE}
+tab_cor_gather %>% 
+  flextable::save_as_docx(path = "tables/tab_cor_gather.docx")
+```
+
+
+\clearpage
+
+```{r}
+tab_cor_split <- df_use %>% 
+  dplyr::group_by(prog, gender) %>% 
+  dplyr::select("Hours" = hours, 
+                "Effort" = effort, 
+                "Loss" = loss) %>% 
+  tidyr::nest() %>% 
+  dplyr::mutate(cor = map(data, 
+                          ~ rstatix::cor_mat(.x) %>% 
+                            rstatix::cor_gather())) %>% 
+  tidyr::unnest(cor) %>% 
+  dplyr::select(-data) %>% 
+  dplyr::mutate(p = apaSupp::p_num(p)) %>% 
+  dplyr::filter(cor < 1) %>% 
+  dplyr::group_by(prog, gender, cor, p) %>% 
+  dplyr::slice(1) %>% 
+  dplyr::ungroup() %>% 
+  tidyr::unite(col = "Variables", var1, var2, sep = " & ") %>% 
+  dplyr::mutate(text = glue::glue("{apaSupp::apa3(cor)} ({p})")) %>% 
+  dplyr::select(-cor, -p) %>% 
+  tidyr::pivot_wider(names_from = Variables,
+                     values_from = text) %>% 
+  flextable::flextable() %>% 
+  flextable::width(j = 3:5, width = 1.3, unit = "in") %>%
+  flextable::set_caption("Correlations for Quantitative Measurse, Pearson's Product Moment Correlation, by Program and Gender")
+
+tab_cor_split
+```
+
+
+```{r, include=FALSE}
+tab_cor_gather %>% 
+  flextable::save_as_docx(path = "tables/tab_cor_split.docx")
+```
+
+
+\clearpage
+
+
+```{r, fig.width=4, fig.height=4, fig.cap= "Correlation Plot for Program Time, Effort Rating, and Weight Loss, Pearson's Product Moment Correlation (r) Indication Statistical Significance - Option A"}
+df_use %>% 
+  dplyr::select("Hours" = hours, 
+                "Effort" = effort, 
+                "Loss" = loss) %>% 
+  cor() %>% 
+  corrplot::corrplot.mixed()
+```
+
+
+\clearpage
+
+```{r, fig.width=4, fig.height=4, fig.cap= "Correlation Plot for Program Time, Effort Rating, and Weight Loss, Pearson's Product Moment Correlation (r) Indication Statistical Significance - Option B"}
+df_use %>% 
+  dplyr::select("Hours" = hours, 
+                "Effort" = effort, 
+                "Loss" = loss) %>% 
+  rstatix::cor_mat() %>%   
+  rstatix::cor_reorder() %>%
+  rstatix::pull_lower_triangle() %>%
+  rstatix::cor_plot(label = TRUE)
+```
+
+
+
+\clearpage
+
+```{r, fig.width=4, fig.height=4, fig.cap= "Correlation Plot for Program Time, Effort Rating, and Weight Loss, Pearson's Product Moment Correlation (r) Indication Statistical Significance, for the Jogging Program"}
+df_use %>% 
+  dplyr::filter(prog == "Jogging") %>% 
+  dplyr::select("Hours" = hours, 
+                "Effort" = effort, 
+                "Loss" = loss) %>% 
+  rstatix::cor_mat() %>%   
+  rstatix::cor_reorder() %>%
+  rstatix::pull_lower_triangle() %>%
+  rstatix::cor_plot(label = TRUE)
+```
+
+
+
+
+\clearpage
+
+```{r, fig.width=4, fig.height=4, fig.cap= "Correlation Plot for Program Time, Effort Rating, and Weight Loss, Pearson's Product Moment Correlation (r) Indication Statistical Significance, for the Swimming Running"}
+df_use %>% 
+  dplyr::filter(prog == "Swimming") %>% 
+  dplyr::select("Hours" = hours, 
+                "Effort" = effort, 
+                "Loss" = loss) %>% 
+  rstatix::cor_mat() %>%   
+  rstatix::cor_reorder() %>%
+  rstatix::pull_lower_triangle() %>%
+  rstatix::cor_plot(label = TRUE)
+```
+
+
+
+
+\clearpage
+
+```{r, fig.width=4, fig.height=4, fig.cap= "Correlation Plot for Program Time, Effort Rating, and Weight Loss, Pearson's Product Moment Correlation (r) Indication Statistical Significance, for the Reading Running"}
+df_use %>% 
+  dplyr::filter(prog == "Reading") %>% 
+  dplyr::select("Hours" = hours, 
+                "Effort" = effort, 
+                "Loss" = loss) %>% 
+  rstatix::cor_mat() %>%   
+  rstatix::cor_reorder() %>%
+  rstatix::pull_lower_triangle() %>%
+  rstatix::cor_plot(label = TRUE)
+```
+
+
+
+\clearpage
+
+# VISUALIZATIONS
+
+## Univariable
+
+### Weight Loss
+
+
+```{r, fig.width=6, fig.height=4, fig.cap = "Distribution of Weight Loss"}
+df_use %>% 
+  ggplot(aes(loss)) + 
+  geom_histogram(color = "black",
+                 alpha = .3,
+                 binwidth = 5) +
+  stat_summary(aes(xintercept = ..x.., 
+                   y = 0), 
+               fun = mean, 
+               geom = "vline", 
+               orientation = "y",
+               linewidth = 2) +
+  labs(x = "Weight Loss, pounds",
+       y = "Count") +
+  scale_x_continuous(breaks = seq(from = -20, to = 50, by = 10)) 
+```
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_loss.png",
+       width = 6,
+       height = 4,
+       units = "in")
+```
+
+
+
+\clearpage
+
+
+
+```{r, fig.width=6, fig.height=6, fig.cap = "Distribution of Weight Loss, By Program - Option A"}
+df_use %>% 
+  ggplot(aes(loss)) + 
+  geom_histogram(color = "black",
+                 alpha = .3,
+                 binwidth = 5) +
+  stat_summary(aes(xintercept = ..x.., y = 0),
+               fun = mean,
+               geom = "vline",
+               orientation = "y",
+               linewidth = 2) +
+  labs(x = "Weight Loss, pounds",
+       y = "Count") +
+  facet_wrap(~ prog, ncol = 1) +
+  geom_vline(xintercept = 0, color = "black", linetype = "dotted") +
+  scale_x_continuous(breaks = seq(from = -20, to = 50, by = 10)) 
+```
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_loss_prog_a.png",
+       width = 6,
+       height = 6,
+       units = "in")
+```
+
+
+
+\clearpage
+
+```{r, fig.width=6, fig.height=4, fig.cap = "Distribution of Weight Loss, By Program - Option B"}
+df_use %>% 
+  ggplot(aes(x = prog,
+             y = loss)) + 
+  geom_hline(yintercept = 0, color = "black") +
+  geom_violin(fill = "gray") +
+  geom_boxplot(width = .25) +
+  geom_jitter(size = .75,
+              shape = 1,
+              alpha = .3,
+              width = .2,
+              height = 0) +
+  stat_summary(fun = "mean",
+               geom = "point",
+               shape = 18,
+               size = 5) +
+  stat_summary(aes(group = 1),
+               fun = "mean",
+               geom = "line") +
+  labs(x = "Program, randomized",
+       y = "Weight Loss, pounds") +
+  scale_y_continuous(breaks = seq(from = -20, to = 50, by = 10))
+```
+
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_loss_prog_b.png",
+       width = 6,
+       height = 4,
+       units = "in")
+```
+
+
+
+\clearpage
+
+
+
+```{r, fig.width=6, fig.height=6, fig.cap = "Distribution of Weight Loss, By Program and Gender - Option A"}
+df_use %>% 
+  ggplot(aes(loss,
+             fill = gender)) + 
+  geom_density(alpha = .5) +  
+  stat_summary(aes(xintercept = ..x.., 
+                   y = 0,
+                   linetype = gender), 
+               fun = mean, 
+               geom = "vline", 
+               orientation = "y",
+               linewidth = 2) +
+  geom_vline(xintercept = 0, 
+             color = "black", 
+             linetype = "dotted") +
+  labs(x = "Weight Loss, pounds",
+       y = "Density",
+       fill = NULL,
+       color = NULL,
+       linetype = NULL)+
+  facet_wrap(~ prog, ncol = 1) +
+  scale_fill_manual(values = c("gray20", "gray90")) +
+  scale_x_continuous(breaks = seq(from = -20, to = 50, by = 10)) +
+  theme(legend.position = c(1, 0),
+        legend.justification = c(1.1, -.1),
+        legend.background = element_rect(color = "black"),
+        legend.key.height = unit(1.5, "cm"))
+```
+
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_loss_prog_gender_a.png",
+       width = 6,
+       height = 6,
+       units = "in")
+```
+
+
+
+
+
+\clearpage
+
+```{r, fig.width=6, fig.height=4, fig.cap = "Distribution of Weight Loss, By Program and Gender - Option B"}
+df_use %>% 
+  ggplot(aes(x = prog,
+             y = loss,
+             fill = gender,
+             shape = gender,
+             group = interaction(prog,gender))) +
+  geom_hline(yintercept = 0, color = "black") + 
+  geom_violin(alpha = .5) +
+  geom_boxplot(fill = "white",
+               width = .25,
+               position = position_dodge(width = .9)) +
+  stat_summary(fun = mean,
+               geom = "point",
+               size = 5,
+               position = position_dodge(width = .9)) +
+  labs(x = "Program, randomized",
+       y = "Weight Loss, pounds",
+       fill = NULL,
+       color = NULL,
+       shape = NULL)  +
+  scale_fill_manual(values = c("gray20", "gray90")) +
+  scale_shape_manual(values = c(18, 19)) +
+  scale_y_continuous(breaks = seq(from = -20, to = 50, by = 10)) +
+  theme(legend.position = c(0, 1),
+        legend.justification = c(-.1, 1.1),
+        legend.background = element_rect(color = "black"),
+        legend.key.height = unit(1.3, "cm"),
+        legend.direction = "horizontal")
+```
+
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_loss_prog_gender_b.png",
+       width = 6,
+       height = 4,
+       units = "in")
+```
+
+
+
+
+\clearpage
+
+```{r, fig.width=6, fig.height=4, fig.cap = "Distribution of Weight Loss, By Program and Gender - Option C"}
+df_use %>% 
+  ggplot(aes(x = gender,
+             y = loss,
+             shape = gender,
+             group = gender)) + 
+  geom_hline(yintercept = 0, color = "black") + 
+  geom_violin(aes(fill = gender),
+              alpha = .5) +
+  geom_boxplot(fill = "white",
+               width = .25,
+               position = position_dodge(width = .9)) +
+  stat_summary(fun = mean,
+               geom = "point",
+               size = 5,
+               position = position_dodge(width = .9)) +
+  stat_summary(aes(group = 1),
+               fun = "mean",
+               geom = "line") +
+  labs(x = NULL,
+       y = "Weight Loss, pounds",
+       shape = NULL)  +
+  scale_shape_manual(values = c(18, 19)) +
+  scale_y_continuous(breaks = seq(from = -20, to = 50, by = 10)) +
+  scale_fill_manual(values = c("gray20", "gray90")) +
+  theme(legend.position = "none") +
+  facet_grid(~ prog)
+```
+
+
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_loss_prog_gender_c.png",
+       width = 6,
+       height = 4,
+       units = "in")
+```
+
+
+\clearpage
+
+### Program Time
+
+
+
+```{r, fig.width=6, fig.height=4, fig.cap = "Distribution of Program Time"}
+df_use %>% 
+  ggplot(aes(hours)) + 
+  geom_histogram(color = "black",
+                 alpha = .3,
+                 binwidth = .25) +
+  stat_summary(aes(xintercept = ..x.., 
+                   y = 0), 
+               fun = mean, 
+               geom = "vline", 
+               orientation = "y",
+               linewidth = 2) +
+  labs(x = "Program Time, hours/week",
+       y = "Count") 
+```
+
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_hours.png",
+       width = 6,
+       height = 4,
+       units = "in")
+```
+
+
+\clearpage
+
+
+
+
+
+```{r, fig.width=6, fig.height=6, fig.cap = "Distribution of Program Time, By Program - Option A"}
+df_use %>% 
+  ggplot(aes(hours)) + 
+  geom_histogram(color = "black",
+                 alpha = .3,
+                 binwidth = .25) +
+  stat_summary(aes(xintercept = ..x.., y = 0),
+               fun = mean,
+               geom = "vline",
+               orientation = "y",
+               linewidth = 2) +
+  labs(x = "Program Time, hours/week",
+       y = "Count") +
+  facet_wrap(~ prog, ncol = 1)
+```
+
+
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_hours_prog_a.png",
+       width = 6,
+       height = 6,
+       units = "in")
+```
+
+
+
+
+\clearpage
+
+```{r, fig.width=6, fig.height=4, fig.cap = "Distribution of Program Time, By Program - Option B"}
+df_use %>% 
+  ggplot(aes(x = prog,
+             y = hours)) + 
+  geom_violin(fill = "gray") +
+  geom_boxplot(width = .25) +
+  geom_jitter(size = .75,
+              shape = 1,
+              alpha = .3,
+              width = .2,
+              height = 0) +
+  stat_summary(fun = "mean",
+               geom = "point",
+               shape = 18,
+               size = 5) +
+  stat_summary(aes(group = 1),
+               fun = "mean",
+               geom = "line") +
+  labs(x = "Program, randomized",
+       y = "Program Time, hours/week") 
+```
+
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_hours_prog_b.png",
+       width = 6,
+       height = 4,
+       units = "in")
+```
+
+
+\clearpage
+
+
+
+```{r, fig.width=6, fig.height=6, fig.cap = "Distribution of Program Time, By Program and Gender - Option A"}
+df_use %>% 
+  ggplot(aes(hours,
+             fill = gender)) + 
+  geom_density(alpha = .5) +  
+  stat_summary(aes(xintercept = ..x.., 
+                   y = 0,
+                   linetype = gender), 
+               fun = mean, 
+               geom = "vline", 
+               orientation = "y",
+               linewidth = 2) +
+  labs(x = "Program Time, hours/week",
+       y = "Density",
+       fill = NULL,
+       color = NULL,
+       linetype = NULL)+
+  facet_wrap(~ prog, ncol = 1) +
+  scale_fill_manual(values = c("gray20", "gray90")) +
+  theme(legend.position = c(1, 0),
+        legend.justification = c(1.1, -.1),
+        legend.background = element_rect(color = "black"),
+        legend.key.height = unit(1.5, "cm"))
+```
+
+
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_hours_prog_gender_a.png",
+       width = 6,
+       height = 6,
+       units = "in")
+```
+
+
+\clearpage
+
+```{r, fig.width=6, fig.height=4, fig.cap = "Distribution of Program Time, By Program and Gender - Option B"}
+df_use %>% 
+  ggplot(aes(x = prog,
+             y = hours,
+             fill = gender,
+             shape = gender,
+             group = interaction(prog,gender))) + 
+  geom_violin(alpha = .5) +
+  geom_boxplot(fill = "white",
+               width = .25,
+               position = position_dodge(width = .9)) +
+  stat_summary(fun = mean,
+               geom = "point",
+               size = 5,
+               position = position_dodge(width = .9)) +
+  labs(x = "Program, randomized",
+       y = "Program Time, hours/week",
+       fill = NULL,
+       color = NULL,
+       shape = NULL)  +
+  scale_fill_manual(values = c("gray20", "gray90")) +
+  scale_shape_manual(values = c(18, 19)) +
+  theme(legend.position = c(0, 1),
+        legend.justification = c(-.1, 1.1),
+        legend.background = element_rect(color = "black"),
+        legend.key.height = unit(1.3, "cm"),
+        legend.direction = "horizontal")
+```
+
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_hours_prog_gender_b.png",
+       width = 6,
+       height = 4,
+       units = "in")
+```
+
+
+
+
+\clearpage
+
+```{r, fig.width=6, fig.height=4, fig.cap = "Distribution of Program Time, By Program and Gender - Option C"}
+df_use %>% 
+  ggplot(aes(x = gender,
+             y = hours,
+             shape = gender,
+             group = gender)) + 
+  geom_violin(aes(fill = gender),
+              alpha = .5) +
+  geom_boxplot(fill = "white",
+               width = .25,
+               position = position_dodge(width = .9)) +
+  stat_summary(fun = mean,
+               geom = "point",
+               size = 5,
+               position = position_dodge(width = .9)) +
+  stat_summary(aes(group = 1),
+               fun = "mean",
+               geom = "line") +
+  scale_fill_manual(values = c("gray20", "gray90")) +
+  labs(x = NULL,
+       y = "Program Time, hours/week",
+       shape = NULL)  +
+  scale_shape_manual(values = c(18, 19)) +
+  theme(legend.position = "none") +
+  facet_grid(~ prog)
+```
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_hours_prog_gender_c.png",
+       width = 6,
+       height = 4,
+       units = "in")
+```
+
+
+
+\clearpage
+
+### Effort Rating
+
+
+
+```{r, fig.width=6, fig.height=4, fig.cap = "Distribution of Effort Rating"}
+df_use %>% 
+  ggplot(aes(effort)) + 
+  geom_histogram(color = "black",
+                 alpha = .3,
+                 binwidth = 2) +
+  stat_summary(aes(xintercept = ..x.., 
+                   y = 0), 
+               fun = mean, 
+               geom = "vline", 
+               orientation = "y",
+               linewidth = 2) +
+  labs(x = "Effort Rating, 0-50",
+       y = "Count")
+```
+
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_effort.png",
+       width = 6,
+       height = 4,
+       units = "in")
+```
+
+
+
+
+\clearpage
+
+
+
+
+
+```{r, fig.width=6, fig.height=6, fig.cap = "Distribution of Effort Rating, By Program - Option A"}
+df_use %>% 
+  ggplot(aes(effort)) + 
+  geom_histogram(color = "black",
+                 alpha = .3,
+                 binwidth = 2) +
+  stat_summary(aes(xintercept = ..x.., y = 0),
+               fun = mean,
+               geom = "vline",
+               orientation = "y",
+               linewidth = 2) +
+  labs(x = "Effort Rating, 0-50",
+       y = "Count") +
+  facet_wrap(~ prog, ncol = 1)
+```
+
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_effort_prog_a.png",
+       width = 6,
+       height = 6,
+       units = "in")
+```
+
+
+
+\clearpage
+
+```{r, fig.width=6, fig.height=4, fig.cap = "Distribution of Effort Rating, By Program - Option B"}
+df_use %>% 
+  ggplot(aes(x = prog,
+             y = effort)) + 
+  geom_violin(fill = "gray") +
+  geom_boxplot(width = .25) +
+  geom_jitter(size = .75,
+              shape = 1,
+              alpha = .3,
+              width = .2,
+              height = 0) +
+  stat_summary(fun = "mean",
+               geom = "point",
+               shape = 18,
+               size = 5) +
+  stat_summary(aes(group = 1),
+               fun = "mean",
+               geom = "line") +
+  labs(x = "Program, randomized",
+       y = "Effort Rating, 0-50") 
+```
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_effort_prog_b.png",
+       width = 6,
+       height = 4,
+       units = "in")
+```
+
+
+\clearpage
+
+
+
+```{r, fig.width=6, fig.height=6, fig.cap = "Distribution of Effort Rating, By Program and Gender - Option A"}
+df_use %>% 
+  ggplot(aes(effort,
+             fill = gender)) + 
+  geom_density(alpha = .5) +  
+  stat_summary(aes(xintercept = ..x.., 
+                   y = 0,
+                   linetype = gender), 
+               fun = mean, 
+               geom = "vline", 
+               orientation = "y",
+               linewidth = 2) +
+  labs(x = "Effort Rating, 0-50",
+       y = "Density",
+       fill = NULL,
+       linetype = NULL)+
+  facet_wrap(~ prog, ncol = 1) +
+  scale_fill_manual(values = c("gray20", "gray90")) +
+  theme(legend.position = c(1, 0),
+        legend.justification = c(1.1, -.1),
+        legend.background = element_rect(color = "black"),
+        legend.key.height = unit(1.5, "cm"))
+```
+
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_effort_prog_gender_a.png",
+       width = 6,
+       height = 6,
+       units = "in")
+```
+
+
+\clearpage
+
+```{r, fig.width=6, fig.height=4, fig.cap = "Distribution of Effort Rating, By Program and Gender - Option B"}
+df_use %>% 
+  ggplot(aes(x = prog,
+             y = effort,
+             fill = gender,
+             shape = gender,
+             group = interaction(prog,gender))) + 
+  geom_violin(alpha = .5) +
+  geom_boxplot(fill = "white",
+               width = .25,
+               position = position_dodge(width = .9)) +
+  stat_summary(fun = mean,
+               geom = "point",
+               size = 5,
+               position = position_dodge(width = .9)) +
+  labs(x = "Program, randomized",
+       y = "Effort Rating, 0-50",
+       fill = NULL,
+       color = NULL,
+       shape = NULL)  +
+  scale_fill_manual(values = c("gray20", "gray90")) +
+  scale_shape_manual(values = c(18, 19)) +
+  theme(legend.key.height = unit(2, "cm"))
+```
+
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_effort_prog_gender_b.png",
+       width = 6,
+       height = 4,
+       units = "in")
+```
+
+
+
+\clearpage
+
+```{r, fig.width=6, fig.height=4, fig.cap = "Distribution of Effort Rating, By Program and Gender - Option C"}
+df_use %>% 
+  ggplot(aes(x = gender,
+             y = effort,
+             shape = gender,
+             group = gender)) + 
+  geom_violin(fill = "gray",
+              alpha = .5) +
+  geom_boxplot(fill = "white",
+               width = .25,
+               position = position_dodge(width = .9)) +
+  stat_summary(fun = mean,
+               geom = "point",
+               size = 5,
+               position = position_dodge(width = .9)) +
+  stat_summary(aes(group = 1),
+               fun = "mean",
+               geom = "line") +
+  labs(x = NULL,
+       y = "Effort Rating, 0-50",
+       shape = NULL)  +
+  scale_shape_manual(values = c(18, 19)) +
+  theme(legend.position = "none") +
+  facet_grid(~ prog)
+```
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_effort_prog_gender_c.png",
+       width = 6,
+       height = 4,
+       units = "in")
+```
+
+
+\clearpage
+
+## Bivariable
+
+### Weight Loss by Program Time
+
+```{r, fig.width=6, fig.height=5, fig.cap="Association Between Weight Loss by Program Time, by Gender and Program"}
+df_use %>% 
+  ggplot(aes(x = hours,
+             y = loss)) +
+  geom_hline(yintercept = 0, color = "black") +
+  geom_point(alpha = .25) +
+  theme_bw() +
+  facet_grid(gender ~ prog) +
+  geom_smooth(method = "lm",
+              formula = y ~ x,
+              se = FALSE,
+              linetype = "longdash") +
+  ggpubr::stat_cor(aes(label = ..r.label..),
+                   cor.coef.name = "r",
+                   digits = 3)
+
+```
+
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_loss_hours.png",
+       width = 6,
+       height = 5,
+       units = "in")
+```
+
+
+
+
+
+\clearpage
+
+
+
+### Weight Loss by Effort Rating
+
+```{r, fig.width=6, fig.height=5, fig.cap="Association Between Weight Loss by Effort Rating, by Gender and Program"}
+df_use %>% 
+  ggplot(aes(x = effort,
+             y = loss)) +
+  geom_hline(yintercept = 0, color = "black") +
+  geom_point(alpha = .25) +
+  theme_bw() +
+  facet_grid(gender ~ prog) +
+  geom_smooth(method = "lm",
+              formula = y ~ x,
+              se = FALSE,
+              linetype = "longdash") +
+  ggpubr::stat_cor(aes(label = ..r.label..),
+                   cor.coef.name = "r",
+                   digits = 3,
+                   r.accuracy = .001)
+```
+
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_loss_effort.png",
+       width = 6,
+       height = 5,
+       units = "in")
+```
+
+
+
+\clearpage
+
+
+### Effort Rating by Program Time
+
+
+```{r, fig.width=6, fig.height=5, fig.cap="Association Between Effort Rating by Program Time, by Gender and Program"}
+df_use %>% 
+  ggplot(aes(x = hours,
+             y = effort)) +
+  geom_point(alpha = .25) +
+  theme_bw() +
+  facet_grid(gender ~ prog) +
+  geom_smooth(method = "lm",
+              formula = y ~ x,
+              se = FALSE,
+              linetype = "longdash") +
+  ggpubr::stat_cor(aes(label = ..r.label..),
+                   cor.coef.name = "r",
+                   digits = 3)
+```
+
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_effort_hours.png",
+       width = 6,
+       height = 5,
+       units = "in")
+```
+
+
+\clearpage
+
+# REGRESSION ANALYSIS
+
+Multip
+
+## Model Fitting
+
+### Fit Nested Models
+
+```{r}
+fit_1 <- lm(loss ~ prog + hours + gender + effort,
+            data = df_use)
+
+fit_2 <- lm(loss ~ prog*hours*gender + 
+              prog*hours*effort,
+            data = df_use)
+
+fit_3 <- lm(loss ~ prog*hours*gender + 
+              prog*gender*effort + 
+              prog*hours*effort,
+            data = df_use)
+fit_4 <- lm(loss ~ prog*hours*gender*effort,
+            data = df_use)
+```
+
+
+\clearpage
+
+### Parameter Estimate Table
+
+```{r, results='asis'}
+texreg::knitreg(list(fit_1, fit_2, fit_3, fit_4),
+                custom.model.names = c("fit 1", "fit 2", "fit 3", "fit 4"),
+                caption = "Parameter Estimates of Nested Regression Models for Weight Loss")
+```
+
+```{r tab_lm_all, include=FALSE, results='hide', warning=FALSE, message=FALSE}
+# texreg::wordreg(list(fit_1, fit_2, fit_3, fit_4),
+#                 custom.model.names = c("fit 1", "fit 2", "fit 3", "fit 4"),
+#                 caption = "Parameter Estimates of Nested Regression Models for Weight Loss",
+#                 file = "tables/tab_lm_all.doc")
+```
+
+
+
+\clearpage
+
+### Compare Model Fit
+
+```{r}
+tab_lm_fits <- performance::compare_performance(fit_1, fit_2, fit_3, fit_4) %>% 
+  data.frame() %>% 
+  dplyr::select(Name, AIC, BIC, R2, R2_adjusted, RMSE, Sigma) %>% 
+  flextable::flextable() %>% 
+  flextable::set_caption("Comparison of Model Fit for Nested Regression Models for Weight Loss")
+
+tab_lm_fits
+```
+
+
+```{r, include=FALSE}
+tab_lm_fits %>% 
+  flextable::save_as_docx(path = "tables/tab_lm_fits.docx")
+```
+
+
+
+
+
+
+
+
+\clearpage
+
+### Residual Diagnostics
+
+The standard regression assumptions include the following about residuals/errors:
+
+* The error has a normal distribution (normality assumption).
+* The errors have mean zero.
+* The errors have same but unknown variance (homoscedasticity assumption).
+* The error are independent of each other (independent errors assumption).
+
+
+Normality Test:
+
+* Shapiro-Wilk ($W$): The recommended sample size for this test ranges from 7 to 2000. Origin allows sample sizes from 3 to 5000. However, when sample size is relatively large, D'Agostino K-squared or Lilliefors are generally preferred over Shapiro-Wilk.
+
+* Kolmogorov-Smirnov ($D$): The K-S test, though known to be less powerful, is widely used. Generally, it requires **large sample sizes**.
+
+* Cramer-con Mises ($CH$): The Cramer-von Mises goodness-of-fit test is based on the empirical distribution and an ordered statistic. It is distribution-free (can be used for other distributions as well) omnibus test alternative to the Kolmogorov-Smirnov test (also ecdf-based). The p-value is based on the largest discrepancy between the empirical distribution and the hypothetical (normal, in this case) distribution. In terms of power against commonly-encountered alternatives it doesn't shine compared to the rest of the test in our goodness-of-fit calculator, but it is still widely used.
+
+* Anderson-Darling ($A^2$): The Anderson-Darling normality test is a modification of the Cramer-von Mises approach and is thus a distance-test based on the empirical cumulative distribution function and distribution-free in its generic form. Compared with the Cramer–von Mises distance, the Anderson–Darling distance places more weight on observations in the tails of the distribution. It shows decent sensitivity against a variety of distributions, most notably the Laplace and Uniform distribution. Sample size of less than 26 is recommended, but industrial data with 200 and more might pass A-D. The p-value of the A-D test depends on simulation algorithms. 
+
+
+
+
+```{r}
+olsrr::ols_test_normality(fit_2)
+```
+
+
+```{r, fig.width=5, fig.height=3, fig.cap= "Residual Diagnostics, Assess Normality of the Conditional Distribution of Weight Loss, QQ Plot"}
+olsrr::ols_plot_resid_qq(fit_2)
+```
+
+
+
+```{r, fig.width=5, fig.height=3, fig.cap= "Residual Diagnostics, Assess Normality of the Conditional Distribution of Weight Loss, Histogram"}
+olsrr::ols_plot_resid_hist(fit_2)
+```
+
+\clearpage
+
+It is a scatter plot of residuals on the y axis and fitted values on the x axis to detect non-linearity, unequal error variances, and outliers.
+
+Characteristics of a well behaved residual vs fitted plot:
+
+* The residuals **spread randomly** around the 0 line indicating that the relationship is linear.  
+
+* The residuals form an **approximate horizontal band** around the 0 line indicating homogeneity of error variance. 
+
+* No one residual is **visibly away from** the random pattern of the residuals indicating that there are no outliers.
+
+```{r, fig.width=5, fig.height=3, fig.cap= "Residual Diagnostics, Assess Various Assumptions of Regression, scatterplot"}
+olsrr::ols_plot_resid_fit(fit_2)
+```
+
+
+\clearpage
+
+Cook's distance was introduced by American statistician R Dennis Cook in 1977. It is used to **identify influential data points**. It depends on both the residual and leverage i.e it takes it account both the x value and y value of the observation. A data point having a large cook's d indicates that the data point strongly influences the fitted values.
+
+```{r, fig.width=6, fig.height=4, fig.cap= "Residual Diagnostics, Identiry Influential Data Points, Cook's D Chart"}
+olsrr::ols_plot_cooksd_chart(fit_2)
+```
+
+
+
+
+\clearpage
+
+## Final Model
+
+### Anlaysis of Variance
+
+```{r}
+tab_lm_aov <- anova(fit_2) %>% 
+  data.frame() %>%
+  tibble::rownames_to_column() %>% 
+  dplyr::select("Model Term" = rowname, 
+                MS = Mean.Sq,
+                df = Df,
+                F = F.value,
+                p = Pr..F.) %>% 
+  dplyr::mutate(p = apaSupp::p_num(p)) %>% 
+  dplyr::mutate_if(is.double, apaSupp::apa2) %>% 
+  flextable::flextable() %>% 
+  flextable::set_caption("Final Regression Model for Weight Loss, Analysis of Variance and Significance of All Terms")
+
+tab_lm_aov
+```
+
+
+```{r, include=FALSE}
+tab_lm_aov %>% 
+  flextable::save_as_docx(path = "tables/tab_lm_aov.docx")
+```
+
+\clearpage
+
+### Parameter Estimates
+
+```{r, results='asis'}
+# texreg::knitreg(fit_2,
+#                 custom.model.names = "Weight Loss, pounds",
+#                 single.row = TRUE,
+#                 caption = "Parameter Estimates of Final Regression Models for Weight Loss")
+```
+
+
+
+```{r tab_lm_final, include=FALSE, results='hide', warning=FALSE, message=FALSE}
+texreg::wordreg(fit_2,
+                custom.model.names = "Weight Loss, pounds",
+                single.row = TRUE,
+                caption = "Parameter Estimates of Final Regression Models for Weight Loss",
+                file = "tables/tab_lm_final.doc")
+```
+
+
+
+
+\clearpage
+
+
+### Simple Slopes Analysis
+
+```{r}
+tab_simpslopes <- interactions::sim_slopes(model = fit_2,
+                                           pred = hours,
+                                           modx = prog,
+                                           mod2 = gender) %>% 
+  broom::tidy() %>% 
+  dplyr::select(Gender = mod2.value,
+                Program = modx.value,
+                b = estimate,
+                SE = std.error,
+                CI_lo = conf.low,
+                CI_hi = conf.high,
+                p = p.value) %>% 
+  dplyr::mutate(across(c(b, SE, p, CI_lo, CI_hi),
+                       as.numeric)) %>% 
+  dplyr::mutate(p = apaSupp::p_num(p)) %>% 
+  dplyr::mutate_if(is.numeric, apaSupp::apa2) %>% 
+  flextable::flextable()%>% 
+  flextable::set_caption("Simple Slopes Analysis for Weight Loss by Time Spent in each Program by Gender, Collapsed Across Effort")
+
+tab_simpslopes
+```
+
+
+```{r, include=FALSE}
+tab_simpslopes %>% 
+  flextable::save_as_docx(path = "tables/tab_simpslopes.docx")
+```
+
+
+
+
+\clearpage
+
+### Visualization
+
+
+
+```{r, fig.width=6, fig.height=5, fig.cap="Weight Loss Uniquely Moderated by Program Time and Effort Rating According to Gender and Program Type"}
+effects::Effect(mod = fit_2,
+                focal.predictors = c("prog", "hours", 
+                                     "gender", "effort"),
+                xlevels = list(hours = seq(from = 0,
+                                           to = 4,
+                                           by = .1),
+                               effort = c(26.26, 29.66, 33.10))) %>% 
+  data.frame() %>% 
+  dplyr::mutate(effort = effort %>% 
+                  factor(levels = c(26.26, 29.66,33.10),
+                         labels = c("Low Effort (Q1)",
+                                    "Avg Effort (Mean)",
+                                    "High Effort (Q3)"))) %>% 
+  ggplot(aes(x = hours,
+             y = fit,
+             group = prog)) +
+  geom_ribbon(aes(ymin = lower,
+                  ymax = upper,
+                  fill = prog),
+              alpha = .3) +
+  geom_line(aes(linetype = prog)) +
+  theme_bw() +
+  facet_grid(gender ~ effort) +
+  geom_hline(yintercept = 0, color = "black") +
+  scale_linetype_manual(values = c("solid", "longdash", "dotted")) +
+  labs(x = "Program Time, hours/week",
+       y = "Weight Loss, pounds\nEstimated Marginal Mean",
+       linetype = NULL,
+       color = NULL,
+       fill = NULL)  +
+  theme(legend.position = "bottom",
+        legend.key.width = unit(1.5, "cm"))
+```
+
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_lm_final.png",
+       width = 6,
+       height = 5,
+       units = "in")
+```
+
+
+
+\clearpage
+
+# FINAL RESULTS
+
+
+## RQ (1) 
+
+I’m just starting out and don’t want to put in too much effort. 
+
+How many hours per week of exercise do I need to put in to lose 5 pounds?
+
+### Constraints
+
+* Exclude the `Reading` program
+* Set `effort` to a low value of `26.26` out of 50 which is the 25th percentile (Q1)
+* Invert Predictions
+
+\clearpage
+
+### Inverse Estimation
+
+
+```{r}
+tab_rq1 <- fit_2 %>% 
+  effects::Effect(mod = .,
+                  focal.predictors = c("prog", "hours", 
+                                       "gender", "effort"),
+                  xlevels = list(hours = seq(from = 0,
+                                             to = 4,
+                                             by = .1),
+                                 effort = c(26.26, 33.10))) %>% 
+  data.frame() %>% 
+  dplyr::filter(prog != "Reading") %>% 
+  dplyr::filter(effort == 26.26) %>% 
+  dplyr::filter(fit > 0) %>% 
+  dplyr::mutate(dist5 = abs(fit - 5)) %>% 
+  dplyr::group_by(prog, gender) %>% 
+  dplyr::mutate(dist5_min = min(dist5)) %>% 
+  dplyr::filter(dist5 == dist5_min) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::arrange(prog, gender) %>% 
+  dplyr::select("Program" = prog, 
+                "Gender" = gender, 
+                "Exercise Time, hours/week" = hours, 
+                "Weight Loss, pounds" = fit) %>% 
+  flextable::flextable() %>% 
+  flextable::set_caption(caption = "RQ (1) Inverse Estimation of Exercise Time Required by Each Program for a Five Pound Weight Loss, Given Low Effort")
+
+tab_rq1
+```
+
+
+
+```{r, include=FALSE}
+tab_rq1 %>% 
+  flextable::save_as_docx(path = "tables/tab_rq1.docx")
+```
+
+
+
+\clearpage
+
+### Visualization
+
+
+```{r, fig.width=6, fig.height=4, fig.cap="RQ (1) Compare Exercise Time Required by Each Program for a Five Pound Weight Loss, Given Low Effort"}
+effects::Effect(mod = fit_2,
+                focal.predictors = c("prog", "hours", 
+                                     "gender", "effort"),
+                xlevels = list(hours = seq(from = 0,
+                                           to = 4,
+                                           by = .1),
+                               effort = c(26.26, 29.66, 33.10))) %>% 
+  data.frame() %>% 
+  dplyr::filter(prog != "Reading") %>% 
+  dplyr::filter(effort == 26.26) %>% 
+  ggplot(aes(x = hours,
+             y = fit,
+             group = prog)) +
+  geom_ribbon(aes(ymin = lower,
+                  ymax = upper,
+                  fill = prog),
+              alpha = .3) +
+  geom_line(aes(linetype = prog)) +
+  theme_bw() +
+  facet_grid(~ gender) +
+  geom_hline(yintercept = 0,
+             color = "blaCK")+
+  geom_hline(yintercept = 5,
+             color = "red")+
+  scale_linetype_manual(values = c("solid", "longdash", "dotted")) +
+  scale_fill_manual(values = c("gray20", "gray90")) +
+  scale_y_continuous(breaks = seq(from = -20, to = 50, by = 10)) +
+  labs(x = "Program Time, hours/week",
+       y = "Weight Loss, pounds\nEstimated Marginal Mean",
+       linetype = NULL,
+       fill = NULL)  +
+  theme(legend.position = c(1, 0),
+        legend.justification = c(1.1, -.1),
+        legend.background = element_rect(color = "black"),
+        legend.key.width = unit(1.5, "cm")) +
+  geom_point(data = data.frame(gender = "Female",
+                               prog = "Jogging",
+                               hours = 2.3,
+                               fit = 5),
+             color = "red",
+             shape = 1,
+             size = 5) 
+```
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_rq1.png",
+       width = 6,
+       height = 4,
+       units = "in")
+```
+
+
+
+
+
+\clearpage
+
+### Conclusion
+
+* Even when putting in little effort, both men and women on the swimming program should expect at least a 5 pound weight loss, irrespective of weekly time spent.
+
+* While men should also expect a 5+ pound weight loss on the jogging program, irrespective of weekly time spent, women will need to plan on spending at least 2 hours and 20 min per week running.
+
+
+
+\clearpage
+
+## RQ (2) 
+
+I’m moderately fit and can put in an average level of effort into my workout. 
+
+For every one hour increase per week in exercise, how much additional weight loss do I expect?
+
+### Constraints
+
+* Exclude the `Reading` program
+* Set `effort` to the mean value
+* Interpret the slopes, `b`
+
+### Simple Slopes Analysis
+
+```{r}
+sim_slope_M <- fit_2 %>% 
+  emmeans::emtrends(var = "hours", 
+                    ~ prog | gender) %>% 
+  data.frame() %>% 
+  dplyr::filter(prog != "Reading") 
+```
+
+
+
+```{r}
+tab_rq2 <- sim_slope_M %>% 
+  dplyr::select(Program = prog,
+                Gender = gender,
+                Slope = hours.trend,
+                SE, lower.CL, upper.CL) %>% 
+  dplyr::mutate_if(is.numeric, apaSupp::apa2) %>% 
+  flextable::flextable()%>% 
+  flextable::set_caption("RQ (2) Additional Weight Loss per Hour/Week Spent on Each Exercise Program with Average Effort, by Gender")
+
+tab_rq2
+```
+
+
+
+
+
+```{r, include=FALSE}
+tab_rq2 %>% 
+  flextable::save_as_docx(path = "tables/tab_rq2.docx")
+```
+
+
+
+\clearpage
+
+### Visualize
+
+
+```{r, fig.width=6, fig.height=4, fig.cap="RQ (2) Compare Additional Weight Loss per Hour/Week Spent on Each Exercise Program with Average Effort, by Gender"}
+effects::Effect(mod = fit_2,
+                focal.predictors = c("prog", "hours", 
+                                     "gender", "effort"),
+                xlevels = list(hours = seq(from = 0,
+                                           to = 4,
+                                           by = .1),
+                               effort = c( 26.26, 29.63, 33.10))) %>% 
+  data.frame() %>% 
+  dplyr::filter(prog != "Reading") %>% 
+  dplyr::filter(effort == 33.10) %>% 
+  ggplot(aes(x = hours,
+             y = fit,
+             group = prog)) +
+  geom_ribbon(aes(ymin = lower,
+                  ymax = upper,
+                  fill = prog),
+              alpha = .3) +
+  geom_line(aes(linetype = prog)) +
+  theme_bw() +
+  facet_grid(~ gender) +
+  geom_hline(yintercept = 0,
+             color = "blaCK")+
+  scale_linetype_manual(values = c("solid", "longdash", "dotted")) +
+  scale_y_continuous(breaks = seq(from = -20, to = 50, by = 10)) +
+  scale_fill_manual(values = c("gray20", "gray90")) +
+  labs(x = "Program Time, hours/week",
+       y = "Weight Loss, pounds\nEstimated Marginal Mean",
+       linetype = NULL,
+       fill = NULL)  +
+  theme(legend.position = c(0, 1),
+        legend.justification = c(-.1, 1.1),
+        legend.background = element_rect(color = "black")) +
+  geom_text(data = sim_slope_M %>% 
+              dplyr::mutate(hours = c(3, .75, 3, 0.9),
+                            fit = c(13, 18, 13, 30)),
+            aes(label = glue::glue("{apaSupp::apa2(hours.trend)}")))
+```
+
+
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_rq2.png",
+       width = 6,
+       height = 4,
+       units = "in")
+```
+
+
+
+
+\clearpage
+
+### Conclusion
+
+An hour increase per week in exercise, will result in a different amount of additional total weight loss, depending on gender and program type.
+
+For women, an hour/week increase in exercise will translate to 9.86 more pounds loss if jogging and 5.15 if swimming.
+
+For men, an hour/week increase in exercise will translate to 2.68 more pounds loss if jogging and 9.13 if swimming.
+
+
+
+
+\clearpage
+
+## RQ (3) 
+
+I’m a crossfit athlete and can perform with the utmost intensity. 
+
+How much more weight loss would I expect for every one hour increase in exercise compared to the average amount of effort most people put in?
+
+Additionally, we can visualize the interaction to help us understand these relationships.
+
+
+### Contraints
+
+* Exclude the `Reading` program
+* Set `effort` to near the max: 45
+* Interpret the slopes, `b`
+
+\clearpage
+
+### Simple Slopes Analysis
+
+```{r}
+sim_slope_Max <- fit_2 %>% 
+  emmeans::emtrends(var = "hours", 
+                    ~ prog | gender,
+                    at = list(effort = 45)) %>% 
+  data.frame() %>% 
+  dplyr::filter(prog != "Reading") 
+```
+
+```{r}
+tab_rq3a <- sim_slope_Max %>% 
+  dplyr::select(Program = prog,
+                Gender = gender,
+                Slope = hours.trend,
+                SE, lower.CL, upper.CL) %>% 
+  dplyr::mutate_if(is.numeric, apaSupp::apa2) %>% 
+  flextable::flextable()%>% 
+  flextable::set_caption("RQ (3) Additional Weight Loss per Hour/Week Spent on Each Exercise Program with Near Maximum Effort, by Gender")
+
+tab_rq3a
+```
+
+```{r, include=FALSE}
+tab_rq3a %>% 
+  flextable::save_as_docx(path = "tables/tab_rq3a.docx")
+```
+
+
+
+\clearpage
+
+```{r}
+sim_slopes_cmp <- fit_2 %>% 
+  emmeans::emtrends(var = "hours", 
+                    ~ effort | prog + gender,
+                    at = list(effort = c(29.63, 45))) %>% 
+  pairs() %>% 
+  data.frame() %>% 
+  dplyr::filter(prog != "Reading") %>%
+  dplyr::mutate(Difference = abs(estimate)) %>% 
+  dplyr::mutate(p = apaSupp::p_num(p.value)) %>% 
+  dplyr::mutate_if(is.numeric, apaSupp::apa2) %>% 
+  dplyr::select(prog, gender, Difference, SE, p)
+```
+
+```{r}
+sim_slopes_M45 <- fit_2 %>% 
+  emmeans::emtrends(var = "hours", 
+                    ~ effort | prog + gender,
+                    at = list(effort = c(29.63, 45))) %>% 
+  data.frame() %>% 
+  dplyr::select(prog, gender, effort, hours.trend) %>% 
+  dplyr::filter(prog != "Reading")
+```
+
+
+\clearpage
+
+```{r}
+tab_rq3b <- sim_slopes_M45 %>% 
+  tidyr::pivot_wider(names_from = effort,
+                     names_prefix = "b_",
+                     values_from = hours.trend) %>% 
+  dplyr::rename("b,\nAverage" = b_29.63,
+                "b,\nNear Max" = b_45) %>% 
+  dplyr::mutate_if(is.numeric, apaSupp::apa2) %>% 
+  dplyr::full_join(sim_slopes_cmp, by = c("prog", "gender")) %>%
+  dplyr::rename(Program = prog,
+                Gender = gender,
+                "b, Difference" = "Difference") %>% 
+  flextable::flextable() %>% 
+  flextable::set_caption("RQ (3) Additional Weight Loss per Hour/Week Spent on Each Exercise Program with Near Max vs. Mean Effort, by Gender")
+
+tab_rq3b
+```
+
+
+
+```{r, include=FALSE}
+tab_rq3b %>% 
+  flextable::save_as_docx(path = "tables/tab_rq3b.docx")
+```
+
+
+
+\clearpage
+
+### Visualize
+
+
+```{r, fig.width=6, fig.height=5, fig.cap="RQ (3) Compare Effort Discrepincies in Additional Weight Loss Associated with an Hour Increase per Week in Each Exercise Program, by Gender"}
+effects::Effect(mod = fit_2,
+                focal.predictors = c("prog", "hours", 
+                                     "gender", "effort"),
+                xlevels = list(hours = seq(from = 0,
+                                           to = 4,
+                                           by = .1),
+                               effort = c(29.63, 45))) %>% 
+  data.frame() %>% 
+  dplyr::filter(prog != "Reading") %>% 
+  dplyr::mutate(effort = effort %>% 
+                  factor(levels = c(45, 29.63),
+                         labels = c("Near Max Effort",
+                                    "Average Effort"))) %>% 
+  ggplot(aes(x = hours,
+             y = fit,
+             group = effort)) +
+  geom_ribbon(aes(ymin = lower,
+                  ymax = upper,
+                  fill = effort),
+              alpha = .3) +
+  geom_line(aes(linetype = effort)) +
+  theme_bw() +
+  facet_grid(gender ~ prog) +
+  geom_hline(yintercept = 0,
+             color = "blaCK")+
+  scale_linetype_manual(values = c("solid", "longdash", "dotted")) +
+  labs(x = "Program Time, hours/week",
+       y = "Weight Loss, pounds\nEstimated Marginal Mean",
+       linetype = NULL,
+       fill = NULL)  +
+  scale_fill_manual(values = c("gray20", "gray90")) +
+  scale_y_continuous(breaks = seq(from = -20, to = 100, by = 20)) +
+  theme(legend.position = c(0, 1),
+        legend.justification = c(-.1, 1.1),
+        legend.background = element_rect(color = "black"),
+        legend.key.width = unit(1, "cm")) +
+  geom_text(data = sim_slopes_M45 %>%
+              dplyr::mutate(hours = c(3, 3, 2, 1.5, 
+                                      3.25, 2, 2, 0.75),
+                            fit = c(5, 45, 13, 45,
+                                    7, 30, 17, 40)) %>% 
+              dplyr::mutate(effort = effort %>% 
+                              factor(levels = c(45, 29.63),
+                                     labels = c("Near Max",
+                                                "Average"))),
+            aes(label = glue::glue("{apaSupp::apa2(hours.trend)}")))
+```
+
+
+
+
+```{r, include=FALSE}
+ggsave(filename = "figures/fig_rq3.png",
+       width = 6,
+       height = 5,
+       units = "in")
+```
+
+
+
+
+\clearpage
+
+### Conclusion
+
+For the jogging program, both males and females with high effort can expect to loose an additional 1.07 pound on average for every one hour increase in exercise compared to people who put in average effort.  This discrepancy is 2.43 for the swimming program.
+
+
+
+
+\clearpage
+
+# SESSION INFORMATION
+
+```{r}
+sessionInfo()
+```
+
+
+\clearpage
+
+# BIBLIOGRAPHY
+
+\doublespacing
+
+
+
+
