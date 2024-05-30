@@ -4,16 +4,39 @@
 \alias{apaTab}
 \title{APA Formatted Table of a data.frame}
 \usage{
-apaTab(x, caption, note = NULL, sig = "* p < .05. ** p < .01. *** p < .001.")
+apaTab(
+  x,
+  caption,
+  general_note = NULL,
+  p_note = "* p < .05. ** p < .01. *** p < .001.",
+  fontname = "Times New Roman",
+  align = "right",
+  valign = "center",
+  digits = 2,
+  space = 1,
+  ...
+)
 }
 \arguments{
 \item{x}{a data frame}
 
-\item{caption}{text for the caption}
+\item{caption}{the \code{flextable} caption for the table}
 
-\item{note}{text for a general note}
+\item{general_note}{general note for footer of APA table}
 
-\item{sig}{text for a p-value significance indicators}
+\item{p_note}{significance note for APA table}
+
+\item{fontname}{name of font for table}
+
+\item{align}{alignment}
+
+\item{valign}{vertial alignment}
+
+\item{digits}{digits after the decimal place for numeric values}
+
+\item{space}{line spacing in the body of the table, default is single}
+
+\item{...}{extra arguments}
 }
 \value{
 table
@@ -22,6 +45,20 @@ table
 APA Formatted Table of a data.frame
 }
 \examples{
-df <- head(cars)
-apaTab(df, caption = "Testing")
+apaTab(head(cars), caption = "Cars Dataset")
+
+cars \%>\%
+head() \%>\%
+apaTab(caption = "Speed and Stopping Distances of Cars in the 1920's",
+       general_note = "Example cases from the dataset.",
+       p_note = NULL)
+
+cars \%>\%
+  psych::headTail() \%>\%
+  tibble::rownames_to_column(var = "ID") \%>\%
+  dplyr::rename("Speed, mph" = speed,
+                "Stopping Distance, ft" = dist) \%>\%
+  apaTab(caption = "Speed and Stopping Distances of Cars in the 1920's",
+         general_note = "Head and tail of a dataset from: McNeil, D. R. (1977) Interactive Data Analysis. Wiley.",
+         p_note = NULL)
 }

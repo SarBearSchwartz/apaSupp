@@ -4,14 +4,39 @@
 \alias{tab_desc}
 \title{Basic Descriptive Summary: n, M (SD), \link{Min, Max}, Median with flextable}
 \usage{
-tab_desc(df, caption, lab = "Scale")
+tab_desc(
+  df,
+  caption = "Descriptive Summary",
+  general_note = NULL,
+  p_note = NULL,
+  fontname = "Times New Roman",
+  align = "center",
+  valign = "center",
+  digits = 2,
+  space = 1,
+  ...
+)
 }
 \arguments{
 \item{df}{a data frame with relevant variables selected}
 
 \item{caption}{the \code{flextable} caption for the table}
 
-\item{lab}{the text to place above the variable names}
+\item{general_note}{general note for footer of APA table}
+
+\item{p_note}{significance note for APA table}
+
+\item{fontname}{name of font for table}
+
+\item{align}{alignment}
+
+\item{valign}{vertial alignment}
+
+\item{digits}{digits after the decimal place for numeric values}
+
+\item{space}{line spacing in the body of the table, default is single}
+
+\item{...}{extra arguments}
 }
 \value{
 a \code{flextable} table with caption
@@ -22,11 +47,13 @@ Basic Descriptive Summary: n, M (SD), \link{Min, Max}, Median with flextable
 \examples{
 library(tidyverse)
 
-tab_desc(df = cars, caption = "Demographics Summary of Cars", lab = "Variable")
+tab_desc(cars)
 
 cars \%>\%
 dplyr::rename("Speed, mph" = speed,
-"Stopping Distance, ft" = dist) \%>\%
-tab_desc(caption = "Demographics Summary of Cars", lab = "Variable")
+              "Stopping Distance, ft" = dist) \%>\%
+tab_desc(caption = "Speed and Stopping Distances of Cars in the 1920's",
+         general_note = "McNeil, D. R. (1977) Interactive Data Analysis. Wiley.")
+
 
 }

@@ -49,3 +49,25 @@ tab_xalpha <- function(df_long,
     flextable::autofit() %>%
     flextable::set_caption(caption)
 }
+#
+#
+# tab_alpha <- function(df_long,
+#                        caption){
+#   df_long %>%
+#      %>%
+#     dplyr::select(-id) %>%
+#     data.frame() %>%
+#     psych::alpha() %>%
+#     dplyr::mutate(alpha = map(psych_alpha, ~.x$total)) %>%
+#     dplyr::mutate(nvar = map_dbl(psych_alpha, ~.x$nvar)) %>%
+#     tidyr::unnest(alpha) %>%
+#     dplyr::select("Scale" = scale,
+#                   "Items" = nvar,
+#                   "Alpha, raw" = raw_alpha,
+#                   "Alpha, std." = std.alpha) %>%
+#     flextable::flextable() %>%
+#     flextable::colformat_double(j = c("Items"), digits = 0) %>%
+#     flextable::autofit() %>%
+#     flextable::set_caption(caption)
+# }
+
