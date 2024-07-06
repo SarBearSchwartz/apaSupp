@@ -2,58 +2,57 @@
 % Please edit documentation in R/tab_desc.R
 \name{tab_desc}
 \alias{tab_desc}
-\title{Basic Descriptive Summary: n, M (SD), \link{Min, Max}, Median with flextable}
+\title{Basic Descriptive Summary: n, M (SD), Median, etc. with flextable}
 \usage{
 tab_desc(
   df,
+  total = FALSE,
   caption = "Descriptive Summary",
   general_note = NULL,
   p_note = NULL,
-  fontname = "Times New Roman",
-  align = "center",
   valign = "center",
   digits = 2,
-  space = 1,
-  ...
+  fontname = "serif",
+  space = 0.5
 )
 }
 \arguments{
-\item{df}{a data frame with relevant variables selected}
+\item{df}{REQUIRED: data frame}
 
-\item{caption}{the \code{flextable} caption for the table}
+\item{total}{Optional: Logical. Calculate total? default is no (FALSE)}
 
-\item{general_note}{general note for footer of APA table}
+\item{caption}{REQUIRED: Text. Caption for the table}
 
-\item{p_note}{significance note for APA table}
+\item{general_note}{Optional: Text. General note for footer of APA table}
 
-\item{fontname}{name of font for table}
+\item{p_note}{Optional: Text. Significance note for APA table}
 
-\item{align}{alignment}
+\item{valign}{Optional: Text. vertical alignment ("center")}
 
-\item{valign}{vertial alignment}
+\item{digits}{Optional: Number. Digits after the decimal place}
 
-\item{digits}{digits after the decimal place for numeric values}
+\item{fontname}{Optional: Text.  Font used in table}
 
-\item{space}{line spacing in the body of the table, default is single}
-
-\item{...}{extra arguments}
+\item{space}{Optional: Number. Line spacing in the body of the table}
 }
 \value{
 a \code{flextable} table with caption
 }
 \description{
-Basic Descriptive Summary: n, M (SD), \link{Min, Max}, Median with flextable
+Basic Descriptive Summary: n, M (SD), Median, etc. with flextable
 }
 \examples{
 library(tidyverse)
 
+# Simple
 tab_desc(cars)
 
+# Complex
 cars \%>\%
-dplyr::rename("Speed, mph" = speed,
-              "Stopping Distance, ft" = dist) \%>\%
-tab_desc(caption = "Speed and Stopping Distances of Cars in the 1920's",
-         general_note = "McNeil, D. R. (1977) Interactive Data Analysis. Wiley.")
+    dplyr::rename("Speed, mph" = speed,
+                  "Stopping Distance, ft" = dist) \%>\%
+    tab_desc(caption = "Speed and Stopping Distances of Cars in the 1920's",
+             general_note = "McNeil, D. R. (1977) Interactive Data Analysis. Wiley.")
 
 
 }

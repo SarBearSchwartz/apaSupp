@@ -4,14 +4,45 @@
 \alias{tab_xalpha}
 \title{Tabulate Internal Consistency}
 \usage{
-tab_xalpha(df_long, caption, scale = "scale")
+tab_xalpha(
+  df,
+  measure = NULL,
+  domain = NULL,
+  item,
+  value,
+  id,
+  caption = "Internal Consistency",
+  general_note = NULL,
+  valign = "center",
+  digits = 2,
+  fontname = "serif",
+  space = 0.5
+)
 }
 \arguments{
-\item{df_long}{data frame with the following \code{id}, \code{item}, \code{value}, \code{scale},}
+\item{df}{REQUIRED: data frame}
 
-\item{caption}{the \code{flextable} caption for the table}
+\item{measure}{Optional: Bare variable name. Measurement tool name}
 
-\item{scale}{the variable that denotes the subscale for each item}
+\item{domain}{Optional: Bare variable name. Domain or sub-score name}
+
+\item{item}{REQUIRED: Bare variable name. Item distinction}
+
+\item{value}{REQUIRED: Bare variable name. Values or rating of each item}
+
+\item{id}{REQUIRED: Bare variable name. Identify cases/subjects}
+
+\item{caption}{REQUIRED: Text. Caption for the table}
+
+\item{general_note}{Optional: Text. General note for footer of APA table}
+
+\item{valign}{Optional: Text. Vertical alignment ("center")}
+
+\item{digits}{Optional: Number. Digits after the decimal place}
+
+\item{fontname}{Optional: Text.  Font used in table}
+
+\item{space}{Optional: Number. Line spacing in the body of the table}
 }
 \value{
 a \code{flextable} table with caption
@@ -20,17 +51,28 @@ a \code{flextable} table with caption
 Tabulate Internal Consistency
 }
 \examples{
+library(tidyverse)
 library(lavaan)
+
 data(HolzingerSwineford1939, package = "lavaan")
-df <- HolzingerSwineford1939
-df \%>\%
+
+HolzingerSwineford1939 \%>\%
   tidyr::pivot_longer(cols = starts_with("x"),
-                      names_to = "item",
-                      values_to = "value") \%>\%
-  dplyr::mutate(scale = case_when(item \%in\% c("x1", "x2", "x3") ~ "Visual",
-                                  item \%in\% c("x4", "x5", "x6") ~ "Verbal",
-                                  item \%in\% c("x7", "x8", "x9") ~ "Speed")) \%>\%
-  dplyr::select(id, item, value, scale) \%>\%
-  tab_xalpha(caption = "Internal Consistency for Holzinger and Swineford Dataset, n = 301")
+             names_to = "it",
+             values_to = "val") \%>\%
+  dplyr::mutate(Domain = case_when(it \%in\% c("x1", "x2", "x3") ~ "Visual",
+                                   it \%in\% c("x4", "x5", "x6") ~ "Verbal",
+                                  it \%in\% c("x7", "x8", "x9") ~ "Speed")) \%>\%
+  dplyr::mutate(Measure = case_when(Domain \%in\% c("Visual", "Verbal") ~
+                                   "Scale V Made Up",
+                                    Domain == "Speed"  ~
+                                   "Scale S With A Very Long Name for Demo")) \%>\%
+  tab_xalpha(measure = Measure,
+             domain = Domain,
+             item = it,
+             value = val,
+             id = id,
+             caption = "Internal Consistency for the Holzinger and Swineford",
+             general_note = "Scales are for example only.")
 
 }
