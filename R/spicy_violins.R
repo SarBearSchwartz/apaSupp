@@ -59,14 +59,14 @@ spicy_violins <- function(df,
   df_sum <- df  %>%
     dplyr::filter(complete.cases(!!var, !!split)) %>%
     dplyr::group_by(!!split) %>%
-    dplyr::summarise(n = n(),
-                     M = mean(!!var),
-                     SD = sd(!!var),
-                     Min = min(!!var),
-                     Q1 = quantile(!!var, .25),
-                     Mdn = median(!!var),
-                     Q3 = quantile(!!var, .75),
-                     Max = max(!!var)) %>%
+    dplyr::summarise(n = dplyr::n(),
+                     M = stats::mean(!!var),
+                     SD = stats::sd(!!var),
+                     Min = base::min(!!var),
+                     Q1 = stats::quantile(!!var, .25),
+                     Mdn = stats::median(!!var),
+                     Q3 = stats::quantile(!!var, .75),
+                     Max = base::max(!!var)) %>%
     dplyr::mutate_if(is.numeric,
                      ~ round(.x, digits)) %>%
     dplyr::ungroup() %>%

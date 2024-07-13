@@ -41,6 +41,7 @@ tab_desc <- function(df,
                      caption = "Descriptive Summary",
                      general_note = NULL,
                      p_note = NULL,
+                     no_notes = FALSE,
                      valign = "center",
                      digits = 2,
                      fontname = "serif",
@@ -48,7 +49,9 @@ tab_desc <- function(df,
 
   n <- nrow(df)
 
-  if (is.null(general_note)){
+  if (no_notes == TRUE){
+    general_note <- NULL
+  } else if (is.null(general_note)){
     general_note <- glue::glue("N = {n}.")
   } else {
     general_note <- glue::glue("{general_note} N = {n}.")
@@ -58,16 +61,16 @@ tab_desc <- function(df,
     dplyr::select(where(is.numeric)) %>%
     dplyr::summarise(across(
       .cols = is.numeric,
-      .fns = list(valid = ~ n(),
+      .fns = list(valid = ~ dplyr::n(),
                   nmiss = ~ naniar::n_miss(.x),
-                  M     = ~ mean(.x, na.rm = TRUE),
-                  SD    = ~ sd(.x, na.rm = TRUE),
-                  min   = ~ min(.x, na.rm = TRUE),
-                  q1    = ~ quantile(.x, p = .25, na.rm = TRUE),
-                  Mdn   = ~ median(.x, na.rm = TRUE),
-                  q3    = ~ quantile(.x, p = .75, na.rm = TRUE),
-                  max   = ~ max(.x, na.rm = TRUE),
-                  sum   = ~ sum(.x, na.rm = TRUE)),
+                  M     = ~ base::mean(.x, na.rm = TRUE),
+                  SD    = ~ stats::sd(.x, na.rm = TRUE),
+                  min   = ~ base::min(.x, na.rm = TRUE),
+                  q1    = ~ stats::quantile(.x, p = .25, na.rm = TRUE),
+                  Mdn   = ~ stats::median(.x, na.rm = TRUE),
+                  q3    = ~ stats::quantile(.x, p = .75, na.rm = TRUE),
+                  max   = ~ base::max(.x, na.rm = TRUE),
+                  sum   = ~ base::sum(.x, na.rm = TRUE)),
       .names = "{col}__{fn}"
     )) %>%
     tidyr::pivot_longer(cols = everything(),
@@ -103,7 +106,8 @@ tab_desc <- function(df,
             digits = digits,
             fontname = fontname,
             space = space) %>%
-    flextable::align(j = 1, align = "left")
+    flextable::align(j = 1, align = "left") %>%
+    flextable::bold(j = c(3, 4, 7),      part = "all")
 
   return(tab)
 }

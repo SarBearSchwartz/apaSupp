@@ -10,6 +10,7 @@ tab_desc(
   caption = "Descriptive Summary",
   general_note = NULL,
   p_note = NULL,
+  no_notes = FALSE,
   valign = "center",
   digits = 2,
   fontname = "serif",

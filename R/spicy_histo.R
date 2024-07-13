@@ -48,30 +48,20 @@ spicy_histo <- function(df,
 
   df_sum <- df %>%
     dplyr::filter(complete.cases(!!var)) %>%
-    dplyr::summarise(n = n(),
-                     M = mean(!!var),
-                     SD = sd(!!var),
-                     Min = min(!!var),
-                     Q1 = quantile(!!var, .25),
-                     Mdn = median(!!var),
-                     Q3 = quantile(!!var, .75),
-                     Max = max(!!var)) %>%
+    dplyr::summarise(M   = base::mean(!!var),
+                     Q1  = stats::quantile(!!var, .25),
+                     Mdn = stats::median(!!var),
+                     Q3  = stats::quantile(!!var, .75)) %>%
     dplyr::mutate_if(is.numeric,
                      ~ round(.x, digits)) %>%
     data.frame()
 
-  tab <- df_sum %>%
-    flextable::flextable() %>%
-    flextable::line_spacing(space = .75, part = "all") %>%
-    flextable::bold(j = c(2, 3, 6),
-                    part = "all") %>%
-    flextable::align(align = "center", part = "all") %>%
-    flextable::border_remove() %>%
-    flextable::hline_top(part = "head", border = border.thick) %>%
-    flextable::hline_bottom(part = "head", border = border.thin) %>%
-    flextable::hline_bottom(part = "body", border = border.thick) %>%
-    flextable::font(fontname = fontname, part = "all")
 
+  tab <- df %>%
+    dplyr::select(!!var) %>%
+    tab_desc(caption = NULL,
+             no_notes = TRUE) %>%
+    flextable::delete_columns(j = 1)
 
   p <- df %>%
     dplyr::filter(complete.cases(!!var)) %>%

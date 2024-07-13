@@ -55,16 +55,16 @@ spicy_histos <- function(df,
               "
 
   df_sum <- df  %>%
-    dplyr::filter(complete.cases(!!var, !!split)) %>%
+    dplyr::filter(stats::complete.cases(!!var, !!split)) %>%
     dplyr::group_by(!!split) %>%
     dplyr::summarise(n = n(),
-                     M = mean(!!var),
-                     SD = sd(!!var),
-                     Min = min(!!var),
-                     Q1 = quantile(!!var, .25),
-                     Mdn = median(!!var),
-                     Q3 = quantile(!!var, .75),
-                     Max = max(!!var)) %>%
+                     M = base::mean(!!var),
+                     SD = stats::sd(!!var),
+                     Min = base::min(!!var),
+                     Q1 = stats::quantile(!!var, .25),
+                     Mdn = stats::median(!!var),
+                     Q3 = stats::quantile(!!var, .75),
+                     Max = base::max(!!var)) %>%
     dplyr::mutate_if(is.numeric,
                      ~ round(.x, digits)) %>%
     dplyr::ungroup() %>%
@@ -80,6 +80,13 @@ spicy_histos <- function(df,
     flextable::hline_bottom(part = "head", border = border.thin) %>%
     flextable::hline_bottom(part = "body", border = border.thick) %>%
     flextable::font(fontname = fontname, part = "all")
+
+  # tab <- df %>%
+  #   dplyr::select(!!var, !!split) %>%
+  #   flextable::as_grouped_data(group = !!split) %>%
+  #   tab_desc(caption = NULL,
+  #            no_notes = TRUE)
+
 
 
   p <- df %>%

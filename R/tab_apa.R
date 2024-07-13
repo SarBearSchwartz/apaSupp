@@ -10,11 +10,12 @@
 #' @param space Optional: Number. Line spacing in the body of the table
 #'
 #' @return table
-#' @import tidyverse
 #' @import tibble
 #' @import rempsyc
 #' @import flextable
 #' @import officer
+#' @import tidyverse
+#' @import rlang
 #' @export
 #'
 #' @examples
