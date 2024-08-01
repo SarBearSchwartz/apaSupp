@@ -8,16 +8,15 @@
 #' @param id REQUIRED: Bare variable name. Identify cases/subjects
 #' @param caption REQUIRED: Text. Caption for the table
 #' @param general_note Optional: Text. General note for footer of APA table
-#' @param valign Optional: Text. Vertical alignment ("center")
+#' @param max_width_in = Optional: Number.  Inches wide take can be
 #' @param digits Optional: Number. Digits after the decimal place
-#' @param fontname Optional: Text.  Font used in table
-#' @param space Optional: Number. Line spacing in the body of the table
 #'
 #' @return a `flextable` table with caption
 #' @import tidyverse
 #' @import tibble
 #' @import dplyr
 #' @import tidyr
+#' @import purrr
 #' @import glue
 #' @import rlang
 #' @import psych
@@ -58,10 +57,8 @@ tab_xalpha <- function(df,
                        id,
                        caption = "Internal Consistency",
                        general_note = NULL,
-                       valign = "center",
-                       digits = 2,
-                       fontname = "serif",
-                       space = .5){
+                       max_width_in = 6,
+                       digits = 2){
 
   measure <- rlang::enquo(measure)
   domain  <- rlang::enquo(domain)
@@ -88,14 +85,13 @@ tab_xalpha <- function(df,
     unique() %>%
     length()
 
-  if (is.null(general_note)){
-    general_note <- glue::glue("N = {n}.")
-  } else {
-    general_note <- glue::glue("{general_note} N = {n}.")
-  }
+  standard_note <- glue::glue("Std = standardized. Mdn = median. N = {n}.")
 
-  border.thick <- list("width" = 2.5, color = "black", style = "solid")
-  border.thin  <- list("width" = 1.0, color = "black", style = "solid")
+  if (is.null(general_note)){
+    main_note <- standard_note
+  } else {
+    main_note <- paste(general_note, standard_note, sep = " ")
+  }
 
 
   x <- dfc %>%
@@ -127,8 +123,9 @@ tab_xalpha <- function(df,
                   "Chronbach's\nAlpha_Raw" = raw_alpha,
                   "Chronbach's\nAlpha_Std" = std.alpha,
                   "Guttman's\nLamdba\nG6" = `G6(smc)`,
-                  "Interitem\nCorrelation_Mean" = average_r,
-                  "Interitem\nCorrelation_Median" = median_r)
+                  "Interitem\nCorrelation_M" = average_r,
+                  "Interitem\nCorrelation_Mdn" = median_r) %>%
+    as.data.frame()
 
   if (level_num == 2){
     grp_lines <- x %>%
@@ -147,32 +144,29 @@ tab_xalpha <- function(df,
   }
 
   tab <- y  %>%
-    theme_apa(valign = valign,
-              digits = digits,
-              fontname = fontname,
-              space = space) %>%
     flextable::separate_header() %>%
-    flextable::border_remove() %>%
-    flextable::hline_top(border = border.thick,
-                         part = "header") %>%
-    flextable::hline(border = border.thin,
-                     part = "header") %>%
-    flextable::hline_top(border = border.thick,
-                         part = "body") %>%
-    flextable::hline_bottom(part = "head", border = border.thin) %>%
-    flextable::hline_bottom(part = "body", border = border.thick) %>%
-    flextable::fix_border_issues() %>%
-    flextable::autofit() %>%
-    flextable::line_spacing(space = 1.5, part = "header") %>%
+    theme_apa(caption = caption,
+              general_note = main_note,
+              p_note = NULL,
+              digits = digits) %>%
     flextable::align(j = -1, align = "center", part = "all") %>%
-    flextable::set_caption(caption = caption) %>%
-    flextable::add_footer_lines("") %>%
-    flextable::compose(i = 1, j = 1,
-                       value = flextable::as_paragraph(flextable::as_i("Note. "),
-                                                       general_note),
-                       part = "footer")
+    flextable::line_spacing(space = 1, part = "header") %>%
+    flextable::padding(j = c(6),
+                       padding.left = 5,
+                       padding.right = 5,
+                       part = "all") %>%
+    flextable::padding(j = c(4, 7),
+                       padding.left = 10,
+                       padding.right = 1,
+                       part = "all") %>%
+    flextable::padding(j = c(5, 8),
+                       padding.left = 1,
+                       padding.right = 10,
+                       part = "all") %>%
+    flextable::fit_to_width(max_width = max_width_in, unit = "in")
 
   return(tab)
+
 }
 
 

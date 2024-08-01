@@ -17,10 +17,10 @@
 #' x <- c(.36521, .02456, .0000000056)
 #' p_num(x)
 p_num <- function(value,
-                         breaks = c(.05, .01, .001),
-                         symbols = c("*", "**", "***"),
-                         decimals = 3,
-                         leading = FALSE){
+                  breaks = c(.05, .01, .001),
+                  symbols = c("*", "**", "***"),
+                  decimals = 3,
+                  leading = FALSE){
 
   value_apa = MOTE::apa(value = value,
                         decimals = decimals,
@@ -32,7 +32,7 @@ p_num <- function(value,
 
   dplyr::case_when(value <  breaks[3] ~ glue::glue("< {value_apa_min} {symbols[3]}"),
                    value == breaks[3] ~ glue::glue("{value_apa_min} {symbols[3]}"),
-                   value <=  breaks[2] ~ glue::glue("{value_apa} {symbols[2]}"),
-                   value <=  breaks[1] ~ glue::glue("{value_apa} {symbols[1]}"),
-                   value > breaks[1] ~ glue::glue("{value_apa}"))
+                   value <= breaks[2] ~ glue::glue("{value_apa} {symbols[2]}"),
+                   value <= breaks[1] ~ glue::glue("{value_apa} {symbols[1]}"),
+                   value  > breaks[1] ~ glue::glue("{value_apa}"))
 }

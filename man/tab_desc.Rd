@@ -6,35 +6,28 @@
 \usage{
 tab_desc(
   df,
-  total = FALSE,
-  caption = "Descriptive Summary",
+  caption = "Summary of Quantiatative Variables",
   general_note = NULL,
   p_note = NULL,
   no_notes = FALSE,
-  valign = "center",
-  digits = 2,
-  fontname = "serif",
-  space = 0.5
+  max_width_in = 6,
+  digits = 2
 )
 }
 \arguments{
 \item{df}{REQUIRED: data frame}
 
-\item{total}{Optional: Logical. Calculate total? default is no (FALSE)}
-
 \item{caption}{REQUIRED: Text. Caption for the table}
 
 \item{general_note}{Optional: Text. General note for footer of APA table}
 
-\item{p_note}{Optional: Text. Significance note for APA table}
+\item{p_note}{Optional: Text. (default = NULL) Significance note for APA table, If \code{p_note = "apa"} then the standard \code{"* p < .05. ** p < .01. *** p < .001."} will be used}
 
-\item{valign}{Optional: Text. vertical alignment ("center")}
+\item{no_notes}{REQUIRED: Logical.  Defaults to \code{FALSE}, if \code{TRUE} will ignore \code{genderal_note} and \code{p_note}}
+
+\item{max_width_in}{= Optional: Number.  Inches wide take can be}
 
 \item{digits}{Optional: Number. Digits after the decimal place}
-
-\item{fontname}{Optional: Text.  Font used in table}
-
-\item{space}{Optional: Number. Line spacing in the body of the table}
 }
 \value{
 a \code{flextable} table with caption

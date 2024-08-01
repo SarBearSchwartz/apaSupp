@@ -13,10 +13,8 @@ tab_xalpha(
   id,
   caption = "Internal Consistency",
   general_note = NULL,
-  valign = "center",
-  digits = 2,
-  fontname = "serif",
-  space = 0.5
+  max_width_in = 6,
+  digits = 2
 )
 }
 \arguments{
@@ -36,13 +34,9 @@ tab_xalpha(
 
 \item{general_note}{Optional: Text. General note for footer of APA table}
 
-\item{valign}{Optional: Text. Vertical alignment ("center")}
+\item{max_width_in}{= Optional: Number.  Inches wide take can be}
 
 \item{digits}{Optional: Number. Digits after the decimal place}
-
-\item{fontname}{Optional: Text.  Font used in table}
-
-\item{space}{Optional: Number. Line spacing in the body of the table}
 }
 \value{
 a \code{flextable} table with caption

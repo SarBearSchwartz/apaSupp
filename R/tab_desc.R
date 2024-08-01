@@ -1,24 +1,19 @@
 #' Basic Descriptive Summary: n, M (SD), Median, etc. with flextable
 #'
 #' @param df REQUIRED: data frame
-#' @param total Optional: Logical. Calculate total? default is no (FALSE)
 #' @param caption REQUIRED: Text. Caption for the table
 #' @param general_note Optional: Text. General note for footer of APA table
-#' @param p_note Optional: Text. Significance note for APA table
-#' @param valign Optional: Text. vertical alignment ("center")
+#' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
+#' @param no_notes REQUIRED: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `genderal_note` and `p_note`
+#' @param max_width_in = Optional: Number.  Inches wide take can be
 #' @param digits Optional: Number. Digits after the decimal place
-#' @param fontname Optional: Text.  Font used in table
-#' @param space Optional: Number. Line spacing in the body of the table
 #'
 #' @return a `flextable` table with caption
 #' @import tidyverse
 #' @import dplyr
 #' @import tidyr
-#' @import tibble
-#' @import purrr
 #' @import glue
 #' @import flextable
-#' @import officer
 #' @import naniar
 #' @export
 #'
@@ -37,32 +32,30 @@
 #'
 #'
 tab_desc <- function(df,
-                     total = FALSE,
-                     caption = "Descriptive Summary",
+                     caption = "Summary of Quantiatative Variables",
                      general_note = NULL,
                      p_note = NULL,
                      no_notes = FALSE,
-                     valign = "center",
-                     digits = 2,
-                     fontname = "serif",
-                     space = .5){
+                     max_width_in = 6,
+                     digits = 2){
 
   n <- nrow(df)
 
+  standard_note <- glue::glue("NA = not available or missing. Mdn = median. Q1 = 25th percentile, Q3 = 75th percentile. N = {n}.")
+
   if (no_notes == TRUE){
-    general_note <- NULL
+    main_note <- NULL
   } else if (is.null(general_note)){
-    general_note <- glue::glue("N = {n}.")
+    main_note <- standard_note
   } else {
-    general_note <- glue::glue("{general_note} N = {n}.")
+    main_note <- paste(general_note, standard_note, sep = " ")
   }
 
   x <- df %>%
     dplyr::select(where(is.numeric)) %>%
     dplyr::summarise(across(
       .cols = is.numeric,
-      .fns = list(valid = ~ dplyr::n(),
-                  nmiss = ~ naniar::n_miss(.x),
+      .fns = list(nmiss = ~ naniar::n_miss(.x),
                   M     = ~ base::mean(.x, na.rm = TRUE),
                   SD    = ~ stats::sd(.x, na.rm = TRUE),
                   min   = ~ base::min(.x, na.rm = TRUE),
@@ -71,43 +64,33 @@ tab_desc <- function(df,
                   q3    = ~ stats::quantile(.x, p = .75, na.rm = TRUE),
                   max   = ~ base::max(.x, na.rm = TRUE),
                   sum   = ~ base::sum(.x, na.rm = TRUE)),
-      .names = "{col}__{fn}"
-    )) %>%
+      .names = "{col}__{fn}")) %>%
     tidyr::pivot_longer(cols = everything(),
                         names_to = c("var", ".value"),
                         names_pattern = "(.*)__(.*)") %>%
-    dplyr::mutate(miss = glue::glue("{nmiss}/{valid}")) %>%
-    dplyr::mutate_if(is.numeric, apa2) %>%
-    dplyr::mutate(min_p = glue::glue("[{min}")) %>%
-    dplyr::mutate(max_p = glue::glue("{max}]")) %>%
     dplyr::mutate(nmiss = as.integer(as.numeric(nmiss))) %>%
     dplyr::select("Measure" = var,
-                  "Missing" = nmiss,
-                  "Mean" = M,
-                  "(SD)" = SD,
-                  "[min" = min_p,
+                  "NA" = nmiss,
+                  "M" = M,
+                  "SD" = SD,
+                  "min" = min,
                   "Q1" = q1,
-                  "Median" = Mdn,
+                  "Mdn" = Mdn,
                   "Q3" = q3,
-                  "max]" = max_p,
-                  "Total" = sum
-    )
-
-  if (total == FALSE){
-    x <- x %>%
-      dplyr::select(-Total)
-  }
+                  "max" = max) %>%
+    as.data.frame()
 
   tab <- x %>%
-    tab_apa(caption = caption,
-            general_note = general_note,
-            p_note = p_note,
-            valign = valign,
-            digits = digits,
-            fontname = fontname,
-            space = space) %>%
-    flextable::align(j = 1, align = "left") %>%
-    flextable::bold(j = c(3, 4, 7),      part = "all")
+    flextable::flextable() %>%
+    theme_apa(caption,
+              general_note = main_note,
+              p_note = p_note,
+              no_notes = no_notes,
+              max_width_in = max_width_in,
+              digits = digits) %>%
+    flextable::align(j = 1,   align = "left",  part = "all") %>%
+    flextable::align(j = 2:9, align = "right", part = "all") %>%
+    flextable::bold(j = c(3, 4, 7), part = "all")
 
   return(tab)
 }
