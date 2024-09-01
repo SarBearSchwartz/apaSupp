@@ -1,10 +1,10 @@
 #' Frequency Table, total or split by a factor
 #'
-#' @param df REQUIRED: data frame
-#' @param split Optional: quoted variable name. Measurement tool name
+#' @param df REQUIRED: Data frame
+#' @param split Optional: Quoted variable name
 #' @param caption REQUIRED: Text. Caption for the table
 #' @param general_note Optional: Text. General note for footer of APA table
-#' @param max_width_in = Optional: Number.  Inches wide take can be
+#' @param max_width_in Optional: Number.  Inches wide table can be
 #' @param digits Optional: Number. Digits after the decimal place
 #'
 #' @return a `flextable` table with caption

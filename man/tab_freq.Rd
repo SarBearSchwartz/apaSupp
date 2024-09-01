@@ -14,15 +14,15 @@ tab_freq(
 )
 }
 \arguments{
-\item{df}{REQUIRED: data frame}
+\item{df}{REQUIRED: Data frame}
 
-\item{split}{Optional: quoted variable name. Measurement tool name}
+\item{split}{Optional: Quoted variable name}
 
 \item{caption}{REQUIRED: Text. Caption for the table}
 
 \item{general_note}{Optional: Text. General note for footer of APA table}
 
-\item{max_width_in}{= Optional: Number.  Inches wide take can be}
+\item{max_width_in}{Optional: Number.  Inches wide table can be}
 
 \item{digits}{Optional: Number. Digits after the decimal place}
 }

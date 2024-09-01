@@ -1,11 +1,11 @@
 #' Basic Descriptive Summary: n, M (SD), Median, etc. with flextable
 #'
-#' @param df REQUIRED: data frame
+#' @param df REQUIRED: Data frame
 #' @param caption REQUIRED: Text. Caption for the table
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
 #' @param no_notes REQUIRED: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `genderal_note` and `p_note`
-#' @param max_width_in = Optional: Number.  Inches wide take can be
+#' @param max_width_in Optional: Number.  Inches wide table can be
 #' @param digits Optional: Number. Digits after the decimal place
 #'
 #' @return a `flextable` table with caption
