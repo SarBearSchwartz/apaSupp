@@ -46,7 +46,7 @@ tab_cor <- function(df,
     dplyr::select(var2, everything())
 
   tab <- x %>%
-    flextable::as_flextable(max_rows = 100) %>%
+    flextable::as_flextable(max_row = 100) %>%
     flextable::delete_part(part = "header") %>%
     flextable::add_header_row(values = c("Variables", "r", "p"),
                               colwidths = c(2, 1, 2)) %>%
