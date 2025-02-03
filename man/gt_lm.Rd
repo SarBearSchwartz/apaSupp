@@ -4,12 +4,12 @@
 \alias{gt_lm}
 \title{APA: gtsummary for a single linear model}
 \usage{
-gt_lm(x, d = 2)
+gt_lm(x, fit = c("r.squared", "adj.r.squared"), d = 2)
 }
 \arguments{
-\item{x}{REQUIRED: a single 'lm' object, bare name}
+\item{x}{REQUIRED: bare name. a single 'lm' object#' @param fit Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"}
 
-\item{d}{OPTIONAL: number of digits, default = 2}
+\item{d}{Optional: number. digits after the decimal, default = 2}
 }
 \value{
 a gtsummary object
@@ -18,7 +18,8 @@ a gtsummary object
 APA: gtsummary for a single linear model
 }
 \examples{
-m <- lm(dist ~ speed, data = cars)
+mtcars <- mtcars \%>\% dplyr::mutate(vs = factor(vs))
+m <- lm(mpg ~ vs + disp, data = mtcars)
 gt_lm(m)
 
 
