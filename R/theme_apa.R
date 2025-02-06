@@ -68,7 +68,8 @@ theme_apa <- function(tab,
     flextable::align(j = -1, align = "center", part = "all") %>%
     flextable::align(j = 1, align = "left") %>%
     flextable::colformat_double(digits = digits)  %>%
-    flextable::set_caption(caption = caption) %>%
+    flextable::set_caption(caption = caption,
+                           autonum = TRUE) %>%
     flextable::fit_to_width(max_width = max_width_in, unit = "in")
 
   if (!is.null(main_note)){
