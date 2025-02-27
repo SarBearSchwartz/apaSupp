@@ -5,17 +5,20 @@
 \title{APA: flextable for ONElinear models}
 \usage{
 tab_lm(
-  x,
+  model,
   var_labels = NULL,
   caption = "Regression Model",
   p_note = "apa",
   general_note = NULL,
   fit = c("r.squared", "adj.r.squared"),
-  d = 2
+  d = 2,
+  std = TRUE,
+  vif = FALSE,
+  eta2 = TRUE
 )
 }
 \arguments{
-\item{x}{REQUIRED: 1 lm model, bare names}
+\item{model}{REQUIRED: 1 lm model, bare name}
 
 \item{var_labels}{Optional: Vector. Text replacements for model terms, "old" = "new"}
 
@@ -28,6 +31,12 @@ tab_lm(
 \item{fit}{Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"}
 
 \item{d}{Optional: Number. Digits after the decimal place}
+
+\item{std}{Optional: Logical. (default = TRUE) Include standardized coefficients?}
+
+\item{vif}{Optional: Logical. (default = FALSE) Include variance inflation factors?}
+
+\item{eta2}{Optional: logical. (default = TRUE) Include eta-squared (semi-partial correlations) and partial eta-squared (partial correlations)}
 }
 \value{
 a flextable object
