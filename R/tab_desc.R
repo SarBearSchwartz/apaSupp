@@ -69,7 +69,7 @@ tab_desc <- function(df,
                         names_to = c("var", ".value"),
                         names_pattern = "(.*)__(.*)") %>%
     dplyr::mutate(nmiss = as.integer(as.numeric(nmiss))) %>%
-    dplyr::select("Measure" = var,
+    dplyr::select("Variable" = var,
                   "NA" = nmiss,
                   "M" = M,
                   "SD" = SD,
@@ -82,12 +82,12 @@ tab_desc <- function(df,
 
   tab <- x %>%
     flextable::flextable() %>%
-    theme_apa(caption,
-              general_note = main_note,
-              p_note = p_note,
-              no_notes = no_notes,
-              max_width_in = max_width_in,
-              digits = digits) %>%
+    apaSupp::theme_apa(caption,
+                       general_note = main_note,
+                       p_note = p_note,
+                       no_notes = no_notes,
+                       max_width_in = max_width_in,
+                       digits = digits) %>%
     flextable::align(j = 1,   align = "left",  part = "all") %>%
     flextable::align(j = 2:9, align = "right", part = "all") %>%
     flextable::bold(j = c(3, 4, 7), part = "all")

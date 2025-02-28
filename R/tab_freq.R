@@ -38,10 +38,10 @@ tab_freq <- function(df,
     flextable::prepend_chunks(i = ~is.na(variable),
                               j = 1,
                               as_chunk("\t")) %>%
-    theme_apa(caption = caption,
-              general_note = general_note,
-              digits = digits,
-              max_width_in = max_width_in) %>%
+    apaSupp::theme_apa(caption = caption,
+                       general_note = general_note,
+                       digits = digits,
+                       max_width_in = max_width_in) %>%
     flextable::align(align = "right", part = "body") %>%
     flextable::align(j = 1:2, align = "left",  part = "all") %>%
     flextable::padding(j =  1, padding.left = 0, padding.right = 0) %>%

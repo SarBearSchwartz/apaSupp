@@ -19,6 +19,8 @@
 #' @import tidyverse
 #' @import broom.helpers
 #' @import DescTools
+#' @import car
+#' @import MOTE
 #' @export
 #'
 #' @examples
@@ -67,30 +69,30 @@ tab_lm <- function(model,
 
   if(std == TRUE){
     get <- get %>%
-      modify_table_body(dplyr::left_join,
-                        bstd_to_tibble(model, d = d),
-                        by = c("variable", "row_type")) %>%
-      modify_header(bs ~ "bs")
+      gtsummary::modify_table_body(dplyr::left_join,
+                                   bstd_to_tibble(model, d = d),
+                                   by = c("variable", "row_type")) %>%
+      gtsummary::modify_header(bs ~ "bs")
 
     general_note <- paste(general_note, "b\U002A = standardized estimate.")
   }
 
   if(vif == TRUE){
     get <- get %>%
-      modify_table_body(dplyr::left_join,
+      gtsummary::modify_table_body(dplyr::left_join,
                         vif_to_tibble(model, d = d),
                         by = c("variable", "row_type")) %>%
-      modify_header(vif ~ "VIF")
+      gtsummary::modify_header(vif ~ "VIF")
 
     general_note <- paste(general_note, "VIF = variance inflation factor.")
   }
 
   if(eta2 == TRUE){
     get <- get %>%
-      modify_table_body(dplyr::left_join,
+      gtsummary::modify_table_body(dplyr::left_join,
                         eta2_to_tibble(model),
                         by = c("variable", "row_type")) %>%
-      modify_header(eta.sq ~ "n2",
+      gtsummary::modify_header(eta.sq ~ "n2",
                     eta.sq.part ~ "n2p")
 
     general_note <- paste(general_note,
@@ -124,12 +126,12 @@ tab_lm <- function(model,
 
   if (eta2 == TRUE){
     table <- table %>%
-    flextable::compose(part = "header",
-                       j = "eta.sq",
-                       value = flextable::as_paragraph("\U1D702\U00B2")) %>%
-    flextable::compose(part = "header",
-                       j = "eta.sq.part",
-                       value = flextable::as_paragraph("\U1D702\U209A\U00B2"))
+      flextable::compose(part = "header",
+                         j = "eta.sq",
+                         value = flextable::as_paragraph("\U1D702\U00B2")) %>%
+      flextable::compose(part = "header",
+                         j = "eta.sq.part",
+                         value = flextable::as_paragraph("\U1D702\U209A\U00B2"))
 
   }
 
@@ -207,9 +209,9 @@ eta2_to_tibble <- function(model) {
   result <- result %>%
     dplyr::mutate(row_type = "label")%>%
     dplyr::mutate(across(c(eta.sq, eta.sq.part),
-                  ~ MOTE::apa(value = .,
-                                  decimals = 3,
-                                  leading = FALSE)))
+                         ~ MOTE::apa(value = .,
+                                     decimals = 3,
+                                     leading = FALSE)))
 
   return(result)
 }
