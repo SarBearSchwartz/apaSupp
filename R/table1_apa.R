@@ -20,7 +20,7 @@
 #'
 table1_apa <- function(df,
                        split,
-                       caption,
+                       caption = "Summary Statistics",
                        total = TRUE,
                        test = TRUE,
                        na.rm = FALSE,

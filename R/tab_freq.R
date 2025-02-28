@@ -18,7 +18,7 @@
 #' mtcars
 tab_freq <- function(df,
                      split = NULL,
-                     caption,
+                     caption = "Summary of Categorical Variables",
                      general_note = NULL,
                      max_width_in = 6,
                      digits = 2){

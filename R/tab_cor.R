@@ -1,4 +1,4 @@
-#' Tabulate Pairwise Pearson's Cofrrelation
+#' Tabulate Pairwise Pearson's Correlation
 #'
 #' @param df REQUIRED: A dataframe with selected numeric variables
 #' @param caption REQUIRED: Text. Caption for the table
@@ -21,7 +21,7 @@
 #' mtcars
 #'
 tab_cor <- function(df,
-                    caption,
+                    caption = "Correlations",
                     general_note = NULL,
                     p_note = "* p < .05. ** p < .01. *** p < .001.",
                     max_width_in = 6,

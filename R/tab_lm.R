@@ -18,6 +18,7 @@
 #' @import magrittr
 #' @import tidyverse
 #' @import broom.helpers
+#' @import DescTools
 #' @export
 #'
 #' @examples
@@ -166,7 +167,7 @@ bstd_to_tibble <- function(model, d = 2) {
 
 vif_to_tibble <- function(model, d = 2) {
 
-  vif <- car::vif(fit_lm_both)
+  vif <- car::vif(model)
 
   if (!is.matrix(vif)){
     result <- vif %>%
