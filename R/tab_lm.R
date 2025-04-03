@@ -14,10 +14,9 @@
 #' @returns a flextable object
 #' @import gtsummary
 #' @import flextable
-#' @import purrr
-#' @import magrittr
 #' @import tidyverse
 #' @import broom.helpers
+#' @import parameters
 #' @import DescTools
 #' @import car
 #' @import MOTE
@@ -96,8 +95,8 @@ tab_lm <- function(model,
                     eta.sq.part ~ "n2p")
 
     general_note <- paste(general_note,
-                          "\U1D702\U00B2 = semi-partial correlation.",
-                          "\U1D702\U209A\U00B2 = partial correlation.")
+                          "\U03B7\U00B2 = semi-partial correlation.",
+                          "\U03B7\U209A\U00B2 = partial correlation.")
   }
 
   table <- get %>%
@@ -128,10 +127,10 @@ tab_lm <- function(model,
     table <- table %>%
       flextable::compose(part = "header",
                          j = "eta.sq",
-                         value = flextable::as_paragraph("\U1D702\U00B2")) %>%
+                         value = flextable::as_paragraph("\u03B7\U00B2")) %>%
       flextable::compose(part = "header",
                          j = "eta.sq.part",
-                         value = flextable::as_paragraph("\U1D702\U209A\U00B2"))
+                         value = flextable::as_paragraph("\u03B7\u209A\U00B2"))
 
   }
 
@@ -202,8 +201,8 @@ eta2_to_tibble <- function(model) {
   } else {
     result <- eta2 %>%
       as.data.frame() %>%
-      rownames_to_column(var = "variable") %>%
-      as_tibble()
+      tibble::rownames_to_column(var = "variable") %>%
+      tibble::as_tibble()
   }
 
   result <- result %>%

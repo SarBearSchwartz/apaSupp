@@ -13,12 +13,7 @@
 #'
 #' @return a `flextable` table with caption
 #' @import tidyverse
-#' @import tibble
-#' @import dplyr
-#' @import tidyr
-#' @import purrr
 #' @import glue
-#' @import rlang
 #' @import psych
 #' @import flextable
 #' @import lavaan

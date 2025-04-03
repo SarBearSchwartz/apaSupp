@@ -7,7 +7,9 @@
 gt_lm(x, fit = c("r.squared", "adj.r.squared"), d = 2)
 }
 \arguments{
-\item{x}{REQUIRED: bare name. a single 'lm' object#' @param fit Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"}
+\item{x}{REQUIRED: bare name. a single 'lm' object}
+
+\item{fit}{Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"}
 
 \item{d}{Optional: number. digits after the decimal, default = 2}
 }
@@ -18,6 +20,9 @@ a gtsummary object
 APA: gtsummary for a single linear model
 }
 \examples{
+library(datasets)
+library(tidyverse)
+
 mtcars <- mtcars \%>\% dplyr::mutate(vs = factor(vs))
 m <- lm(mpg ~ vs + disp, data = mtcars)
 gt_lm(m)

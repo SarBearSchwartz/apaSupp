@@ -8,15 +8,16 @@ License: MIT + file LICENSE
 URL: https://github.com/SarBearSchwartz/apaSupp
 Depends: R (>= 4.1.0)
 Imports: 
-    rlang,
     tidyverse,
-    dplyr,
-    forcats,
     ggplot2,
     glue,
-    purrr,
-    tibble,
+    DescTools,
+    broom.helpers,
+    car,
+    gtsummary,
     rstatix,
+    performance,
+    parameters,
     tidyr,
     flextable,
     MOTE,
@@ -24,6 +25,7 @@ Imports:
     naniar,
     officer,
     patchwork,
+    furniture,
     lavaan
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

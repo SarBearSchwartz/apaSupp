@@ -1,6 +1,7 @@
 #' APA: gtsummary for a single linear model
 #'
-#' @param x REQUIRED: bare name. a single 'lm' object#' @param fit Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"
+#' @param x REQUIRED: bare name. a single 'lm' object
+#' @param fit Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"
 #' @param d Optional: number. digits after the decimal, default = 2
 #'
 #' @return a gtsummary object
@@ -10,6 +11,9 @@
 #' @export
 #'
 #' @examples
+#' library(datasets)
+#' library(tidyverse)
+#'
 #' mtcars <- mtcars %>% dplyr::mutate(vs = factor(vs))
 #' m <- lm(mpg ~ vs + disp, data = mtcars)
 #'gt_lm(m)
@@ -31,11 +35,11 @@ gt_lm <- function(x,
     gtsummary::remove_footnote_header() %>%
     gtsummary::remove_abbreviation("SE = Standard Error")  %>%
     gtsummary::modify_fmt_fun(estimate ~
-                                label_style_number(digits = d)) %>%
+                                gtsummary::label_style_number(digits = d)) %>%
     gtsummary::modify_fmt_fun(std.error ~
-                                label_style_number(digits = d,
-                                                   prefix = "(",
-                                                   suffix = ")")) %>%
+                                gtsummary::label_style_number(digits = d,
+                                                              prefix = "(",
+                                                              suffix = ")")) %>%
     gtsummary::modify_header(label = "Variable",
                              estimate = "b",
                              std.error = "(SE)",

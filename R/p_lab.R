@@ -8,7 +8,7 @@
 #'
 #'
 #' @return character of the form "p = .231", "p = .022**", or "< .001***"
-#' @import dplyr
+#' @import tidyverse
 #' @import glue
 #' @import MOTE
 #' @export

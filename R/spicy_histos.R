@@ -10,14 +10,14 @@
 #'
 #' @return a `ggplot` object
 #' @import tidyverse
-#' @import rlang
-#' @import dplyr
 #' @import ggplot2
 #' @import patchwork
 #' @export
 #'
 #' @examples
 #' # Simple
+#' library(datasets)
+#'
 #'  spicy_histos(df = mtcars,
 #'               var = mpg,
 #'               split = am)
@@ -55,7 +55,7 @@ spicy_histos <- function(df,
   df_sum <- df  %>%
     dplyr::filter(stats::complete.cases(!!var, !!split)) %>%
     dplyr::group_by(!!split) %>%
-    dplyr::summarise(n = n(),
+    dplyr::summarise(n = dplyr::n(),
                      M = base::mean(!!var),
                      SD = stats::sd(!!var),
                      Min = base::min(!!var),

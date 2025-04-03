@@ -37,6 +37,8 @@ Descriptive Summary of a Continuous Variable, Histograms and Table
 }
 \examples{
 # Simple
+library(datasets)
+
  spicy_histos(df = mtcars,
               var = mpg,
               split = am)

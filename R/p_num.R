@@ -4,11 +4,12 @@
 #' @param breaks statistical significance break points
 #' @param symbols symbols to assign to each break point
 #' @param decimals number of digits after the decimal point
+#' @param stars LOGICAL. default = TRUE, but FALSE leaves off stars
 #' @param leading keep the leading zero in front of the decimal
 #'
 #'
 #' @return character of the form ".231", ".022**", or "< .001***"
-#' @import dplyr
+#' @import tidyverse
 #' @import glue
 #' @import MOTE
 #' @export
@@ -19,6 +20,7 @@
 p_num <- function(value,
                   breaks = c(.05, .01, .001),
                   symbols = c("*", "**", "***"),
+                  stars = TRUE,
                   decimals = 3,
                   leading = FALSE){
 
@@ -29,6 +31,10 @@ p_num <- function(value,
   value_apa_min = MOTE::apa(value = breaks[3],
                             decimals = decimals,
                             leading = leading)
+
+  if (stars == FALSE) {
+    symbols = rep("", times = length(breaks))
+  }
 
   dplyr::case_when(value <  breaks[3] ~ glue::glue("< {value_apa_min} {symbols[3]}"),
                    value == breaks[3] ~ glue::glue("{value_apa_min} {symbols[3]}"),

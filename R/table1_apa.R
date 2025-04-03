@@ -11,6 +11,9 @@
 #' @param max_width_in Optional: Number.  Inches wide table can be
 #' @param digits Optional: Number. Digits after the decimal place
 #' @export
+#' @import tidyverse
+#' @import furniture
+#' @import flextable
 #'
 #' @examples
 #' library(tidyverse)

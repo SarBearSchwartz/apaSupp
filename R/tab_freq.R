@@ -8,7 +8,7 @@
 #' @param digits Optional: Number. Digits after the decimal place
 #'
 #' @return a `flextable` table with caption
-#' @import dplyr
+#' @import tidyverse
 #' @import flextable
 #' @export
 #'

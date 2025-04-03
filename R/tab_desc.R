@@ -10,8 +10,6 @@
 #'
 #' @return a `flextable` table with caption
 #' @import tidyverse
-#' @import dplyr
-#' @import tidyr
 #' @import glue
 #' @import flextable
 #' @import naniar

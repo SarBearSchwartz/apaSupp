@@ -9,7 +9,6 @@
 #'
 #' @return table
 #' @import tidyverse
-#' @import dplyr
 #' @import flextable
 #' @export
 #'

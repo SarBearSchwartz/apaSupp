@@ -12,7 +12,6 @@
 #' @returns a flextable object
 #' @import gtsummary
 #' @import flextable
-#' @import purrr
 #' @import tidyverse
 #' @import broom.helpers
 #' @export
