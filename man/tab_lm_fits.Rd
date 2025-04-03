@@ -8,7 +8,7 @@ tab_lm_fits(
   x,
   caption = "Comparison of Linear Model Performane Metrics",
   general_note = NA,
-  sort = c("AIC", "R2_adjusted"),
+  sort = "AIC",
   d = 2
 )
 }
@@ -19,7 +19,7 @@ tab_lm_fits(
 
 \item{general_note}{Optional: Text. General note for footer of APA table}
 
-\item{sort}{Optional: metrics to sort by, default = c("AIC", "R2_adjusted"), may include: "AIC", "BIC", "R2", "R2_adjusted", "RMSE"}
+\item{sort}{Optional: metrics to sort by, default = "AIC", but may use: "AIC", "BIC", "R2", "R2_adjusted", "RMSE"}
 
 \item{d}{Optional: Number. Digits after the decimal place}
 }

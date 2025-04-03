@@ -21,7 +21,7 @@
 #' @param x REQUIRED: List. at least 2 lm models, bare names, If named list, then names appear in the table
 #' @param caption Optional: Text. Caption for the table
 #' @param general_note Optional: Text. General note for footer of APA table
-#' @param sort Optional: metrics to sort by, default = c("AIC", "R2_adjusted"), may include: "AIC", "BIC", "R2", "R2_adjusted", "RMSE"
+#' @param sort Optional: metrics to sort by, default = "AIC", but may use: "AIC", "BIC", "R2", "R2_adjusted", "RMSE"
 #' @param d Optional: Number. Digits after the decimal place
 #'
 #' @returns a flextable object
@@ -41,7 +41,7 @@
 tab_lm_fits <- function(x,
                          caption = "Comparison of Linear Model Performane Metrics",
                          general_note = NA,
-                         sort = c("AIC", "R2_adjusted"),
+                         sort = "AIC",
                          d = 2){
 
   ns <- sapply(x,function(y)length (y$residuals))
