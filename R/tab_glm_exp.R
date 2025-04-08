@@ -65,7 +65,7 @@ tab_glm_exp <- function(x,
     abr2 = "Log Scale, b"
     main_note <- flextable::as_paragraph(flextable::as_i("Note. "),
                                          flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
-                                         "CI = confidence interval; ",
+                                         " = confidence interval; ",
                                          flextable::as_i("p"),
                                          " = significance from Wald t-test for parameter estimate. ",
                                          flextable::as_chunk(general_note))

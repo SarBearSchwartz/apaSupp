@@ -1,5 +1,5 @@
 #' @title
-#' APA: flextable for Comparing the Performance of Linear models
+#' APA: flextable for Comparing the Performance of Generalize Linear models
 #'
 #' @description
 #' Create a flextable for Comparing the Performance of Linear models via Several Metrics
@@ -18,10 +18,10 @@
 #' Note: regression metrics are all internal measures, that is they have been computed on the **same data** that was used to build the regression model. They tell you how well the model fits to the data in hand.
 #'
 #'
-#' @param x REQUIRED: List. at least 2 lm models, bare names, If named list, then names appear in the table
+#' @param x REQUIRED: List. at least 2 glm models, bare names, If named list, then names appear in the table
 #' @param caption Optional: Text. Caption for the table
 #' @param general_note Optional: Text. General note for footer of APA table
-#' @param sort Optional: metrics to sort by, default = "AIC", but may use: "AIC", "BIC", "R2", "R2_adjusted", "RMSE"
+#' @param sort Optional: metrics to sort by, default = "AIC", but may use: "R2_Tjur", "R2_Nag", "AIC",  "BIC", "RMSE"
 #' @param d Optional: Number. Digits after the decimal place
 #'
 #' @returns a flextable object
@@ -34,18 +34,21 @@
 #'
 #' @examples
 #'
-#' m1 <- lm(dist ~ 1, cars)
-#' m2 <- lm(dist ~ speed, cars)
-#' tab_lm_fits(list("null" = m1, "main" = m2))
+#' fit1 <- glm(vs ~ wt, data = mtcars, family = "binomial")
+#' fit2 <- glm(vs ~ wt + mpg, data = mtcars, family = "binomial")
+#' tab_glm_fits(list(fit1, fit2))
 #'
-tab_lm_fits <- function(x,
-                         caption = "Comparison of Linear Model Performane Metrics",
+tab_glm_fits <- function(x,
+                         caption = "Comparison of Generalized Linear Model Performane Metrics",
                          general_note = NA,
                          sort = "AIC",
                          d = 2){
 
-  ns <- sapply(x,function(y)length (y$residuals))
+  ns <- sapply(x,function(y) length(y$residuals))
+
   nparams <- sapply(x,function(y) length(y$coefficients))
+
+  nagR2 <- sapply(x, performance::r2_nagelkerke)
 
   if (length(unique(ns)) == 1){
     n <- unique(ns)
@@ -58,10 +61,10 @@ tab_lm_fits <- function(x,
                                         note_sample,
                                         flextable::as_i("k"),
                                         " = number of parameters estimated in each model. ",
-                                        "Larger values indicated better performance for multiple R-squared (",
-                                        flextable::as_i(flextable::as_chunk("mult-R\u00B2")),
-                                        ") and adjusted R-squared (",
-                                        flextable::as_i(flextable::as_chunk("adj-R\u00B2")),
+                                        "Larger values indicated better performance for pseudo R-squared, both Tjur's  (",
+                                        flextable::as_i(flextable::as_chunk("Tjur-R\u00B2")),
+                                        ") and Nagelkerke's (",
+                                        flextable::as_i(flextable::as_chunk("Nag-R\u00B2")),
                                         "). Smaller values indicated better performance for Akaike's Information Criteria (AIC), Bayesian information criteria (BIC), and Root Mean Squared Error (RMSE).",
                                         flextable::as_chunk(general_note))
 
@@ -69,14 +72,16 @@ tab_lm_fits <- function(x,
     data.frame() %>%
     dplyr::mutate(N = ns) %>%
     dplyr::mutate(k = nparams) %>%
+    dplyr::mutate(R2_Nag = nagR2) %>%
     dplyr::select(Model = Name,
                   N, k,
-                  R2,
-                  R2_adjusted,
-                  AIC, BIC,
+                  R2_Tjur,
+                  R2_Nag,
+                  AIC,
+                  BIC,
                   RMSE) %>%
     dplyr::arrange(sort) %>%
-    dplyr::mutate(across(c(R2, R2_adjusted),
+    dplyr::mutate(across(c(R2_Tjur, R2_Nag),
                          ~ apaSupp::p_num(., decimals = d + 1, stars = FALSE)))
 
   if (length(unique(ns)) == 1){
@@ -88,16 +93,18 @@ tab_lm_fits <- function(x,
     flextable::flextable() %>%
     apaSupp::theme_apa(caption = caption,
                        p_note = NULL) %>%
+    flextable::colformat_double(j = c("k"), big.mark = "", digits = 0) %>%
     flextable::colformat_double(j = c("AIC", "BIC", "RMSE"), big.mark = "", digits = d) %>%
-    flextable::align(part = "all", j = c("R2","AIC"), align = "right") %>%
-    flextable::align(part = "all", j = c("k", "R2_adjusted", "BIC"), align = "left") %>%
+    flextable::align(part = "all", j = c("R2_Tjur", "AIC"), align = "right") %>%
+    flextable::align(part = "all", j = c("k", "R2_Nag", "BIC"), align = "left") %>%
+    flextable::italic(part = "header", j = "k") %>%
     flextable::compose(part = "header",
-                       j = "R2",
-                       value = flextable::as_paragraph(flextable::as_i(flextable::as_chunk("mult-R\u00B2")))) %>%
+                       j = "R2_Tjur",
+                       value = flextable::as_paragraph(flextable::as_i(flextable::as_chunk("Tjur-R\u00B2"))))%>%
     flextable::compose(part = "header",
-                       j = "R2_adjusted",
-                       value = flextable::as_paragraph(flextable::as_i(flextable::as_chunk("adj-R\u00B2"))))%>%
-    flextable::add_footer_lines("R2_adjusted") %>%
+                       j = "R2_Nag",
+                       value = flextable::as_paragraph(flextable::as_i(flextable::as_chunk("Nag-R\u00B2"))))%>%
+    flextable::add_footer_lines("") %>%
     flextable::compose(i = 1, j = 1,
                        value = final_note,
                        part = "footer")
