@@ -1,8 +1,38 @@
+#' APA: flextable for a GLM models (specifically logisitc right now)
+#'
+#' @param x REQUIRED: a glm models, bare name
+#' @param var_labels Optional: Vector. Text replacements for model terms, "old" = "new"
+#' @param type Optional: default = "logistic", more to come soon...
+#' @param caption Optional: Text. Caption for the table
+#' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If p_note = "apa" then the standard "* p < .05. ** p < .01. *** p < .001." will be used
+#' @param general_note Optional: Text. General note for footer of APA table
+#' @param d Optional: Number. Digits after the decimal place
+#'
+#' @returns a flextable object
+#' @import gtsummary
+#' @import flextable
+#' @import tidyverse
+#' @import broom.helpers
+#' @import HSAUR3
+#' @export
+#'
+#' @examples
+#' library(HSAUR3)
+#' library(tidyverse)
+#'
+#' data("womensrole", package = "HSAUR3")
+#'
+#' fit_glm_1 <- glm(cbind(agree, disagree) ~ gender + education,
+#'                   data = womensrole,
+#'                   family = binomial)
+#'
+#' apaSupp::tab_glm_exp(fit_glm_1)
+#'
 tab_glm_exp <- function(x,
                         var_labels = NULL,
+                        type = "logistic",
                         caption = "Generalized Regression Model",
                         p_note = "apa",
-                        type = "logistic",
                         general_note = NA,
                         d = 2){
 
@@ -26,8 +56,7 @@ tab_glm_exp <- function(x,
     abr2 <- "Logit Scale, b"
     main_note <- flextable::as_paragraph(flextable::as_i("Note. "),
                                          flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
-                                         flextable::as_i("CI"),
-                                         " = confidence interval; ",
+                                         "CI = confidence interval; ",
                                          flextable::as_i("p"),
                                          " = significance from Wald t-test for parameter estimate. ",
                                          flextable::as_chunk(general_note))
@@ -36,8 +65,7 @@ tab_glm_exp <- function(x,
     abr2 = "Log Scale, b"
     main_note <- flextable::as_paragraph(flextable::as_i("Note. "),
                                          flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
-                                         flextable::as_i("CI"),
-                                         " = confidence interval; ",
+                                         "CI = confidence interval; ",
                                          flextable::as_i("p"),
                                          " = significance from Wald t-test for parameter estimate. ",
                                          flextable::as_chunk(general_note))
