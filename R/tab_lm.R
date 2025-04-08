@@ -155,7 +155,7 @@ tab_lm <- function(x,
   if(std == TRUE){
     get <- get %>%
       gtsummary::modify_table_body(dplyr::left_join,
-                                   bstd_to_tibble(x, d = d),
+                                   apaSupp::bstd_to_tibble(x, d = d),
                                    by = c("variable", "row_type")) %>%
       gtsummary::modify_header(bs ~ "bs")
   }
@@ -163,7 +163,7 @@ tab_lm <- function(x,
   if(vif == TRUE){
     get <- get %>%
       gtsummary::modify_table_body(dplyr::left_join,
-                                   vif_to_tibble(x, d = d),
+                                   apaSupp::vif_to_tibble(x, d = d),
                                    by = c("variable", "row_type")) %>%
       gtsummary::modify_header(vif ~ "VIF")
   }
@@ -171,7 +171,7 @@ tab_lm <- function(x,
   if(eta2 == TRUE){
     get <- get %>%
       gtsummary::modify_table_body(dplyr::left_join,
-                                   eta2_to_tibble(x),
+                                   apaSupp::eta2_to_tibble(x),
                                    by = c("variable", "row_type")) %>%
       gtsummary::modify_header(eta.sq ~ "n2",
                                eta.sq.part ~ "n2p")
