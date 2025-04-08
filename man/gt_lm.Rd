@@ -4,10 +4,12 @@
 \alias{gt_lm}
 \title{APA: gtsummary for a single linear model}
 \usage{
-gt_lm(x, fit = c("r.squared", "adj.r.squared"), d = 2)
+gt_lm(x, narrow = FALSE, fit = c("r.squared", "adj.r.squared"), d = 2)
 }
 \arguments{
-\item{x}{REQUIRED: bare name. a single 'lm' object}
+\item{x}{REQUIRED: bare name. a single 'lm' object'}
+
+\item{narrow}{Optional. Logical. Default = FALSE, but TRUE will exclude p-vlaues from the table to make it narrower}
 
 \item{fit}{Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"}
 

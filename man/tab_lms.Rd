@@ -9,6 +9,7 @@ tab_lms(
   mod_names = NA,
   var_labels = NULL,
   caption = "Compare Regression Models",
+  narrow = FALSE,
   p_note = "apa",
   general_note = NULL,
   fit = c("r.squared", "adj.r.squared"),
@@ -23,6 +24,8 @@ tab_lms(
 \item{var_labels}{Optional: Vector. Text replacements for model terms, "old" = "new"}
 
 \item{caption}{Optional: Text. Caption for the table}
+
+\item{narrow}{Optional. Logical. Default = FALSE, but TRUE will exclude p-vlaues from the table to make it narrower}
 
 \item{p_note}{Optional: Text. (default = NULL) Significance note for APA table, If p_note = "apa" then the standard "* p < .05. ** p < .01. *** p < .001." will be used}
 

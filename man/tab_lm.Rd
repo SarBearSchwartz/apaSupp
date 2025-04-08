@@ -5,11 +5,11 @@
 \title{APA: flextable for ONElinear models}
 \usage{
 tab_lm(
-  model,
+  x,
   var_labels = NULL,
   caption = "Regression Model",
   p_note = "apa",
-  general_note = NULL,
+  general_note = NA,
   fit = c("r.squared", "adj.r.squared"),
   d = 2,
   std = TRUE,
@@ -18,7 +18,7 @@ tab_lm(
 )
 }
 \arguments{
-\item{model}{REQUIRED: 1 lm model, bare name}
+\item{x}{REQUIRED: 1 lm model, bare name}
 
 \item{var_labels}{Optional: Vector. Text replacements for model terms, "old" = "new"}
 
