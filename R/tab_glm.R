@@ -42,13 +42,10 @@ tab_glm <- function(x,
   if (n_param < 2) {vif <- FALSE}
 
 
-  if (family(fit2)$link == "logit"){
+  if (family(x)$link == "logit"){
     back_trans <- "exp"
     abr1 <- "Odds Ratio"
     abr2 <- "Logit Scale"
-  } else {
-    abr1 <- "Transform"
-    abr2 <- "Original"
   }
 
 
