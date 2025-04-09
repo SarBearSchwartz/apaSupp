@@ -4,19 +4,6 @@
 #' @description
 #' Create a flextable for Comparing the Performance of Linear models via Several Metrics
 #'
-#' @details
-#' Model performance metrics
-#'
-#' In regression model, the most commonly known evaluation metrics include:
-#' * **Akaike's Information Criteria (AIC)** is a metric developed by the Japanese Statistician, Hirotugu Akaike, 1970. The basic idea of AIC is to penalize the inclusion of additional variables to a model. It adds a penalty that increases the error when including additional terms. The **lower** the AIC, the better the model.
-#' * **Bayesian information criteria (BIC)** is a variant of AIC with a stronger penalty for including additional variables to the model. The basic idea of AIC is to penalize the inclusion of additional variables to a model. It adds a penalty that increases the error when including additional terms. The **lower** the BIC, the better the model.
-#' * **R-squared (R2)**, which is the proportion of variation in the outcome that is explained by the predictor variables. In multiple regression models, R2 corresponds to the squared correlation between the observed outcome values and the predicted values by the model. The **Higher** the R-squared, the better the model.
-#' * **Adjusted R-squared (adj-R2)** adjusts the R2 for having too many variables in the model.  **Larger** values are better.
-#' * **Root Mean Squared Error (RMSE)**, which measures the average error performed by the model in predicting the outcome for an observation. Mathematically, the RMSE is the square root of the mean squared error (MSE), which is the average squared difference between the observed actual outcome values and the values predicted by the model. So, MSE = mean((observed - predicted)^2) and RMSE = sqrt(MSE). The **lower** the RMSE, the better the model.
-#'
-#' Including additional variables in the model will **always** increase the R2 and reduce the RMSE.  Conversely, AIC, BIC, and adjusted-R2 penalize for model complexity and are more commonly used for model evaluation and selection, as these are unbiased estimated fo the model prediction error, and thus should be the basis of model comparison and optimal model selection.
-#' Note: regression metrics are all internal measures, that is they have been computed on the **same data** that was used to build the regression model. They tell you how well the model fits to the data in hand.
-#'
 #'
 #' @param x REQUIRED: List. at least 2 lm models, bare names, If named list, then names appear in the table
 #' @param caption Optional: Text. Caption for the table
@@ -36,6 +23,7 @@
 #'
 #' m1 <- lm(dist ~ 1, cars)
 #' m2 <- lm(dist ~ speed, cars)
+#'
 #' tab_lm_fits(list("null" = m1, "main" = m2))
 #'
 tab_lm_fits <- function(x,

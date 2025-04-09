@@ -47,6 +47,7 @@ APA: flextable for ONElinear models
 \examples{
 
 m <- lm(dist ~ speed, cars)
+
 tab_lm(m)
 
 }

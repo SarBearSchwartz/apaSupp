@@ -12,8 +12,11 @@
 #' @export
 #'
 #' @examples
+#'
 #' x <- c(.36521, .02456, .0000000056)
+#'
 #' p_star(x)
+#'
 p_star <- function(value,
                   breaks = c(.05, .01, .001),
                   symbols = c("*", "**", "***")){

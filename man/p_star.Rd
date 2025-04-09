@@ -20,6 +20,9 @@ character of the form ".231", ".022**", or "< .001***"
 P-value Stars: only stars with no numbers
 }
 \examples{
+
 x <- c(.36521, .02456, .0000000056)
+
 p_star(x)
+
 }

@@ -29,25 +29,13 @@ a flextable object
 \description{
 Create a flextable for Comparing the Performance of Linear models via Several Metrics
 }
-\details{
-Model performance metrics
-
-In regression model, the most commonly known evaluation metrics include:
-\itemize{
-\item \strong{Akaike's Information Criteria (AIC)} is a metric developed by the Japanese Statistician, Hirotugu Akaike, 1970. The basic idea of AIC is to penalize the inclusion of additional variables to a model. It adds a penalty that increases the error when including additional terms. The \strong{lower} the AIC, the better the model.
-\item \strong{Bayesian information criteria (BIC)} is a variant of AIC with a stronger penalty for including additional variables to the model. The basic idea of AIC is to penalize the inclusion of additional variables to a model. It adds a penalty that increases the error when including additional terms. The \strong{lower} the BIC, the better the model.
-\item \strong{R-squared (R2)}, which is the proportion of variation in the outcome that is explained by the predictor variables. In multiple regression models, R2 corresponds to the squared correlation between the observed outcome values and the predicted values by the model. The \strong{Higher} the R-squared, the better the model.
-\item \strong{Adjusted R-squared (adj-R2)} adjusts the R2 for having too many variables in the model.  \strong{Larger} values are better.
-\item \strong{Root Mean Squared Error (RMSE)}, which measures the average error performed by the model in predicting the outcome for an observation. Mathematically, the RMSE is the square root of the mean squared error (MSE), which is the average squared difference between the observed actual outcome values and the values predicted by the model. So, MSE = mean((observed - predicted)^2) and RMSE = sqrt(MSE). The \strong{lower} the RMSE, the better the model.
-}
-
-Including additional variables in the model will \strong{always} increase the R2 and reduce the RMSE.  Conversely, AIC, BIC, and adjusted-R2 penalize for model complexity and are more commonly used for model evaluation and selection, as these are unbiased estimated fo the model prediction error, and thus should be the basis of model comparison and optimal model selection.
-Note: regression metrics are all internal measures, that is they have been computed on the \strong{same data} that was used to build the regression model. They tell you how well the model fits to the data in hand.
-}
 \examples{
 
+mtcars <- mtcars \%>\% dplyr::mutate(cyl = factor(cyl))
+
 fit1 <- glm(vs ~ wt, data = mtcars, family = "binomial")
-fit2 <- glm(vs ~ wt + mpg, data = mtcars, family = "binomial")
+fit2 <- glm(vs ~ wt + mpg + cy, data = mtcars, family = "binomial")
+
 tab_glm_fits(list(fit1, fit2))
 
 }

@@ -12,12 +12,12 @@
 #' @export
 #'
 #' @examples
-#' library(datasets)
-#' library(tidyverse)
 #'
-#' mtcars <- mtcars %>% dplyr::mutate(vs = factor(vs))
-#' m <- lm(mpg ~ vs + disp, data = mtcars)
-#'gt_lm(m)
+#' mtcars <- mtcars %>% dplyr::mutate(cyl = factor(cyl))
+#'
+#' fit_glm1 <- glm(vs ~ wt, data = mtcars, family = "binomial")
+#'
+#' gt_glm(fit_glm1)
 #'
 #'
 #'

@@ -25,6 +25,7 @@
 #' @examples
 #'
 #' m <- lm(dist ~ speed, cars)
+#'
 #' tab_lm(m)
 #'
 
@@ -44,6 +45,8 @@ tab_lm <- function(x,
     coef() %>%
     length()
 
+  if (n_param < 2) vif <- FALSE
+
   n_fit <- length(fit)
 
 
@@ -57,79 +60,87 @@ tab_lm <- function(x,
 
 
   if (std == TRUE & vif == TRUE & eta2 == TRUE){
-    main_note <- flextable::as_paragraph(flextable::as_i("Note. "),
-                                         flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
-                                         flextable::as_i("p"),
-                                         " = significance from Wald t-test for parameter estimate; ",
-                                         flextable::as_i("b\U002A"),
-                                         " = standardized estimate; VIF = variance inflation factor; ",
-                                         flextable::as_i("\U03B7\U00B2"),
-                                         "= semi-partial correlation; ",
-                                         flextable::as_i("\U03B7\U209A\U00B2"),
-                                         "= partial correlation.",
-                                         flextable::as_chunk(general_note))
+    main_note <- flextable::as_paragraph(
+      flextable::as_i("Note. "),
+      flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
+      flextable::as_i("p"),
+      " = significance from Wald t-test for parameter estimate; ",
+      flextable::as_i("b\U002A"),
+      " = standardized estimate; VIF = variance inflation factor; ",
+      flextable::as_i("\U03B7\U00B2"),
+      "= semi-partial correlation; ",
+      flextable::as_i("\U03B7\U209A\U00B2"),
+      "= partial correlation.",
+      flextable::as_chunk(general_note))
   } else if (std == FALSE & vif == TRUE & eta2 == TRUE){
-    main_note <- flextable::as_paragraph(flextable::as_i("Note. "),
-                                         flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
-                                         flextable::as_i("p"),
-                                         " = significance from Wald t-test for parameter estimate; ",
-                                         "VIF = variance inflation factor; ",
-                                         flextable::as_i("\U03B7\U00B2"),
-                                         "= semi-partial correlation; ",
-                                         flextable::as_i("\U03B7\U209A\U00B2"),
-                                         "= partial correlation.",
-                                         flextable::as_chunk(general_note))
+    main_note <- flextable::as_paragraph(
+      flextable::as_i("Note. "),
+      flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
+      flextable::as_i("p"),
+      " = significance from Wald t-test for parameter estimate; ",
+      "VIF = variance inflation factor; ",
+      flextable::as_i("\U03B7\U00B2"),
+      "= semi-partial correlation; ",
+      flextable::as_i("\U03B7\U209A\U00B2"),
+      "= partial correlation.",
+      flextable::as_chunk(general_note))
   } else if (std == TRUE & vif == FALSE & eta2 == TRUE){
-    main_note <- flextable::as_paragraph(flextable::as_i("Note. "),
-                                         flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
-                                         flextable::as_i("p"),
-                                         " = significance from Wald t-test for parameter estimate; ",
-                                         flextable::as_i("b\U002A"),
-                                         " = standardized estimate; ",
-                                         flextable::as_i("\U03B7\U00B2"),
-                                         "= semi-partial correlation; ",
-                                         flextable::as_i("\U03B7\U209A\U00B2"),
-                                         "= partial correlation.",
-                                         flextable::as_chunk(general_note))
+    main_note <- flextable::as_paragraph(
+      flextable::as_i("Note. "),
+      flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
+      flextable::as_i("p"),
+      " = significance from Wald t-test for parameter estimate; ",
+      flextable::as_i("b\U002A"),
+      " = standardized estimate; ",
+      flextable::as_i("\U03B7\U00B2"),
+      "= semi-partial correlation; ",
+      flextable::as_i("\U03B7\U209A\U00B2"),
+      "= partial correlation.",
+      flextable::as_chunk(general_note))
   } else if (std == TRUE & vif == TRUE & eta2 == FALSE){
-    main_note <- flextable::as_paragraph(flextable::as_i("Note. "),
-                                         flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
-                                         flextable::as_i("p"),
-                                         " = significance from Wald t-test for parameter estimate; ",
-                                         flextable::as_i("b\U002A"),
-                                         " = standardized estimate; VIF = variance inflation factor. ",
-                                         flextable::as_chunk(general_note))
+    main_note <- flextable::as_paragraph(
+      flextable::as_i("Note. "),
+      flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
+      flextable::as_i("p"),
+      " = significance from Wald t-test for parameter estimate; ",
+      flextable::as_i("b\U002A"),
+      " = standardized estimate; VIF = variance inflation factor. ",
+      flextable::as_chunk(general_note))
   } else if (std == TRUE & vif == FALSE & eta2 == FALSE){
-    main_note <- flextable::as_paragraph(flextable::as_i("Note. "),
-                                         flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
-                                         flextable::as_i("p"),
-                                         " = significance from Wald t-test for parameter estimate; ",
-                                         flextable::as_i("b\U002A"),
-                                         " = standardized estimate. ",
-                                         flextable::as_chunk(general_note))
+    main_note <- flextable::as_paragraph(
+      flextable::as_i("Note. "),
+      flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
+      flextable::as_i("p"),
+      " = significance from Wald t-test for parameter estimate; ",
+      flextable::as_i("b\U002A"),
+      " = standardized estimate. ",
+      flextable::as_chunk(general_note))
   } else if (std == FALSE & vif == TRUE & eta2 == FALSE){
-    main_note <- flextable::as_paragraph(flextable::as_i("Note. "),
-                                         flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
-                                         flextable::as_i("p"),
-                                         " = significance from Wald t-test for parameter estimate; ",
-                                         "VIF = variance inflation factor.",
-                                         flextable::as_chunk(general_note))
+    main_note <- flextable::as_paragraph(
+      flextable::as_i("Note. "),
+      flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
+      flextable::as_i("p"),
+      " = significance from Wald t-test for parameter estimate; ",
+      "VIF = variance inflation factor.",
+      flextable::as_chunk(general_note))
   } else if (std == FALSE & vif == FALSE & eta2 == TRUE){
-    main_note <- flextable::as_paragraph(flextable::as_i("Note. "),
-                                         flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
-                                         flextable::as_i("p"),
-                                         " = significance from Wald t-test for parameter estimate; ",
-                                         flextable::as_i("\U03B7\U00B2"),
-                                         "= semi-partial correlation; ",
-                                         flextable::as_i("\U03B7\U209A\U00B2"),
-                                         "= partial correlation.",
-                                         flextable::as_chunk(general_note))
+    main_note <- flextable::as_paragraph(
+      flextable::as_i("Note. "),
+      flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
+      flextable::as_i("p"),
+      " = significance from Wald t-test for parameter estimate; ",
+      flextable::as_i("\U03B7\U00B2"),
+      "= semi-partial correlation; ",
+      flextable::as_i("\U03B7\U209A\U00B2"),
+      "= partial correlation.",
+      flextable::as_chunk(general_note))
   } else {
-    main_note <- flextable::as_paragraph(flextable::as_i("Note. "),
-                                         flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
-                                         flextable::as_i("p"),
-                                         " = significance from Wald t-test for parameter estimate. ",
-                                         flextable::as_chunk(general_note))
+    main_note <- flextable::as_paragraph(
+      flextable::as_i("Note. "),
+      flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
+      flextable::as_i("p"),
+      " = significance from Wald t-test for parameter estimate. ",
+      flextable::as_chunk(general_note))
   }
 
   get <- x %>%
@@ -171,7 +182,7 @@ tab_lm <- function(x,
   if(eta2 == TRUE){
     get <- get %>%
       gtsummary::modify_table_body(dplyr::left_join,
-                                   apaSupp::eta2_to_tibble(x),
+                                   apaSupp::eta2_to_tibble(x, d = d),
                                    by = c("variable", "row_type")) %>%
       gtsummary::modify_header(eta.sq ~ "n2",
                                eta.sq.part ~ "n2p")
@@ -189,7 +200,6 @@ tab_lm <- function(x,
                        no_notes = FALSE,
                        d = d) %>%
     flextable::hline(i = n_rows - n_fit) %>%
-    flextable::italic(part = "header", i = 1) %>%
     flextable::italic(part = "body", i = rows_fit)
 
   if (std == TRUE){
@@ -237,7 +247,7 @@ tab_lm <- function(x,
 
 
   return(table)
-  }
+}
 
 
 

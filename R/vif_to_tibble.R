@@ -1,3 +1,21 @@
+#' APA: calculate VIF
+#'
+#' @param x REQUIRED: a models (lm or glm), bare name
+#' @param d Optional: Number. Digits after the decimal place
+#'
+#' @returns a data.frame for use with apaSupp's model tables
+#' @import car
+#' @import tidyverse
+#' @export
+#'
+#' @examples
+#'
+#' mtcars <- mtcars %>% dplyr::mutate(cyl = factor(cyl))
+#'
+#' fit_lm1 <- lm(mpg ~ wt + hp + cyl, data = mtcars)
+#'
+#' vif_to_tibble(fit_lm1)
+#'
 vif_to_tibble <- function(model, d = 2) {
 
   vif <- car::vif(model)
