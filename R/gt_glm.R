@@ -29,6 +29,12 @@ gt_glm <- function(x,
                    fit = NA,
                    d = 2){
 
+  if (family(x)$link == "logit"){
+    back_trans <- "exp"
+    abr <- c("Odds Ratio","Logit Scale")
+    sym <- c("OR", "b")
+  }
+
   if (narrow == FALSE){
     p_fun <- function(x, d) apaSupp::p_num(x, d = d + 1)
   } else {
