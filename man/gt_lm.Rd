@@ -26,9 +26,10 @@ library(datasets)
 library(tidyverse)
 
 mtcars <- mtcars \%>\% dplyr::mutate(vs = factor(vs))
+
 m <- lm(mpg ~ vs + disp, data = mtcars)
-gt_lm(m)
 
-
+apaSupp::gt_lm(m, d = 3)
+apaSupp::gt_lm(m, narrow = TRUE)
 
 }

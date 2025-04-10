@@ -26,9 +26,10 @@
 #' mtcars <- mtcars %>% dplyr::mutate(cyl = factor(cyl))
 #'
 #' fit_glm1 <- glm(vs ~ wt, data = mtcars, family = "binomial")
-#' fit_glm2 <- glm(vs ~ wt + mpg + cyl, data = mtcars, family = "binomial")
+#' fit_glm2 <- glm(vs ~ wt + mpg, data = mtcars, family = "binomial")
 #'
-#' tab_glm_fits(list(fit_glm1, fit_glm2))
+#' apaSupp::tab_glm_fits(list(fit_glm1, fit_glm2))
+#' apaSupp::tab_glm_fits(list("Univar" = fit_glm1, "Multivar" = fit_glm2))
 #'
 tab_glm_fits <- function(x,
                          caption = "Comparison of Generalized Linear Model Performane Metrics",
@@ -70,19 +71,14 @@ tab_glm_fits <- function(x,
     dplyr::mutate(across(c(McFadden, Tjur),
                          ~ apaSupp::p_num(., d = d + 1, stars = FALSE)))
 
-  # if (length(unique(ns)) == 1){
-  #   df <- df %>%
-  #     dplyr::select(-N)
-  # }
-
   tab <- df %>%
     flextable::flextable() %>%
     apaSupp::theme_apa(caption = caption,
                        p_note = NULL) %>%
     flextable::colformat_double(j = c("N", "k"), big.mark = "", digits = 0) %>%
     flextable::colformat_double(j = c("AIC", "BIC", "RMSE"), big.mark = "", digits = d) %>%
-    flextable::align(part = "all", j = c(2, 4, 6), align = "right") %>%
-    flextable::align(part = "all", j = c(1, 3, 5), align = "left") %>%
+    flextable::align(part = "all", j = c("N", "McFadden","AIC"), align = "right") %>%
+    flextable::align(part = "all", j = c("k", "Tjur", "BIC"), align = "left") %>%
     flextable::add_header_row(values = c(NA, "R2",NA),
                               colwidths = c(3, 2, 3)) %>%
     flextable::hline(part = "header", i = 1,

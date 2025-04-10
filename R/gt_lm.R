@@ -16,10 +16,11 @@
 #' library(tidyverse)
 #'
 #' mtcars <- mtcars %>% dplyr::mutate(vs = factor(vs))
+#'
 #' m <- lm(mpg ~ vs + disp, data = mtcars)
-#'gt_lm(m)
 #'
-#'
+#' apaSupp::gt_lm(m, d = 3)
+#' apaSupp::gt_lm(m, narrow = TRUE)
 #'
 gt_lm <- function(x,
                   narrow = FALSE,
@@ -28,15 +29,15 @@ gt_lm <- function(x,
                   d = 2){
 
   if (narrow == FALSE){
-    p_fun <- apaSupp::p_num
+    p_fun <- function(x, d) apaSupp::p_num(x, d = d + 1)
   } else {
-    p_fun <- p_star
+    p_fun <- function(x, d) apaSupp::p_star(x, d = d + 1)
   }
 
   table <- x %>%
     gtsummary::tbl_regression(intercept = TRUE,
                               conf.int = FALSE,
-                              pvalue_fun = p_fun,
+                              pvalue_fun = ~ p_fun(.x, d = d),
                               tidy_fun = broom.helpers::tidy_with_broom_or_parameters)  %>%
     gtsummary::add_glance_table(include = fit) %>%
     gtsummary::modify_column_unhide(column = std.error) %>%

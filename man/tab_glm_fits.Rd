@@ -36,8 +36,9 @@ library(tidyverse)
 mtcars <- mtcars \%>\% dplyr::mutate(cyl = factor(cyl))
 
 fit_glm1 <- glm(vs ~ wt, data = mtcars, family = "binomial")
-fit_glm2 <- glm(vs ~ wt + mpg + cyl, data = mtcars, family = "binomial")
+fit_glm2 <- glm(vs ~ wt + mpg, data = mtcars, family = "binomial")
 
-tab_glm_fits(list(fit_glm1, fit_glm2))
+apaSupp::tab_glm_fits(list(fit_glm1, fit_glm2))
+apaSupp::tab_glm_fits(list("Univar" = fit_glm1, "Multivar" = fit_glm2))
 
 }

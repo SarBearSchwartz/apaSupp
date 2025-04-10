@@ -1,6 +1,6 @@
-#' APA: flextable for 2-3 linear models
+#' APA: flextable for 2-3 generalized linear models
 #'
-#' @param x REQUIRED: List. at least 2 lm models, bare names
+#' @param x REQUIRED: List. at least 2 glm models, bare names
 #' @param var_labels Optional: Vector. Text replacements for model terms, "old" = "new"
 #' @param caption Optional: Text. Caption for the table
 #' @param narrow  Optional. Logical. Default = FALSE, but TRUE will exclude p-vlaues from the table to make it narrower
@@ -18,20 +18,28 @@
 #'
 #' @examples
 #'
-#' m1 <- lm(dist ~ 1, cars)
-#' m2 <- lm(dist ~ speed, cars)
+#' library(tidyverse)
 #'
-#' tab_lms(list(m1, m2))
+#' mtcars <- mtcars %>% dplyr::mutate(cyl = factor(cyl))
 #'
-tab_lms <- function(x,
+#' fit_glm1 <- glm(vs ~ wt, data = mtcars, family = "binomial")
+#' fit_glm2 <- glm(vs ~ wt + mpg + cyl, data = mtcars, family = "binomial")
+#'
+#' apaSupp::tab_glms(list(fit_glm1, fit_glm2))
+#' apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2))
+#' apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), narrow = TRUE)
+#' apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), narrow = TRUE, fit = c("AIC", "BIC"))
+#'
+#'
+tab_glms <- function(x,
                     var_labels = NULL,
                     caption = "Compare Regression Models",
                     narrow = FALSE,
                     p_note = "apa",
                     general_note = NULL,
-                    fit = c("r.squared",
-                            "adj.r.squared"),
+                    fit = NA,
                     d = 2){
+
 
 
   n_param <- x %>%
@@ -42,10 +50,17 @@ tab_lms <- function(x,
 
   n_models <- length(x)
 
-  n_fit <- length(fit)
+
+  n_fit   <- sum(!is.na(fit))
+
+  if(is.null(names(x))){
+    mod_names <- paste("Model", 1:n_models)
+  }else{
+    mod_names <- names(x)
+  }
 
   get <- x %>%
-    purrr::map(gt_lm,
+    purrr::map(apaSupp::gt_glm,
                narrow = narrow,
                fit = fit,
                d = d) %>%
@@ -58,18 +73,21 @@ tab_lms <- function(x,
 
   n_rows <- flextable::nrow_part(table, part = "body")
 
-  rows_fit <- (n_rows - n_fit + 1):(n_rows)
-
-
   table <- table %>%
     apaSupp::theme_apa(caption = caption,
                        p_note = p_note,
                        general_note = general_note) %>%
-    flextable::hline(part = "body", i = n_rows - n_fit) %>%
     flextable::bold(part = "header", i = 1) %>%
     flextable::italic(part = "header", i = 2) %>%
-    flextable::italic(part = "body", i = rows_fit) %>%
     flextable::align(part = "header", i = 1, align = "center")
+
+  if(n_fit > 0){
+    table <- table %>%
+      flextable::italic(part = "body", i = (n_rows + 1 - n_fit):(n_rows)) %>%
+      flextable::hline(part = "body", i = (n_rows - n_fit))
+  }
+
+  n_rows <- flextable::nrow_part(table, part = "body")
 
   if (narrow == FALSE){
     table <- table %>%

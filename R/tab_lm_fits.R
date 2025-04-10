@@ -24,7 +24,8 @@
 #' m1 <- lm(dist ~ 1, cars)
 #' m2 <- lm(dist ~ speed, cars)
 #'
-#' tab_lm_fits(list("null" = m1, "main" = m2))
+#' apaSupp::tab_lm_fits(list(m1, m2))
+#' apaSupp::tab_lm_fits(list("null" = m1, "main" = m2))
 #'
 tab_lm_fits <- function(x,
                          caption = "Comparison of Linear Model Performane Metrics",
@@ -43,14 +44,12 @@ tab_lm_fits <- function(x,
   }
 
   final_note <- flextable::as_paragraph(flextable::as_i("Note. "),
-                                        note_sample,
+                                        flextable::as_chunk(ifelse(length(unique(ns)) == 1,
+                                                                   NA,
+                                                                   "Models fit to different samples. ")),
                                         flextable::as_i("k"),
                                         " = number of parameters estimated in each model. ",
-                                        "Larger values indicated better performance for multiple R-squared (",
-                                        flextable::as_i(flextable::as_chunk("mult-R\u00B2")),
-                                        ") and adjusted R-squared (",
-                                        flextable::as_i(flextable::as_chunk("adj-R\u00B2")),
-                                        "). Smaller values indicated better performance for Akaike's Information Criteria (AIC), Bayesian information criteria (BIC), and Root Mean Squared Error (RMSE).",
+                                        "Larger values indicated better performance for R-squared values. Smaller values indicated better performance for Akaike's Information Criteria (AIC), Bayesian information criteria (BIC), and Root Mean Squared Error (RMSE).",
                                         flextable::as_chunk(general_note))
 
   df <- performance::compare_performance(x) %>%
@@ -59,33 +58,34 @@ tab_lm_fits <- function(x,
     dplyr::mutate(k = nparams) %>%
     dplyr::select(Model = Name,
                   N, k,
-                  R2,
-                  R2_adjusted,
+                  mult = R2,
+                  adj = R2_adjusted,
                   AIC, BIC,
                   RMSE) %>%
     dplyr::arrange(sort) %>%
-    dplyr::mutate(across(c(R2, R2_adjusted),
+    dplyr::mutate(across(c(mult, adj),
                          ~ apaSupp::p_num(., d = d + 1, stars = FALSE)))
 
-  if (length(unique(ns)) == 1){
-    df <- df %>%
-      dplyr::select(-N)
-  }
+
 
   tab <- df %>%
     flextable::flextable() %>%
     apaSupp::theme_apa(caption = caption,
                        p_note = NULL) %>%
     flextable::colformat_double(j = c("AIC", "BIC", "RMSE"), big.mark = "", digits = d) %>%
-    flextable::align(part = "all", j = c("R2","AIC"), align = "right") %>%
-    flextable::align(part = "all", j = c("k", "R2_adjusted", "BIC"), align = "left") %>%
-    flextable::compose(part = "header",
-                       j = "R2",
-                       value = flextable::as_paragraph(flextable::as_i(flextable::as_chunk("mult-R\u00B2")))) %>%
-    flextable::compose(part = "header",
-                       j = "R2_adjusted",
-                       value = flextable::as_paragraph(flextable::as_i(flextable::as_chunk("adj-R\u00B2"))))%>%
-    flextable::add_footer_lines("R2_adjusted") %>%
+    flextable::align(part = "all", j = c("N", "mult","AIC"), align = "right") %>%
+    flextable::align(part = "all", j = c("k", "adj", "BIC"), align = "left") %>%
+    flextable::add_header_row(values = c(NA, "R2",NA),
+                              colwidths = c(3, 2, 3)) %>%
+    flextable::hline(part = "header", i = 1,
+                     border = flextable::fp_border_default(width = 0)) %>%
+    flextable::hline(part = "header", i = 1, j = 4:5) %>%
+    flextable::italic(part = "header", i = 2, j = c(2:3)) %>%
+    flextable::compose(part = "header", i = 1, j = 4,
+                       value = flextable::as_paragraph(flextable::as_i(
+                         flextable::as_chunk("R\u00B2")))) %>%
+    flextable::align(part = "header", i = 1, align = "center") %>%
+    flextable::add_footer_lines("") %>%
     flextable::compose(i = 1, j = 1,
                        value = final_note,
                        part = "footer")

@@ -4,7 +4,7 @@
 \alias{gt_glm}
 \title{APA: gtsummary for a single linear model}
 \usage{
-gt_glm(x, narrow = FALSE, fit = c("r.squared", "adj.r.squared"), d = 2)
+gt_glm(x, narrow = FALSE, fit = NA, d = 2)
 }
 \arguments{
 \item{x}{REQUIRED: bare name. a single 'glm' object'}
@@ -23,12 +23,15 @@ APA: gtsummary for a single linear model
 }
 \examples{
 
+library(tidyverse)
+
 mtcars <- mtcars \%>\% dplyr::mutate(cyl = factor(cyl))
 
 fit_glm1 <- glm(vs ~ wt, data = mtcars, family = "binomial")
+fit_glm2 <- glm(vs ~ wt + mpg , data = mtcars, family = "binomial")
 
-gt_glm(fit_glm1)
-
-
+apaSupp::gt_glm(fit_glm2)
+apaSupp::gt_glm(fit_glm2, narrow = TRUE, d = 3)
+apaSupp::gt_glm(fit_glm2, narrow = TRUE, fit = c("AIC", "BIC"))
 
 }

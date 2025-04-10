@@ -34,6 +34,7 @@ Create a flextable for Comparing the Performance of Linear models via Several Me
 m1 <- lm(dist ~ 1, cars)
 m2 <- lm(dist ~ speed, cars)
 
-tab_lm_fits(list("null" = m1, "main" = m2))
+apaSupp::tab_lm_fits(list(m1, m2))
+apaSupp::tab_lm_fits(list("null" = m1, "main" = m2))
 
 }

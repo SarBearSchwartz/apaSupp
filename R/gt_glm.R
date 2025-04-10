@@ -13,55 +13,72 @@
 #'
 #' @examples
 #'
+#' library(tidyverse)
+#'
 #' mtcars <- mtcars %>% dplyr::mutate(cyl = factor(cyl))
 #'
 #' fit_glm1 <- glm(vs ~ wt, data = mtcars, family = "binomial")
+#' fit_glm2 <- glm(vs ~ wt + mpg , data = mtcars, family = "binomial")
 #'
-#' gt_glm(fit_glm1)
-#'
-#'
+#' apaSupp::gt_glm(fit_glm2)
+#' apaSupp::gt_glm(fit_glm2, narrow = TRUE, d = 3)
+#' apaSupp::gt_glm(fit_glm2, narrow = TRUE, fit = c("AIC", "BIC"))
 #'
 gt_glm <- function(x,
                    narrow = FALSE,
-                   fit = c("r.squared",
-                           "adj.r.squared"),
+                   fit = NA,
                    d = 2){
 
   if (narrow == FALSE){
-    p_fun <- apaSupp::p_num
+    p_fun <- function(x, d) apaSupp::p_num(x, d = d + 1)
   } else {
-    p_fun <- apaSupp::p_star
+    p_fun <- function(x, d = d) apaSupp::p_star(x)
   }
 
+
   table <- x %>%
-    gtsummary::tbl_regression(intercept = TRUE,
-                              conf.int = FALSE,
-                              pvalue_fun = p_fun,
-                              tidy_fun = broom.helpers::tidy_with_broom_or_parameters)  %>%
-    # gtsummary::add_glance_table(include = fit) %>%
-    gtsummary::modify_column_unhide(column = std.error) %>%
-    gtsummary::remove_footnote_header() %>%
-    gtsummary::remove_abbreviation("SE = Standard Error")  %>%
+    gtsummary::tbl_regression(intercept = FALSE,
+                              conf.int = TRUE,
+                              exponentiate = TRUE,
+                              pvalue_fun = ~ p_fun(.x, d = d),
+                              tidy_fun = broom.helpers::tidy_with_broom_or_parameters)
+
+
+    if (sum(!is.na(fit)) > 0){
+      table <- table %>%
+        gtsummary::add_glance_table(include = fit)
+    }
+
+  table <- table %>%
+    gtsummary::modify_column_hide(column = std.error) %>%
     gtsummary::modify_fmt_fun(estimate ~
                                 gtsummary::label_style_number(digits = d)) %>%
-    gtsummary::modify_fmt_fun(std.error ~
+    gtsummary::modify_fmt_fun(conf.low ~
                                 gtsummary::label_style_number(digits = d,
-                                                              prefix = "(",
-                                                              suffix = ")"))
+                                                              prefix = "[")) %>%
+    gtsummary::modify_fmt_fun(conf.high ~
+                                gtsummary::label_style_number(digits = d,
+                                                              suffix = "]")) %>%
+    gtsummary::remove_abbreviation("OR = Odds Ratio") %>%
+    gtsummary::remove_abbreviation("CI = Confidence Interval") %>%
+    gtsummary::remove_abbreviation("SE = Standard Error")
+
   if (narrow == TRUE){
     table <- table %>%
-      gtsummary::modify_column_merge(pattern = "{std.error} {p.value}",
+      gtsummary::modify_column_merge(pattern = "{conf.low}, {conf.high}{p.value}",
                                      row = !is.na(std.error)) %>%
       gtsummary::modify_header(label = "Variable",
-                               estimate = "b",
-                               std.error = "(SE)")
+                               estimate = sym[1],
+                               conf.low = "95% CI")
   } else {
-    table <- table %>%
-      gtsummary::modify_header(label = "Variable",
-                               estimate = "b",
-                               std.error = "(SE)",
-                               p.value = "p")
+
+  table <- table %>%
+    gtsummary::modify_header(label = "Variable",
+                             estimate = sym[1],
+                             conf.low = "95% CI",
+                             p.value = "p")
   }
+
 
   return(table)
 }
