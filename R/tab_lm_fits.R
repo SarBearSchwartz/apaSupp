@@ -65,7 +65,7 @@ tab_lm_fits <- function(x,
                   RMSE) %>%
     dplyr::arrange(sort) %>%
     dplyr::mutate(across(c(R2, R2_adjusted),
-                         ~ apaSupp::p_num(., decimals = d + 1, stars = FALSE)))
+                         ~ apaSupp::p_num(., d = d + 1, stars = FALSE)))
 
   if (length(unique(ns)) == 1){
     df <- df %>%

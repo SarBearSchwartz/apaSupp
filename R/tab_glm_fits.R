@@ -37,7 +37,6 @@ tab_glm_fits <- function(x,
   ns <- sapply(x,function(y) length(y$residuals))
 
   nparams <- sapply(x,function(y) length(y$coefficients))
-
   nagR2 <- sapply(x, performance::r2_nagelkerke)
 
   if (length(unique(ns)) == 1){
@@ -72,7 +71,7 @@ tab_glm_fits <- function(x,
                   RMSE) %>%
     dplyr::arrange(sort) %>%
     dplyr::mutate(across(c(R2_Tjur, R2_Nag),
-                         ~ apaSupp::p_num(., decimals = d + 1, stars = FALSE)))
+                         ~ apaSupp::p_num(., d = d + 1, stars = FALSE)))
 
   if (length(unique(ns)) == 1){
     df <- df %>%
