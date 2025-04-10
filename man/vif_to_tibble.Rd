@@ -4,12 +4,12 @@
 \alias{vif_to_tibble}
 \title{APA: calculate VIF}
 \usage{
-vif_to_tibble(model, d = 2)
+vif_to_tibble(x, d = 2)
 }
 \arguments{
-\item{d}{Optional: Number. Digits after the decimal place}
-
 \item{x}{REQUIRED: a models (lm or glm), bare name}
+
+\item{d}{Optional: Number. Digits after the decimal place}
 }
 \value{
 a data.frame for use with apaSupp's model tables

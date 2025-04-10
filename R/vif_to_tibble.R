@@ -16,9 +16,9 @@
 #'
 #' vif_to_tibble(fit_lm1)
 #'
-vif_to_tibble <- function(model, d = 2) {
+vif_to_tibble <- function(x, d = 2) {
 
-  vif <- car::vif(model)
+  vif <- car::vif(x)
 
   if (!is.matrix(vif)){
     result <- vif %>%

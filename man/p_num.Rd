@@ -9,7 +9,7 @@ p_num(
   breaks = c(0.05, 0.01, 0.001),
   symbols = c("*", "**", "***"),
   stars = TRUE,
-  decimals = 3,
+  d = 3,
   leading = FALSE
 )
 }
@@ -22,7 +22,7 @@ p_num(
 
 \item{stars}{LOGICAL. default = TRUE, but FALSE leaves off stars}
 
-\item{decimals}{number of digits after the decimal point}
+\item{d}{number of digits after the decimal point}
 
 \item{leading}{keep the leading zero in front of the decimal}
 }

@@ -10,9 +10,11 @@ tab_glm(
   caption = "Generalized Regression Model",
   p_note = "apa",
   general_note = NA,
-  fit = c("null.deviance", "deviance"),
+  fit = NULL,
+  pr2 = TRUE,
   d = 2,
-  vif = TRUE
+  vif = TRUE,
+  lrt = TRUE
 )
 }
 \arguments{
@@ -26,9 +28,15 @@ tab_glm(
 
 \item{general_note}{Optional: Text. General note for footer of APA table}
 
-\item{fit}{Optional: Text. fit statistics:  "nobs", null.deviance", "df.null", "deviance", "df.residual", "logLik", "AIC", "BIC"}
+\item{fit}{Optional: Text. fit statistics: (default = NA) "nobs", null.deviance", "df.null", "deviance", "df.residual", "logLik", "AIC", "BIC"}
+
+\item{pr2}{Optional: character vector.  (default = TRUE) include Tjur's pseudo R-squared}
 
 \item{d}{Optional: Number. Digits after the decimal place}
+
+\item{vif}{Optional: Logical. (default = TRUE) Include variance inflation factors}
+
+\item{lrt}{Optional: Logical. (default = TRUE) Include LRT for single-predictor deletion}
 
 \item{type}{Optional: default = "logistic", more to come soon...}
 }
@@ -40,11 +48,18 @@ APA: flextable for a GLM models (specifically logisitc right now)
 }
 \examples{
 
+library(tidyverse)
 
-mtcars <- mtcars \%>\% dplyr::mutate(cyl = factor(cyl))
+mtcars <- mtcars \%>\% dplyr::mutate(am = factor(am))
 
-fit_glm2 <- glm(vs ~ wt + mpg + cyl, data = mtcars, family = "binomial")
+fit_glm1 <- glm(vs ~ am, data = mtcars, family = "binomial")
+fit_glm2 <- glm(vs ~ wt + mpg + am, data = mtcars, family = "binomial")
 
+apaSupp::tab_glm(fit_glm1)
 apaSupp::tab_glm(fit_glm2)
+apaSupp::tab_glm(fit_glm2, vif = FALSE)
+apaSupp::tab_glm(fit_glm2, lrt = FALSE)
+apaSupp::tab_glm(fit_glm2, vif = FALSE, lrt = FALSE)
+apaSupp::tab_glm(fit_glm2, vif = FALSE, lrt = FALSE, pr2 = FALSE)
 
 }

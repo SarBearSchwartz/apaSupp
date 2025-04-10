@@ -3,7 +3,7 @@
 #' @param value a numeric value for a statistical significance (p-value)
 #' @param breaks statistical significance break points
 #' @param symbols symbols to assign to each break point
-#' @param decimals number of digits after the decimal point
+#' @param d number of digits after the decimal point
 #' @param stars LOGICAL. default = TRUE, but FALSE leaves off stars
 #' @param leading keep the leading zero in front of the decimal
 #'
@@ -21,24 +21,24 @@ p_num <- function(value,
                   breaks = c(.05, .01, .001),
                   symbols = c("*", "**", "***"),
                   stars = TRUE,
-                  decimals = 3,
+                  d = 3,
                   leading = FALSE){
 
   value_apa = MOTE::apa(value = value,
-                        decimals = decimals,
+                        decimals = d,
                         leading = leading)
 
   value_apa_min = MOTE::apa(value = breaks[3],
-                            decimals = decimals,
+                            decimals = d,
                             leading = leading)
 
   if (stars == FALSE) {
     symbols = rep("", times = length(breaks))
   }
 
-  dplyr::case_when(value <  breaks[3] ~ glue::glue("< {value_apa_min} {symbols[3]}"),
-                   value == breaks[3] ~ glue::glue("{value_apa_min} {symbols[3]}"),
-                   value <= breaks[2] ~ glue::glue("{value_apa} {symbols[2]}"),
-                   value <= breaks[1] ~ glue::glue("{value_apa} {symbols[1]}"),
+  dplyr::case_when(value <  breaks[3] ~ glue::glue("< {value_apa_min}{symbols[3]}"),
+                   value == breaks[3] ~ glue::glue("{value_apa_min}{symbols[3]}"),
+                   value <= breaks[2] ~ glue::glue("{value_apa}{symbols[2]}"),
+                   value <= breaks[1] ~ glue::glue("{value_apa}{symbols[1]}"),
                    value  > breaks[1] ~ glue::glue("{value_apa}"))
 }

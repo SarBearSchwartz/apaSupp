@@ -1,9 +1,9 @@
 #' P-value Labels: 3-decimal places, no leading zero, and stars
 #'
-#' @param value a numeric value for a statistical significance (p-value)
+#' @param x a numeric value for a statistical significance (p-value)
 #' @param breaks statistical significance break points
 #' @param symbols symbols to assign to each break point
-#' @param decimals number of digits after the decimal point
+#' @param d number of digits after the decimal point
 #' @param leading keep the leading zero in front of the decimal
 #'
 #'
@@ -16,18 +16,18 @@
 #' @examples
 #' x <- c(.36521, .02456, .0000000056)
 #' p_lab(x)
-p_lab <- function(value,
+p_lab <- function(x,
                   breaks = c(.05, .01, .001),
                   symbols = c("*", "**", "***"),
-                  decimals = 3,
+                  d = 3,
                   leading = FALSE){
 
-  value_apa = MOTE::apa(value = value,
-                        decimals = decimals,
+  value_apa = MOTE::apa(value = x,
+                        decimals = d,
                         leading = leading)
 
   value_apa_min = MOTE::apa(value = breaks[3],
-                            decimals = decimals,
+                            decimals = d,
                             leading = leading)
 
   dplyr::case_when(value <  breaks[3] ~ glue::glue("p < {value_apa_min}{symbols[3]}"),
