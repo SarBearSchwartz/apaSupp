@@ -8,7 +8,7 @@
 #' @param x REQUIRED: List. at least 2 glm models, bare names, If named list, then names appear in the table
 #' @param caption Optional: Text. Caption for the table
 #' @param general_note Optional: Text. General note for footer of APA table
-#' @param sort Optional: metrics to sort by, default = "AIC", but may use: "R2_Tjur", "R2_Nag", "AIC",  "BIC", "RMSE"
+#' @param sort Optional: metrics to sort by, default = "AIC", but may use: "Model", "Tjur", "McFadden", "AIC",  "BIC", "RMSE"
 #' @param d Optional: Number. Digits after the decimal place
 #'
 #' @returns a flextable object
@@ -21,78 +21,78 @@
 #'
 #' @examples
 #'
+#' library(tidyverse)
+#'
 #' mtcars <- mtcars %>% dplyr::mutate(cyl = factor(cyl))
 #'
-#' fit1 <- glm(vs ~ wt, data = mtcars, family = "binomial")
-#' fit2 <- glm(vs ~ wt + mpg + cy, data = mtcars, family = "binomial")
+#' fit_glm1 <- glm(vs ~ wt, data = mtcars, family = "binomial")
+#' fit_glm2 <- glm(vs ~ wt + mpg + cyl, data = mtcars, family = "binomial")
 #'
-#' tab_glm_fits(list(fit1, fit2))
+#' tab_glm_fits(list(fit_glm1, fit_glm2))
 #'
 tab_glm_fits <- function(x,
                          caption = "Comparison of Generalized Linear Model Performane Metrics",
                          general_note = NA,
-                         sort = "AIC",
+                         sort = "Tjur",
                          d = 2){
 
   ns <- sapply(x,function(y) length(y$residuals))
 
   nparams <- sapply(x,function(y) length(y$coefficients))
-  nagR2 <- sapply(x, performance::r2_nagelkerke)
 
-  if (length(unique(ns)) == 1){
-    n <- unique(ns)
-    note_sample <- glue::glue("N = {n}. ")
-  } else {
-    note_sample = "Models fit to different samples. "
+  if (family(x[[1]])$link == "logit"){
+    R2_McF = sapply(x, performance::r2_mcfadden)
   }
 
+
   final_note <- flextable::as_paragraph(flextable::as_i("Note. "),
-                                        note_sample,
+                                        flextable::as_chunk(ifelse(length(unique(ns)) == 1,
+                                                                   NA,
+                                                                   "Models fit to different samples. ")),
                                         flextable::as_i("k"),
                                         " = number of parameters estimated in each model. ",
-                                        "Larger values indicated better performance for pseudo R-squared, both Tjur's  (",
-                                        flextable::as_i(flextable::as_chunk("Tjur-R\u00B2")),
-                                        ") and Nagelkerke's (",
-                                        flextable::as_i(flextable::as_chunk("Nag-R\u00B2")),
-                                        "). Smaller values indicated better performance for Akaike's Information Criteria (AIC), Bayesian information criteria (BIC), and Root Mean Squared Error (RMSE).",
+                                        "Larger values indicated better performance for pseudo R-squared values. Smaller values indicated better performance for Akaike's Information Criteria (AIC), Bayesian information criteria (BIC), and Root Mean Squared Error (RMSE).",
                                         flextable::as_chunk(general_note))
 
   df <- performance::compare_performance(x) %>%
     data.frame() %>%
     dplyr::mutate(N = ns) %>%
     dplyr::mutate(k = nparams) %>%
-    dplyr::mutate(R2_Nag = nagR2) %>%
+    dplyr::mutate(McFadden = unlist(R2_McF[1,], use.names = FALSE)) %>%
     dplyr::select(Model = Name,
                   N, k,
-                  R2_Tjur,
-                  R2_Nag,
+                  McFadden,
+                  Tjur = R2_Tjur,
                   AIC,
                   BIC,
                   RMSE) %>%
     dplyr::arrange(sort) %>%
-    dplyr::mutate(across(c(R2_Tjur, R2_Nag),
+    dplyr::mutate(across(c(McFadden, Tjur),
                          ~ apaSupp::p_num(., d = d + 1, stars = FALSE)))
 
-  if (length(unique(ns)) == 1){
-    df <- df %>%
-      dplyr::select(-N)
-  }
+  # if (length(unique(ns)) == 1){
+  #   df <- df %>%
+  #     dplyr::select(-N)
+  # }
 
   tab <- df %>%
     flextable::flextable() %>%
     apaSupp::theme_apa(caption = caption,
                        p_note = NULL) %>%
-    flextable::colformat_double(j = c("k"), big.mark = "", digits = 0) %>%
+    flextable::colformat_double(j = c("N", "k"), big.mark = "", digits = 0) %>%
     flextable::colformat_double(j = c("AIC", "BIC", "RMSE"), big.mark = "", digits = d) %>%
-    flextable::align(part = "all", j = c("R2_Tjur", "AIC"), align = "right") %>%
-    flextable::align(part = "all", j = c("k", "R2_Nag", "BIC"), align = "left") %>%
-    flextable::italic(part = "header", j = "k") %>%
-    flextable::compose(part = "header",
-                       j = "R2_Tjur",
-                       value = flextable::as_paragraph(flextable::as_i(flextable::as_chunk("Tjur-R\u00B2"))))%>%
-    flextable::compose(part = "header",
-                       j = "R2_Nag",
-                       value = flextable::as_paragraph(flextable::as_i(flextable::as_chunk("Nag-R\u00B2"))))%>%
+    flextable::align(part = "all", j = c(2, 4, 6), align = "right") %>%
+    flextable::align(part = "all", j = c(1, 3, 5), align = "left") %>%
+    flextable::add_header_row(values = c(NA, "R2",NA),
+                              colwidths = c(3, 2, 3)) %>%
+    flextable::hline(part = "header", i = 1,
+                     border = flextable::fp_border_default(width = 0)) %>%
+    flextable::hline(part = "header", i = 1, j = 4:5) %>%
+    flextable::italic(part = "header", i = 2, j = c(2:3)) %>%
+    flextable::compose(part = "header", i = 1, j = 4,
+                       value = flextable::as_paragraph(flextable::as_i(
+                         flextable::as_chunk("pseudo-R\u00B2")))) %>%
+    flextable::align(part = "header", i = 1, align = "center") %>%
     flextable::add_footer_lines("") %>%
     flextable::compose(i = 1, j = 1,
                        value = final_note,

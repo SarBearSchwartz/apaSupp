@@ -8,7 +8,7 @@ tab_glm_fits(
   x,
   caption = "Comparison of Generalized Linear Model Performane Metrics",
   general_note = NA,
-  sort = "AIC",
+  sort = "Tjur",
   d = 2
 )
 }
@@ -19,7 +19,7 @@ tab_glm_fits(
 
 \item{general_note}{Optional: Text. General note for footer of APA table}
 
-\item{sort}{Optional: metrics to sort by, default = "AIC", but may use: "R2_Tjur", "R2_Nag", "AIC",  "BIC", "RMSE"}
+\item{sort}{Optional: metrics to sort by, default = "AIC", but may use: "Model", "Tjur", "McFadden", "AIC",  "BIC", "RMSE"}
 
 \item{d}{Optional: Number. Digits after the decimal place}
 }
@@ -31,11 +31,13 @@ Create a flextable for Comparing the Performance of Linear models via Several Me
 }
 \examples{
 
+library(tidyverse)
+
 mtcars <- mtcars \%>\% dplyr::mutate(cyl = factor(cyl))
 
-fit1 <- glm(vs ~ wt, data = mtcars, family = "binomial")
-fit2 <- glm(vs ~ wt + mpg + cy, data = mtcars, family = "binomial")
+fit_glm1 <- glm(vs ~ wt, data = mtcars, family = "binomial")
+fit_glm2 <- glm(vs ~ wt + mpg + cyl, data = mtcars, family = "binomial")
 
-tab_glm_fits(list(fit1, fit2))
+tab_glm_fits(list(fit_glm1, fit_glm2))
 
 }
