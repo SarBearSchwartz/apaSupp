@@ -41,8 +41,13 @@ tab_lms <- function(x,
     max()
 
   n_models <- length(x)
-
   n_fit <- length(fit)
+
+  if(is.null(names(x))){
+    mod_names <- paste("Model", 1:n_models)
+  }else{
+    mod_names <- names(x)
+  }
 
   get <- x %>%
     purrr::map(gt_lm,

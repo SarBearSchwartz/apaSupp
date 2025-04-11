@@ -49,7 +49,6 @@ tab_glms <- function(x,
     max()
 
   n_models <- length(x)
-
   n_fit   <- sum(!is.na(fit))
 
   if(is.null(names(x))){
