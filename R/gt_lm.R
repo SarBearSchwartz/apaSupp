@@ -31,7 +31,7 @@ gt_lm <- function(x,
   if (narrow == FALSE){
     p_fun <- function(x, d) apaSupp::p_num(x, d = d + 1)
   } else {
-    p_fun <- function(x, d) apaSupp::p_star(x, d = d + 1)
+    p_fun <- function(x, d) apaSupp::p_star(x)
   }
 
   table <- x %>%
