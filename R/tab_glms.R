@@ -28,9 +28,9 @@
 #' fit_glm2 <- glm(vs ~ wt + mpg + cyl, data = mtcars, family = "binomial")
 #'
 #' apaSupp::tab_glms(list(fit_glm1, fit_glm2))
-#' apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2))
+#' apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), pr2 = "both")
 #' apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), narrow = TRUE)
-#' apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), narrow = TRUE, fit = c("AIC", "BIC"))
+#' apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), narrow = TRUE, fit = "RMSE")
 #' apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), narrow = TRUE, fit = NA)
 #' apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), narrow = TRUE, fit = NA, pr2 = "tjur")
 #' apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), narrow = TRUE, fit = "AIC", pr2 = "tjur")
@@ -51,7 +51,8 @@ tab_glms <- function(x,
                      general_note = NA,
                      fit = c("AIC", "BIC"),
                      pr2 = "both",
-                     d = 2){
+                     d = 2,
+                     ...){
 
   ns <- sapply(x,function(y) length(y$residuals))
 
@@ -107,7 +108,8 @@ tab_glms <- function(x,
   table <- x %>%
     purrr::map(apaSupp::gt_glm,
                narrow = narrow,
-               d = d) %>%
+               d = d,
+               ...) %>%
     gtsummary::tbl_merge(tab_spanner = mod_names) %>%
     gtsummary::as_flex_table()
 

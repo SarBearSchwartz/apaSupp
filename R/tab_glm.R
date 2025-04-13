@@ -54,7 +54,8 @@ tab_glm <- function(x,
                     pr2 = "tjur",
                     d = 2,
                     vif = TRUE,
-                    lrt = TRUE){
+                    lrt = TRUE,
+                    ...){
 
   n_obs   <- length(x$resid)
   n_param <- length(coef(x))
@@ -107,7 +108,8 @@ tab_glm <- function(x,
       gtsummary::tbl_regression(intercept = TRUE,
                                 conf.int = TRUE,
                                 exponentiate = TRUE,
-                                tidy_fun = broom.helpers::tidy_with_broom_or_parameters) %>%
+                                tidy_fun = broom.helpers::tidy_with_broom_or_parameters,
+                                ...) %>%
       gtsummary::modify_column_hide(column = std.error) %>%
       gtsummary::modify_column_hide(column = p.value) %>%
       gtsummary::modify_fmt_fun(estimate ~

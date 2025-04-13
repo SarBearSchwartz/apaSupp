@@ -4,7 +4,7 @@
 \alias{gt_lm}
 \title{APA: gtsummary for a single linear model}
 \usage{
-gt_lm(x, narrow = FALSE, fit = c("r.squared", "adj.r.squared"), d = 2)
+gt_lm(x, narrow = FALSE, fit = c("r.squared", "adj.r.squared"), d = 2, ...)
 }
 \arguments{
 \item{x}{REQUIRED: bare name. a single 'lm' object'}

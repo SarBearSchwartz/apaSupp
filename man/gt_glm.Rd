@@ -4,7 +4,7 @@
 \alias{gt_glm}
 \title{APA: gtsummary for a single linear model}
 \usage{
-gt_glm(x, narrow = FALSE, fit = NA, d = 2)
+gt_glm(x, narrow = FALSE, fit = NA, d = 2, ...)
 }
 \arguments{
 \item{x}{REQUIRED: bare name. a single 'glm' object'}

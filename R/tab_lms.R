@@ -31,7 +31,8 @@ tab_lms <- function(x,
                     general_note = NULL,
                     fit = c("r.squared",
                             "adj.r.squared"),
-                    d = 2){
+                    d = 2,
+                    ...){
 
 
   n_param <- x %>%
@@ -50,10 +51,11 @@ tab_lms <- function(x,
   }
 
   get <- x %>%
-    purrr::map(gt_lm,
+    purrr::map(apaSupp::gt_lm,
                narrow = narrow,
                fit = fit,
-               d = d) %>%
+               d = d,
+               ...) %>%
     gtsummary::tbl_merge(tab_spanner = mod_names) %>%
     gtsummary::modify_table_body(~ .x %>%
                                    dplyr::arrange(row_type == "glance_statistic"))

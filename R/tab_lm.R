@@ -39,7 +39,8 @@ tab_lm <- function(x,
                    d = 2,
                    std = TRUE,
                    vif = FALSE,
-                   eta2 = TRUE){
+                   eta2 = TRUE,
+                   ...){
 
   n_param <- x %>%
     coef() %>%
@@ -147,7 +148,8 @@ tab_lm <- function(x,
     gtsummary::tbl_regression(intercept = TRUE,
                               conf.int = FALSE,
                               pvalue_fun = apaSupp::p_num,
-                              tidy_fun = broom.helpers::tidy_with_broom_or_parameters) %>%
+                              tidy_fun = broom.helpers::tidy_with_broom_or_parameters,
+                              ...) %>%
     gtsummary::add_glance_table(include = fit) %>%
     gtsummary::modify_column_unhide(column = std.error) %>%
     gtsummary::remove_footnote_header() %>%

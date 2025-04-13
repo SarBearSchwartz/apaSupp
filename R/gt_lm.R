@@ -26,7 +26,8 @@ gt_lm <- function(x,
                   narrow = FALSE,
                   fit = c("r.squared",
                           "adj.r.squared"),
-                  d = 2){
+                  d = 2,
+                  ...){
 
   if (narrow == FALSE){
     p_fun <- function(x, d) apaSupp::p_num(x, d = d + 1)
@@ -38,7 +39,8 @@ gt_lm <- function(x,
     gtsummary::tbl_regression(intercept = TRUE,
                               conf.int = FALSE,
                               pvalue_fun = ~ p_fun(.x, d = d),
-                              tidy_fun = broom.helpers::tidy_with_broom_or_parameters)  %>%
+                              tidy_fun = broom.helpers::tidy_with_broom_or_parameters,
+                              ...)  %>%
     gtsummary::add_glance_table(include = fit) %>%
     gtsummary::modify_column_unhide(column = std.error) %>%
     gtsummary::remove_footnote_header() %>%

@@ -27,7 +27,8 @@
 gt_glm <- function(x,
                    narrow = FALSE,
                    fit = NA,
-                   d = 2){
+                   d = 2,
+                   ...){
 
   if (family(x)$link == "logit"){
     back_trans <- "exp"
@@ -47,7 +48,8 @@ gt_glm <- function(x,
                               conf.int = TRUE,
                               exponentiate = TRUE,
                               pvalue_fun = ~ p_fun(.x, d = d),
-                              tidy_fun = broom.helpers::tidy_with_broom_or_parameters)
+                              tidy_fun = broom.helpers::tidy_with_broom_or_parameters,
+                              ...)
 
 
     if (sum(!is.na(fit)) > 0){

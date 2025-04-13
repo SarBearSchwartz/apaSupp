@@ -12,7 +12,8 @@ tab_lms(
   p_note = "apa",
   general_note = NULL,
   fit = c("r.squared", "adj.r.squared"),
-  d = 2
+  d = 2,
+  ...
 )
 }
 \arguments{

@@ -14,7 +14,8 @@ tab_lm(
   d = 2,
   std = TRUE,
   vif = FALSE,
-  eta2 = TRUE
+  eta2 = TRUE,
+  ...
 )
 }
 \arguments{

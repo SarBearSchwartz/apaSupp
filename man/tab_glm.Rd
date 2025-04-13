@@ -14,7 +14,8 @@ tab_glm(
   pr2 = "tjur",
   d = 2,
   vif = TRUE,
-  lrt = TRUE
+  lrt = TRUE,
+  ...
 )
 }
 \arguments{

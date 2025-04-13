@@ -13,7 +13,8 @@ tab_glms(
   general_note = NA,
   fit = c("AIC", "BIC"),
   pr2 = "both",
-  d = 2
+  d = 2,
+  ...
 )
 }
 \arguments{
@@ -51,9 +52,9 @@ fit_glm1 <- glm(vs ~ wt, data = mtcars, family = "binomial")
 fit_glm2 <- glm(vs ~ wt + mpg + cyl, data = mtcars, family = "binomial")
 
 apaSupp::tab_glms(list(fit_glm1, fit_glm2))
-apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2))
+apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), pr2 = "both")
 apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), narrow = TRUE)
-apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), narrow = TRUE, fit = c("AIC", "BIC"))
+apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), narrow = TRUE, fit = "RMSE")
 apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), narrow = TRUE, fit = NA)
 apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), narrow = TRUE, fit = NA, pr2 = "tjur")
 apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), narrow = TRUE, fit = "AIC", pr2 = "tjur")
