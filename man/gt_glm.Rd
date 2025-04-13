@@ -4,7 +4,7 @@
 \alias{gt_glm}
 \title{APA: gtsummary for a single linear model}
 \usage{
-gt_glm(x, narrow = FALSE, fit = NA, d = 2, ...)
+gt_glm(x, narrow = FALSE, fit = NA, d = 2, show_single_row = NULL)
 }
 \arguments{
 \item{x}{REQUIRED: bare name. a single 'glm' object'}
@@ -14,6 +14,8 @@ gt_glm(x, narrow = FALSE, fit = NA, d = 2, ...)
 \item{fit}{Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"}
 
 \item{d}{Optional: number. digits after the decimal, default = 2}
+
+\item{show_single_row}{(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.}
 }
 \value{
 a gtsummary object

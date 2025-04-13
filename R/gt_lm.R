@@ -4,6 +4,7 @@
 #' @param narrow  Optional. Logical. Default = FALSE, but TRUE will exclude p-vlaues from the table to make it narrower
 #' @param fit Optional: Character vector. Default  = c("r.squared", "adj.r.squared").  May include quoted names of fit statistics listed from broom::glimpse(x)
 #' @param d Optional: number. digits after the decimal, default = 2
+#' @param show_single_row	(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.
 #'
 #' @return a gtsummary object
 #' @import gtsummary
@@ -27,7 +28,7 @@ gt_lm <- function(x,
                   fit = c("r.squared",
                           "adj.r.squared"),
                   d = 2,
-                  ...){
+                  show_single_row = NULL){
 
   if (narrow == FALSE){
     p_fun <- function(x, d) apaSupp::p_num(x, d = d + 1)
@@ -40,7 +41,7 @@ gt_lm <- function(x,
                               conf.int = FALSE,
                               pvalue_fun = ~ p_fun(.x, d = d),
                               tidy_fun = broom.helpers::tidy_with_broom_or_parameters,
-                              ...)  %>%
+                              show_single_row = show_single_row)  %>%
     gtsummary::add_glance_table(include = fit) %>%
     gtsummary::modify_column_unhide(column = std.error) %>%
     gtsummary::remove_footnote_header() %>%

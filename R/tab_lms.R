@@ -8,6 +8,7 @@
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param fit Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"
 #' @param d Optional: Number. Digits after the decimal place
+#' @param show_single_row	(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.
 #'
 #' @returns a flextable object
 #' @import gtsummary
@@ -32,7 +33,7 @@ tab_lms <- function(x,
                     fit = c("r.squared",
                             "adj.r.squared"),
                     d = 2,
-                    ...){
+                    show_single_row = NULL){
 
 
   n_param <- x %>%
@@ -55,7 +56,7 @@ tab_lms <- function(x,
                narrow = narrow,
                fit = fit,
                d = d,
-               ...) %>%
+               show_single_row = show_single_row) %>%
     gtsummary::tbl_merge(tab_spanner = mod_names) %>%
     gtsummary::modify_table_body(~ .x %>%
                                    dplyr::arrange(row_type == "glance_statistic"))

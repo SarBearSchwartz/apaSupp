@@ -8,7 +8,8 @@
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param fit Optional: vector. quoted names of fit metrics from `performance::performance()` for glm (max of 4)
 #' @param pr2 Optional: character.  (default = "both") Include pseudo R-squared: "tjur", "mcfadden", "both", or "none"
-#' @param d Optional: Number. Digits after the decimal place
+#' @param d Optional: number. digits after the decimal, default = 2
+#' @param show_single_row	(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.
 #'
 #' @returns a flextable object
 #' @import gtsummary
@@ -52,7 +53,7 @@ tab_glms <- function(x,
                      fit = c("AIC", "BIC"),
                      pr2 = "both",
                      d = 2,
-                     ...){
+                     show_single_row = NULL){
 
   ns <- sapply(x,function(y) length(y$residuals))
 
@@ -109,7 +110,7 @@ tab_glms <- function(x,
     purrr::map(apaSupp::gt_glm,
                narrow = narrow,
                d = d,
-               ...) %>%
+               show_single_row = show_single_row) %>%
     gtsummary::tbl_merge(tab_spanner = mod_names) %>%
     gtsummary::as_flex_table()
 

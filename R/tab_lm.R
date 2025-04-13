@@ -10,6 +10,7 @@
 #' @param std Optional: Logical. (default = TRUE) Include standardized coefficients?
 #' @param vif Optional: Logical. (default = FALSE) Include variance inflation factors?
 #' @param eta2 Optional: logical. (default = TRUE) Include eta-squared (semi-partial correlations) and partial eta-squared (partial correlations)
+#' @param show_single_row	(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.
 #'
 #' @returns a flextable object
 #' @import gtsummary
@@ -40,7 +41,7 @@ tab_lm <- function(x,
                    std = TRUE,
                    vif = FALSE,
                    eta2 = TRUE,
-                   ...){
+                   show_single_row = NULL){
 
   n_param <- x %>%
     coef() %>%
@@ -149,7 +150,7 @@ tab_lm <- function(x,
                               conf.int = FALSE,
                               pvalue_fun = apaSupp::p_num,
                               tidy_fun = broom.helpers::tidy_with_broom_or_parameters,
-                              ...) %>%
+                              show_single_row = show_single_row) %>%
     gtsummary::add_glance_table(include = fit) %>%
     gtsummary::modify_column_unhide(column = std.error) %>%
     gtsummary::remove_footnote_header() %>%

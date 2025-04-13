@@ -4,7 +4,13 @@
 \alias{gt_lm}
 \title{APA: gtsummary for a single linear model}
 \usage{
-gt_lm(x, narrow = FALSE, fit = c("r.squared", "adj.r.squared"), d = 2, ...)
+gt_lm(
+  x,
+  narrow = FALSE,
+  fit = c("r.squared", "adj.r.squared"),
+  d = 2,
+  show_single_row = NULL
+)
 }
 \arguments{
 \item{x}{REQUIRED: bare name. a single 'lm' object'}
@@ -14,6 +20,8 @@ gt_lm(x, narrow = FALSE, fit = c("r.squared", "adj.r.squared"), d = 2, ...)
 \item{fit}{Optional: Character vector. Default  = c("r.squared", "adj.r.squared").  May include quoted names of fit statistics listed from broom::glimpse(x)}
 
 \item{d}{Optional: number. digits after the decimal, default = 2}
+
+\item{show_single_row}{(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.}
 }
 \value{
 a gtsummary object

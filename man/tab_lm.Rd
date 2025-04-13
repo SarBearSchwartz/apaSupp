@@ -15,7 +15,7 @@ tab_lm(
   std = TRUE,
   vif = FALSE,
   eta2 = TRUE,
-  ...
+  show_single_row = NULL
 )
 }
 \arguments{
@@ -38,6 +38,8 @@ tab_lm(
 \item{vif}{Optional: Logical. (default = FALSE) Include variance inflation factors?}
 
 \item{eta2}{Optional: logical. (default = TRUE) Include eta-squared (semi-partial correlations) and partial eta-squared (partial correlations)}
+
+\item{show_single_row}{(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.}
 }
 \value{
 a flextable object

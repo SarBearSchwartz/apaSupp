@@ -13,7 +13,7 @@ tab_lms(
   general_note = NULL,
   fit = c("r.squared", "adj.r.squared"),
   d = 2,
-  ...
+  show_single_row = NULL
 )
 }
 \arguments{
@@ -32,6 +32,8 @@ tab_lms(
 \item{fit}{Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"}
 
 \item{d}{Optional: Number. Digits after the decimal place}
+
+\item{show_single_row}{(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.}
 }
 \value{
 a flextable object

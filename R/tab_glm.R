@@ -11,6 +11,8 @@
 #' @param d Optional: Number. Digits after the decimal place
 #' @param vif Optional: Logical. (default = TRUE) Include variance inflation factors
 #' @param lrt Optional: Logical. (default = TRUE) Include LRT for single-predictor deletion
+#' @param d Optional: number. digits after the decimal, default = 2
+#' @param show_single_row	(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.
 #'
 #' @returns a flextable object
 #' @import gtsummary
@@ -55,7 +57,7 @@ tab_glm <- function(x,
                     d = 2,
                     vif = TRUE,
                     lrt = TRUE,
-                    ...){
+                    show_single_row = NULL){
 
   n_obs   <- length(x$resid)
   n_param <- length(coef(x))
@@ -109,7 +111,7 @@ tab_glm <- function(x,
                                 conf.int = TRUE,
                                 exponentiate = TRUE,
                                 tidy_fun = broom.helpers::tidy_with_broom_or_parameters,
-                                ...) %>%
+                                show_single_row = show_single_row) %>%
       gtsummary::modify_column_hide(column = std.error) %>%
       gtsummary::modify_column_hide(column = p.value) %>%
       gtsummary::modify_fmt_fun(estimate ~
@@ -145,7 +147,8 @@ tab_glm <- function(x,
                               conf.int = FALSE,
                               exponentiate = FALSE,
                               pvalue_fun = function(x) apaSupp::p_num(x, d = d + 1),
-                              tidy_fun = broom.helpers::tidy_with_broom_or_parameters) %>%
+                              tidy_fun = broom.helpers::tidy_with_broom_or_parameters,
+                              show_single_row = show_single_row) %>%
     gtsummary::modify_column_unhide(column = std.error) %>%
     gtsummary::remove_abbreviation("OR = Odds Ratio") %>%
     gtsummary::remove_abbreviation("SE = Standard Error")  %>%
