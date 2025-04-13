@@ -11,7 +11,7 @@ gt_lm(x, narrow = FALSE, fit = c("r.squared", "adj.r.squared"), d = 2)
 
 \item{narrow}{Optional. Logical. Default = FALSE, but TRUE will exclude p-vlaues from the table to make it narrower}
 
-\item{fit}{Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"}
+\item{fit}{Optional: Character vector. Default  = c("r.squared", "adj.r.squared").  May include quoted names of fit statistics listed from broom::glimpse(x)}
 
 \item{d}{Optional: number. digits after the decimal, default = 2}
 }

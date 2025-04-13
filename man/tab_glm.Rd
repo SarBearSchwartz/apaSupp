@@ -11,7 +11,7 @@ tab_glm(
   p_note = "apa",
   general_note = NA,
   fit = NULL,
-  pr2 = TRUE,
+  pr2 = "tjur",
   d = 2,
   vif = TRUE,
   lrt = TRUE
@@ -30,7 +30,7 @@ tab_glm(
 
 \item{fit}{Optional: Text. fit statistics: (default = NA) "nobs", null.deviance", "df.null", "deviance", "df.residual", "logLik", "AIC", "BIC"}
 
-\item{pr2}{Optional: character vector.  (default = TRUE) include Tjur's pseudo R-squared}
+\item{pr2}{Optional: character.  (default = "both") Include pseudo R-squared: "tjur", "mcfadden", "both", or "none"}
 
 \item{d}{Optional: Number. Digits after the decimal place}
 
@@ -57,9 +57,19 @@ fit_glm2 <- glm(vs ~ wt + mpg + am, data = mtcars, family = "binomial")
 
 apaSupp::tab_glm(fit_glm1)
 apaSupp::tab_glm(fit_glm2)
+
 apaSupp::tab_glm(fit_glm2, vif = FALSE)
 apaSupp::tab_glm(fit_glm2, lrt = FALSE)
 apaSupp::tab_glm(fit_glm2, vif = FALSE, lrt = FALSE)
-apaSupp::tab_glm(fit_glm2, vif = FALSE, lrt = FALSE, pr2 = FALSE)
+
+apaSupp::tab_glm(fit_glm2, pr2 = "both")
+apaSupp::tab_glm(fit_glm2, pr2 = "tjur")
+apaSupp::tab_glm(fit_glm2, pr2 = "mcfadden")
+apaSupp::tab_glm(fit_glm2, pr2 = "none")
+
+
+apaSupp::tab_glm(fit_glm2, fit = c("AIC", "BIC"))
+apaSupp::tab_glm(fit_glm2, pr2 = "both", fit = c("AIC", "BIC"))
+
 
 }

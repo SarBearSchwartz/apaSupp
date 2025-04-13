@@ -10,8 +10,9 @@ tab_glms(
   caption = "Compare Regression Models",
   narrow = FALSE,
   p_note = "apa",
-  general_note = NULL,
-  fit = NA,
+  general_note = NA,
+  fit = c("AIC", "BIC"),
+  pr2 = "both",
   d = 2
 )
 }
@@ -28,7 +29,9 @@ tab_glms(
 
 \item{general_note}{Optional: Text. General note for footer of APA table}
 
-\item{fit}{Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"}
+\item{fit}{Optional: vector. quoted names of fit metrics from \code{performance::performance()} for glm (max of 4)}
+
+\item{pr2}{Optional: character.  (default = "both") Include pseudo R-squared: "tjur", "mcfadden", "both", or "none"}
 
 \item{d}{Optional: Number. Digits after the decimal place}
 }
@@ -51,6 +54,16 @@ apaSupp::tab_glms(list(fit_glm1, fit_glm2))
 apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2))
 apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), narrow = TRUE)
 apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), narrow = TRUE, fit = c("AIC", "BIC"))
+apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), narrow = TRUE, fit = NA)
+apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), narrow = TRUE, fit = NA, pr2 = "tjur")
+apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), narrow = TRUE, fit = "AIC", pr2 = "tjur")
+
+
+fit_glm3 <- glm(vs ~ wt + mpg + cyl, data = mtcars[1:30,], family = "binomial")
+
+apaSupp::tab_glms(list(fit_glm1, fit_glm2, fit_glm3), narrow = TRUE)
+apaSupp::tab_glms(list(fit_glm1, fit_glm2, fit_glm3), narrow = TRUE, fit = "AIC", pr2 = "tjur")
+
 
 
 }

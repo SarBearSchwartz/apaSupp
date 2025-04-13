@@ -7,7 +7,7 @@
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If p_note = "apa" then the standard "* p < .05. ** p < .01. *** p < .001." will be used
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param fit Optional: Text. fit statistics: (default = NA) "nobs", null.deviance", "df.null", "deviance", "df.residual", "logLik", "AIC", "BIC"
-#' @param pr2 Optional: character vector.  (default = TRUE) include Tjur's pseudo R-squared
+#' @param pr2 Optional: character.  (default = "both") Include pseudo R-squared: "tjur", "mcfadden", "both", or "none"
 #' @param d Optional: Number. Digits after the decimal place
 #' @param vif Optional: Logical. (default = TRUE) Include variance inflation factors
 #' @param lrt Optional: Logical. (default = TRUE) Include LRT for single-predictor deletion
@@ -30,10 +30,20 @@
 #'
 #' apaSupp::tab_glm(fit_glm1)
 #' apaSupp::tab_glm(fit_glm2)
+#'
 #' apaSupp::tab_glm(fit_glm2, vif = FALSE)
 #' apaSupp::tab_glm(fit_glm2, lrt = FALSE)
 #' apaSupp::tab_glm(fit_glm2, vif = FALSE, lrt = FALSE)
-#' apaSupp::tab_glm(fit_glm2, vif = FALSE, lrt = FALSE, pr2 = FALSE)
+#'
+#' apaSupp::tab_glm(fit_glm2, pr2 = "both")
+#' apaSupp::tab_glm(fit_glm2, pr2 = "tjur")
+#' apaSupp::tab_glm(fit_glm2, pr2 = "mcfadden")
+#' apaSupp::tab_glm(fit_glm2, pr2 = "none")
+#'
+#'
+#' apaSupp::tab_glm(fit_glm2, fit = c("AIC", "BIC"))
+#' apaSupp::tab_glm(fit_glm2, pr2 = "both", fit = c("AIC", "BIC"))
+#'
 #'
 tab_glm <- function(x,
                     var_labels = NULL,
@@ -41,14 +51,17 @@ tab_glm <- function(x,
                     p_note = "apa",
                     general_note = NA,
                     fit = NULL,
-                    pr2 = TRUE,
+                    pr2 = "tjur",
                     d = 2,
                     vif = TRUE,
                     lrt = TRUE){
 
   n_obs   <- length(x$resid)
   n_param <- length(coef(x))
-  n_fit   <- sum(!is.na(fit), pr2)
+  n_fit   <- sum(!is.na(fit),
+                 3*(pr2 == "both"),
+                 1*(pr2 == "tjur"),
+                 1*(pr2 == "mcfadden"))
 
   if (n_param <= 2) {
     vif <- FALSE
@@ -63,7 +76,6 @@ tab_glm <- function(x,
   }
 
 
-
   main_note <- flextable::as_paragraph(
     flextable::as_i("Note. "),
     flextable::as_chunk(glue::glue("N = {n_obs}. ")),
@@ -73,6 +85,9 @@ tab_glm <- function(x,
     flextable::as_chunk(ifelse(lrt == TRUE,
                                "Significance denotes Wald t-tests for individual parameter estimates, as well as Likelihood Ratio Tests (LRT) for single-predictor deletion. ",
                                "Significance denotes Wald t-tests for parameter estimates. ")),
+    flextable::as_chunk(case_when(pr2 == "both" ~ "Coefficient of deterination included for both Tjur and McFadden's psuedo R-squared",
+                                  pr2 == "tjur" ~ "Coefficient of deterination displays Tjur's psuedo R-squared",
+                                  pr2 == "mcfadden" ~ "Coefficient of deterination displays McFadden's psuedo R-squared",)),
     flextable::as_chunk(general_note)
   )
 
@@ -206,21 +221,58 @@ tab_glm <- function(x,
   n_col <- flextable::ncol_keys(table)
   n_rows <- flextable::nrow_part(table, part = "body")
 
-  if (pr2 == TRUE){
 
-    r2 <- performance::r2(x) %>%
-      unlist(use.names = FALSE) %>%
-      p_num(d = d + 1, stars = FALSE)
+  r2_tjur <- performance::r2_tjur(x) %>%
+    unlist(use.names = FALSE) %>%
+    apaSupp::p_num(d = d + 1, stars = FALSE)
 
+  r2_mcfadden <- performance::r2_mcfadden(x) %>%
+    unlist(use.names = FALSE) %>%
+    apaSupp::p_num(d = d + 1, stars = FALSE)
+
+
+  if (pr2 == "both"){
     table <- table %>%
       flextable::add_body_row(top = FALSE,
                               values = NA) %>%
       flextable::compose(part = "body", i = (n_rows + 1), j = 1,
-                         value = flextable::as_paragraph("Tjur's R",
+                         value = flextable::as_paragraph(flextable::as_i("pseudo-R"),
+                                                         flextable::as_chunk("\u00B2"))) %>%
+      flextable::add_body_row(top = FALSE,
+                              values = NA) %>%
+      flextable::compose(part = "body", i = (n_rows + 2), j = 2,
+                         value = flextable::as_paragraph("Tjur")) %>%
+      flextable::compose(part = "body", i = (n_rows + 2), j = 3,
+                         value = flextable::as_paragraph(r2_tjur)) %>%
+      flextable::add_body_row(top = FALSE,
+                              values = NA) %>%
+      flextable::compose(part = "body", i = (n_rows + 3), j = 2,
+                         value = flextable::as_paragraph("McFadden")) %>%
+      flextable::compose(part = "body", i = (n_rows + 3), j = 3,
+                         value = flextable::as_paragraph(r2_mcfadden[1]))
+
+  } else if (pr2 == "tjur"){
+    table <- table %>%
+      flextable::add_body_row(top = FALSE,
+                              values = NA) %>%
+      flextable::compose(part = "body", i = (n_rows + 1), j = 1,
+                         value = flextable::as_paragraph(flextable::as_i("pseudo-R"),
                                                          flextable::as_chunk("\u00B2"))) %>%
       flextable::compose(part = "body", i = (n_rows + 1), j = 2,
-                         value = flextable::as_paragraph(r2))
+                         value = flextable::as_paragraph(r2_tjur))
+
+  } else if (pr2 == "mcfadden"){
+    table <- table %>%
+      flextable::add_body_row(top = FALSE,
+                              values = NA) %>%
+      flextable::compose(part = "body", i = (n_rows + 1), j = 1,
+                         value = flextable::as_paragraph(flextable::as_i("pseudo-R"),
+                                                         flextable::as_chunk("\u00B2"))) %>%
+      flextable::compose(part = "body", i = (n_rows + 1), j = 2,
+                         value = flextable::as_paragraph(r2_mcfadden[1]))
+
   }
+
 
   n_col <- flextable::ncol_keys(table)
   n_rows <- flextable::nrow_part(table, part = "body")
@@ -230,7 +282,7 @@ tab_glm <- function(x,
     flextable::add_header_row(values = c(NA, abr[1], NA, abr[2], rep(NA, n_col - 6)),
                               colwidths = c(1, 2, 1, 2, rep(1, n_col - 6))) %>%
     apaSupp::theme_apa(caption = caption,
-                       no_notes = FALSE,
+                       no_notes = TRUE,
                        d = d) %>%
     flextable::italic(part = "header", i = 2, j = 4:5) %>%
     flextable::align(part = "all", j = c(2, 5), align = "right") %>%

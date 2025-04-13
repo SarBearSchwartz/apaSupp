@@ -2,6 +2,7 @@
 
 export(apa2)
 export(apa3)
+export(apan)
 export(bstd_to_tibble)
 export(eta2_to_tibble)
 export(gt_glm)
