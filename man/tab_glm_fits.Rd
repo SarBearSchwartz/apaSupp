@@ -8,8 +8,7 @@ tab_glm_fits(
   x,
   caption = "Comparison of Generalized Linear Model Performane Metrics",
   general_note = NA,
-  d = 2,
-  max_width_in = 6
+  d = 2
 )
 }
 \arguments{
@@ -20,8 +19,6 @@ tab_glm_fits(
 \item{general_note}{Optional: Text. General note for footer of APA table}
 
 \item{d}{Optional: Number. Digits after the decimal place}
-
-\item{max_width_in}{= Optional: Number.  Inches wide the table can be}
 }
 \value{
 a flextable object

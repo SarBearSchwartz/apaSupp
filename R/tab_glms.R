@@ -3,14 +3,13 @@
 #' @param x REQUIRED: List. at least 2 glm models, bare names
 #' @param var_labels Optional: Vector. Text replacements for model terms, "old" = "new"
 #' @param caption Optional: Text. Caption for the table
-#' @param narrow  Optional. Logical. Default = FALSE, but TRUE will exclude p-vlaues from the table to make it narrower
-#' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If p_note = "apa" then the standard "* p < .05. ** p < .01. *** p < .001." will be used
 #' @param general_note Optional: Text. General note for footer of APA table
+#' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If p_note = "apa" then the standard "* p < .05. ** p < .01. *** p < .001." will be used
+#' @param d Optional: Number. Digits after the decimal place
+#' @param narrow  Optional. Logical. Default = FALSE, but TRUE will exclude p-vlaues from the table to make it narrower
 #' @param fit Optional: vector. quoted names of fit metrics from `performance::performance()` for glm (max of 4)
 #' @param pr2 Optional: character.  (default = "both") Include pseudo R-squared: "tjur", "mcfadden", "both", or "none"
 #' @param show_single_row	(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.
-#' @param d Optional: Number. Digits after the decimal place
-#' @param max_width_in = Optional: Number.  Inches wide the table can be
 #'
 #'
 #' @returns a flextable object
@@ -49,17 +48,16 @@
 tab_glms <- function(x,
                      var_labels      = NULL,
                      caption         = "Compare Generalized Regression Models",
-                     narrow          = FALSE,
                      general_note    = NA,
                      p_note          = "apa123",
                      no_notes        = FALSE,
                      d               = 2,
+                     narrow          = FALSE,
                      fit             = c("AIC", "BIC"),
                      pr2             = "both",
                      show_single_row = NULL,
                      breaks          = c(.05, .01, .001),
-                     symbols         = c("*", "**", "***"),
-                     max_width_in    = 6){
+                     symbols         = c("*", "**", "***")){
 
   ns <- sapply(x,function(y) length(y$residuals))
 
@@ -228,9 +226,9 @@ tab_glms <- function(x,
     apaSupp::theme_apa(caption      = caption,
                        main_note    = main_note,
                        p_note       = p_note,
+                       d            = d,
                        breaks       = breaks,
-                       symbols      = symbols,
-                       d            = d) %>%
+                       symbols      = symbols) %>%
     flextable::bold(  part = "header", i = 1) %>%
     flextable::italic(part = "header", i = 2) %>%
     flextable::align( part = "header", i = 1, align = "center")
@@ -268,7 +266,6 @@ tab_glms <- function(x,
     flextable::align(part = "header", i = 1, align = "center") %>%
     flextable::align(part = "footer",        align = "left") %>%
     flextable::hline(part = "header", i = 1, border = flextable::fp_border_default(width = 0)) %>%
-    flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
     flextable::autofit()
 
   return(table)

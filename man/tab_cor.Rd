@@ -7,30 +7,27 @@
 tab_cor(
   x,
   caption = "Pairwise Correlations",
-  p_note = "apa123",
   general_note = NA,
+  p_note = "apa123",
   d = 2,
-  max_width_in = 6,
   breaks = c(0.05, 0.01, 0.001),
   symbols = c("*", "**", "***")
 )
 }
 \arguments{
-\item{caption}{REQUIRED: Text. Caption for the table}
+\item{x}{REQUIRED: A dataframe with selected numeric variables}
 
-\item{p_note}{Optional: Text. (default = NULL) Significance note for APA table, If \code{p_note = "apa"} then the standard \code{"* p < .05. ** p < .01. *** p < .001."} will be used}
+\item{caption}{REQUIRED: Text. Caption for the table}
 
 \item{general_note}{Optional: Text. General note for footer of APA table}
 
-\item{d}{Optional: Number. Digits after the decimal place}
+\item{p_note}{Optional: Text. (default = NULL) Significance note for APA table, If \code{p_note = "apa"} then the standard \code{"* p < .05. ** p < .01. *** p < .001."} will be used}
 
-\item{max_width_in}{= Optional: Number.  Inches wide the table can be}
+\item{d}{Optional: Number. Digits after the decimal place}
 
 \item{breaks}{statistical significance break points}
 
 \item{symbols}{symbols to assign to each break point}
-
-\item{xx}{REQUIRED: A dataframe with selected numeric variables}
 }
 \value{
 table

@@ -24,16 +24,13 @@
 #' apaSupp::gt_lm(m, narrow = TRUE)
 #'
 gt_lm <- function(x,
-                  narrow = FALSE,
-                  fit = c("r.squared",
-                          "adj.r.squared"),
-                  d = 2,
+                  narrow          = FALSE,
+                  fit             = c("r.squared", "adj.r.squared"),
+                  d               = 2,
                   show_single_row = NULL){
 
-  if (narrow == FALSE){
-    p_fun <- function(x, d) apaSupp::p_num(x, d = d + 1)
-  } else {
-    p_fun <- function(x, d) apaSupp::p_star(x)
+  if (narrow == FALSE){ p_fun <- function(x, d) apaSupp::p_num(x, d = d + 1)
+  } else {              p_fun <- function(x, d) apaSupp::p_star(x)
   }
 
   table <- x %>%
@@ -46,25 +43,24 @@ gt_lm <- function(x,
     gtsummary::modify_column_unhide(column = std.error) %>%
     gtsummary::remove_footnote_header() %>%
     gtsummary::remove_abbreviation("SE = Standard Error")  %>%
-    gtsummary::modify_fmt_fun(estimate ~
-                                gtsummary::label_style_number(digits = d)) %>%
-    gtsummary::modify_fmt_fun(std.error ~
-                                gtsummary::label_style_number(digits = d,
-                                                              prefix = "(",
-                                                              suffix = ")"))
+    gtsummary::modify_fmt_fun(estimate ~  gtsummary::label_style_number(digits = d)) %>%
+    gtsummary::modify_fmt_fun(std.error ~ gtsummary::label_style_number(digits = d, prefix = "(", suffix = ")")) %>%
+    gtsummary::modify_fmt_fun(estimate  ~ apaSupp::p_num(d = d + 1, stars = FALSE), rows   =  stringr::str_detect(variable, "r.")) %>%
+    gtsummary::modify_fmt_fun(estimate  ~ apaSupp::p_num(d = d - 1, stars = FALSE), rows   = !stringr::str_detect(variable, "r."))
+
+
   if (narrow == TRUE){
     table <- table %>%
-      gtsummary::modify_column_merge(pattern = "{std.error} {p.value}",
-                                     row = !is.na(std.error)) %>%
-      gtsummary::modify_header(label = "Variable",
-                               estimate = "b",
+      gtsummary::modify_column_merge(pattern = "{std.error} {p.value}", row = !is.na(std.error)) %>%
+      gtsummary::modify_header(label     = "Variable",
+                               estimate  = "b",
                                std.error = "(SE)")
   } else {
     table <- table %>%
-      gtsummary::modify_header(label = "Variable",
-                               estimate = "b",
+      gtsummary::modify_header(label     = "Variable",
+                               estimate  = "b",
                                std.error = "(SE)",
-                               p.value = "p")
+                               p.value   = "p")
   }
 
   return(table)

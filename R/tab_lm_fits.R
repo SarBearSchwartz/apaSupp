@@ -9,7 +9,6 @@
 #' @param caption Optional: Text. Caption for the table
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param d Optional: Number. Digits after the decimal place
-#' @param max_width_in = Optional: Number.  Inches wide the table can be
 #'
 #' @returns a flextable object
 #' @import gtsummary
@@ -30,8 +29,7 @@
 tab_lm_fits <- function(x,
                         caption      = "Comparison of Linear Model Performane Metrics",
                         general_note = NA,
-                        d            = 2,
-                        max_width_in = 6){
+                        d            = 2){
 
   ns <- sapply(x,function(y)length (y$residuals))
   nparams <- sapply(x,function(y) length(y$coefficients))
@@ -70,7 +68,6 @@ tab_lm_fits <- function(x,
     flextable::align(  part = "all",    j = c("N", "mult","AIC"), align = "right") %>%
     flextable::align(  part = "all",    j = c("k", "adj", "BIC"), align = "left") %>%
     flextable::align(  part = "header", i = 1,                    align = "center") %>%
-    flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
     flextable::autofit()
 
   return(table)

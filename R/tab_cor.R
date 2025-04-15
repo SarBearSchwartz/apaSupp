@@ -1,11 +1,10 @@
 #' Tabulate Pairwise Pearson's Correlation
 #'
-#' @param xx REQUIRED: A dataframe with selected numeric variables
+#' @param x REQUIRED: A dataframe with selected numeric variables
 #' @param caption REQUIRED: Text. Caption for the table
-#' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
 #' @param general_note Optional: Text. General note for footer of APA table
+#' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
 #' @param d Optional: Number. Digits after the decimal place
-#' @param max_width_in = Optional: Number.  Inches wide the table can be
 #' @param breaks statistical significance break points
 #' @param symbols symbols to assign to each break point
 #'
@@ -22,13 +21,12 @@
 #' apaSupp::tab_cor(mtcars %>% dplyr::select(cyl, mpg, disp, hp))
 #'
 tab_cor <- function(x,
-                    caption = "Pairwise Correlations",
-                    p_note = "apa123",
+                    caption      = "Pairwise Correlations",
                     general_note = NA,
-                    d = 2,
-                    max_width_in = 6,
-                    breaks = c(.05, .01, .001),
-                    symbols = c("*", "**", "***")){
+                    p_note       = "apa123",
+                    d            = 2,
+                    breaks       = c(.05, .01, .001),
+                    symbols      = c("*", "**", "***")){
 
   main_note <- flextable::as_paragraph(
     flextable::as_i("Note. "),

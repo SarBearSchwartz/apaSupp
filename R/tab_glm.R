@@ -2,21 +2,18 @@
 #'
 #' @param x REQUIRED: a glm models, bare name
 #' @param var_labels Optional: Vector. Text replacements for model terms, "old" = "new"
-#' @param type Optional: default = "logistic", more to come soon...
 #' @param caption Optional: Text. Caption for the table
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa123"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
 #' @param no_notes REQUIRED: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `genderal_note` and `p_note`
-#' @param breaks Optional: numeric vector of p-value cut-points
-#' @param symbols Optional: character vector for symbols denoting p-value cut-points
+#' @param d Optional: Number. Digits after the decimal place
 #' @param fit Optional: Text. fit statistics: (default = NA) "nobs", null.deviance", "df.null", "deviance", "df.residual", "logLik", "AIC", "BIC"
 #' @param pr2 Optional: character.  (default = "both") Include pseudo R-squared: "tjur", "mcfadden", "both", or "none"
-#' @param d Optional: Number. Digits after the decimal place
 #' @param vif Optional: Logical. (default = TRUE) Include variance inflation factors
 #' @param lrt Optional: Logical. (default = TRUE) Include LRT for single-predictor deletion
-#' @param show_single_row	(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.
-#' @param d Optional: Number. Digits after the decimal place
-#' @param max_width_in = Optional: Number.  Inches wide the table can be
+#' @param show_single_row	 a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.
+#' @param breaks Optional: numeric vector of p-value cut-points
+#' @param symbols Optional: character vector for symbols denoting p-value cut-points
 #'
 #' @returns a flextable object
 #' @import gtsummary
@@ -64,8 +61,7 @@ tab_glm <- function(x,
                     lrt             = TRUE,
                     show_single_row = NULL,
                     breaks          = c(.05, .01, .001),
-                    symbols         = c("*", "**", "***"),
-                    max_width_in    = 6){
+                    symbols         = c("*", "**", "***")){
 
   n_obs   <- length(x$resid)
   n_param <- length(coef(x))
@@ -196,8 +192,7 @@ tab_glm <- function(x,
     table <- list(get_tran, get_orig, get_sig, get_vif) %>%
       gtsummary::tbl_merge(tab_spanner = c(abr[1], abr[2], "p", NA)) %>%
       gtsummary::as_flex_table() %>%
-      flextable::compose(part = "all", j = c(4, 7),
-                         value = flextable::as_paragraph(NA))
+      flextable::compose(part = "all", j = c(4, 7), value = flextable::as_paragraph(NA))
 
   } else {
     table <- list(get_tran,  get_orig,  get_sig) %>%
@@ -269,9 +264,9 @@ tab_glm <- function(x,
     apaSupp::theme_apa(caption      = caption,
                        main_note    = main_note,
                        p_note       = p_note,
+                       d            = d,
                        breaks       = breaks,
-                       symbols      = symbols,
-                       d            = d) %>%
+                       symbols      = symbols) %>%
     flextable::italic(part = "header", i = 2, j = 4:5) %>%
     flextable::align( part = "all",           j = c(2, 5), align = "right") %>%
     flextable::align( part = "all",           j = c(3, 6), align = "left") %>%
@@ -280,7 +275,6 @@ tab_glm <- function(x,
     flextable::hline( part = "header", i = 1, border = flextable::fp_border_default(width = 0)) %>%
     flextable::hline( part = "header", i = 1, j = 2:3) %>%
     flextable::hline( part = "header", i = 1, j = 5:6) %>%
-    flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
     flextable::autofit()
 
   return(table)

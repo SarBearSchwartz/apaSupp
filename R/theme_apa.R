@@ -2,13 +2,12 @@
 #' @param x REQUIRED: A pre-created `flextable` object
 #' @param caption REQUIRED: Text. Caption for the table
 #' @param general_note Optional: Text. General note for footer of APA table
+#' @param main_note Optional: alternative to `general_note` already in paragraph form
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa123"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
 #' @param no_notes REQUIRED: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `genderal_note` and `p_note`
+#' @param d Optional: Number. Digits after the decimal place
 #' @param breaks Optional: numeric vector of p-value cut-points
 #' @param symbols Optional: character vector for symbols denoting p-value cut-points
-#' @param d Optional: Number. Digits after the decimal place
-#' @param max_width_in Optional: Number.  Inches wide take can be
-#' @param main_note Optional: alternative to `general_note` already in paragraph form
 #'
 #' @return table
 #' @import tidyverse
@@ -27,13 +26,12 @@
 theme_apa <- function(x,
                       caption      = "Table Caption",
                       general_note = NA,
+                      main_note    = NA,
                       p_note       = NA,
                       no_notes     = FALSE,
-                      breaks       = c(.05, .01, .001),
-                      symbols      = c("*", "**", "***"),
                       d            = 2,
-                      max_width_in = 6,
-                      main_note    = NA){
+                      breaks       = c(.05, .01, .001),
+                      symbols      = c("*", "**", "***")){
 
   border.thick <- list("width" = 2.5, color = "black", style = "solid")
   border.thin  <- list("width" = 1.0, color = "black", style = "solid")
@@ -97,9 +95,7 @@ theme_apa <- function(x,
       flextable::compose(part = "footer", i = f + 1, j = 1, value = sig_note)
   }
 
-  table <- table %>%
-    flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
-    flextable::autofit()
+  table <- table %>% flextable::autofit()
 
   return(table)
 }

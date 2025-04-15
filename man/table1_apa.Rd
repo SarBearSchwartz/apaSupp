@@ -13,7 +13,6 @@ table1_apa(
   na.rm = FALSE,
   general_note = NULL,
   p_note = "apa",
-  max_width_in = 6,
   digits = 2
 )
 }
@@ -33,8 +32,6 @@ table1_apa(
 \item{general_note}{Optional: Text. General note for footer of APA table}
 
 \item{p_note}{Optional: Text. (default = NULL) Significance note for APA table, If \code{p_note = "apa"} then the standard \code{"* p < .05. ** p < .01. *** p < .001."} will be used}
-
-\item{max_width_in}{Optional: Number.  Inches wide table can be}
 
 \item{digits}{Optional: Number. Digits after the decimal place}
 }

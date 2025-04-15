@@ -18,8 +18,7 @@ tab_glm(
   lrt = TRUE,
   show_single_row = NULL,
   breaks = c(0.05, 0.01, 0.001),
-  symbols = c("*", "**", "***"),
-  max_width_in = 6
+  symbols = c("*", "**", "***")
 )
 }
 \arguments{
@@ -45,15 +44,11 @@ tab_glm(
 
 \item{lrt}{Optional: Logical. (default = TRUE) Include LRT for single-predictor deletion}
 
-\item{show_single_row}{(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.}
+\item{show_single_row}{a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.}
 
 \item{breaks}{Optional: numeric vector of p-value cut-points}
 
 \item{symbols}{Optional: character vector for symbols denoting p-value cut-points}
-
-\item{max_width_in}{= Optional: Number.  Inches wide the table can be}
-
-\item{type}{Optional: default = "logistic", more to come soon...}
 }
 \value{
 a flextable object

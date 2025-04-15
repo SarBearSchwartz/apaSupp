@@ -8,16 +8,15 @@ tab_lms(
   x,
   var_labels = NULL,
   caption = "Compare Regression Models",
-  narrow = FALSE,
   general_note = NA,
   p_note = "apa123",
   no_notes = FALSE,
   d = 2,
+  narrow = FALSE,
   fit = c("AIC", "BIC", "r.squared", "adj.r.squared"),
   show_single_row = NULL,
   breaks = c(0.05, 0.01, 0.001),
-  symbols = c("*", "**", "***"),
-  max_width_in = 6
+  symbols = c("*", "**", "***")
 )
 }
 \arguments{
@@ -27,13 +26,13 @@ tab_lms(
 
 \item{caption}{Optional: Text. Caption for the table}
 
-\item{narrow}{Optional. Logical. Default = FALSE, but TRUE will exclude p-vlaues from the table to make it narrower}
-
 \item{general_note}{Optional: Text. General note for footer of APA table}
 
 \item{p_note}{Optional: Text. (default = NULL) Significance note for APA table, If p_note = "apa" then the standard "* p < .05. ** p < .01. *** p < .001." will be used}
 
 \item{d}{Optional: Number. Digits after the decimal place}
+
+\item{narrow}{Optional. Logical. Default = FALSE, but TRUE will exclude p-vlaues from the table to make it narrower}
 
 \item{fit}{Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"}
 
@@ -42,8 +41,6 @@ tab_lms(
 \item{breaks}{Optional: numeric vector of p-value cut-points}
 
 \item{symbols}{Optional: character vector for symbols denoting p-value cut-points}
-
-\item{max_width_in}{= Optional: Number.  Inches wide the table can be}
 }
 \value{
 a flextable object

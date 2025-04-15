@@ -2,11 +2,8 @@
 #'
 #' @param df REQUIRED: Data frame
 #' @param caption REQUIRED: Text. Caption for the table
-#' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
 #' @param general_note Optional: Text. General note for footer of APA table
-#' @param no_notes REQUIRED: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `genderal_note` and `p_note`
 #' @param d Optional: Number. Digits after the decimal place
-#' @param max_width_in = Optional: Number.  Inches wide the table can be
 #'
 #' @return a `flextable` table with caption
 #' @import tidyverse
@@ -32,8 +29,7 @@
 tab_desc <- function(df,
                      caption      = "Summary of Quantiatative Variables",
                      general_note = NA,
-                     d            = 2,
-                     max_width_in = 6){
+                     d            = 2){
 
   n <- nrow(df)
 
@@ -80,12 +76,11 @@ tab_desc <- function(df,
     apaSupp::theme_apa(caption   = caption,
                        main_note = main_note,
                        d         = d) %>%
-    flextable::align(part = "all", j = 1,   align = "left") %>%
-    flextable::align(part = "all", j = 2:9, align = "right") %>%
-    flextable::bold( part = "all", j = c(3, 4, 7)) %>%
+    flextable::align(  part = "all", j = 1,   align = "left") %>%
+    flextable::align(  part = "all", j = 2:9, align = "right") %>%
+    flextable::bold(   part = "all", j = c(3, 4, 7)) %>%
     flextable::italic( part = "header") %>%
     flextable::compose(part = "header", i = 1, j = 1, value = flextable::as_paragraph(NA)) %>%
-    flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
     flextable::autofit()
 
   return(table)

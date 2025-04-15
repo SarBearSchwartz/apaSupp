@@ -3,15 +3,14 @@
 #' @param x REQUIRED: List. at least 2 lm models, bare names
 #' @param var_labels Optional: Vector. Text replacements for model terms, "old" = "new"
 #' @param caption Optional: Text. Caption for the table
-#' @param narrow  Optional. Logical. Default = FALSE, but TRUE will exclude p-vlaues from the table to make it narrower
-#' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If p_note = "apa" then the standard "* p < .05. ** p < .01. *** p < .001." will be used
 #' @param general_note Optional: Text. General note for footer of APA table
+#' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If p_note = "apa" then the standard "* p < .05. ** p < .01. *** p < .001." will be used
+#' @param d Optional: Number. Digits after the decimal place
+#' @param narrow  Optional. Logical. Default = FALSE, but TRUE will exclude p-vlaues from the table to make it narrower
 #' @param fit Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"
 #' @param show_single_row	 If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.
-#' @param d Optional: Number. Digits after the decimal place
 #' @param breaks Optional: numeric vector of p-value cut-points
 #' @param symbols Optional: character vector for symbols denoting p-value cut-points
-#' @param max_width_in = Optional: Number.  Inches wide the table can be
 #'
 #' @returns a flextable object
 #' @import gtsummary
@@ -30,16 +29,15 @@
 tab_lms <- function(x,
                     var_labels      = NULL,
                     caption         = "Compare Regression Models",
-                    narrow          = FALSE,
                     general_note    = NA,
                     p_note          = "apa123",
                     no_notes        = FALSE,
                     d               = 2,
+                    narrow          = FALSE,
                     fit             = c("AIC", "BIC", "r.squared", "adj.r.squared"),
                     show_single_row = NULL,
                     breaks          = c(.05, .01, .001),
-                    symbols         = c("*", "**", "***"),
-                    max_width_in    = 6){
+                    symbols         = c("*", "**", "***")){
 
 
   ns <- sapply(x,function(y) length(y$residuals))
@@ -65,7 +63,6 @@ tab_lms <- function(x,
   )
 
 
-
   if(is.null(names(x))){ mod_names <- paste("Model", 1:n_models)
   } else{                mod_names <- names(x)
   }
@@ -83,22 +80,23 @@ tab_lms <- function(x,
     gtsummary::as_flex_table()
 
   n_rows <- flextable::nrow_part(table, part = "body")
-
-  # rows_fit <- (n_rows - n_fit + 1):(n_rows)
-
+  rows_fit <- (n_rows - n_fit + 1):(n_rows)
 
   table <- table %>%
     apaSupp::theme_apa(caption      = caption,
                        main_note    = main_note,
                        p_note       = p_note,
+                       d            = d,
                        breaks       = breaks,
-                       symbols      = symbols,
-                       d            = d) %>%
-    flextable::hline( part = "body",   i = n_rows - n_fit) %>%
+                       symbols      = symbols) %>%
     flextable::bold(  part = "header", i = 1) %>%
     flextable::italic(part = "header", i = 2) %>%
     flextable::italic(part = "body",   i = rows_fit) %>%
-    flextable::align( part = "header", i = 1, align = "center")
+    flextable::align( part = "header", i = 1, align = "center") %>%
+    flextable::align( part = "header", i = 1, align = "center") %>%
+    flextable::align( part = "footer",        align = "left") %>%
+    flextable::hline( part = "body",   i = n_rows - n_fit) %>%
+    flextable::hline( part = "header", i = 1, border = flextable::fp_border_default(width = 0))
 
   if(!is.null(var_labels)){ table <- table %>% flextable::labelizor(part = "body", labels = var_labels)}
 
@@ -112,13 +110,7 @@ tab_lms <- function(x,
       flextable::align(part = "all", j = seq(from = 3, to = (2*n_models + 1), by = 2), align = "left")
   }
 
-  table <- table %>%
-    flextable::align(part = "header", i = 1, align = "center") %>%
-    flextable::align(part = "footer",        align = "left") %>%
-    flextable::hline(part = "header", i = 1,
-                     border = flextable::fp_border_default(width = 0)) %>%
-    flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
-    flextable::autofit()
+  table <- table %>% flextable::autofit()
 
   return(table)
 

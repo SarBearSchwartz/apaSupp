@@ -8,7 +8,6 @@
 #' @param na.rm Optional: Logical. Defaults to NOT list-wise delete cases
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
-#' @param max_width_in Optional: Number.  Inches wide table can be
 #' @param digits Optional: Number. Digits after the decimal place
 #' @export
 #' @import tidyverse
@@ -29,7 +28,6 @@ table1_apa <- function(df,
                        na.rm = FALSE,
                        general_note = NULL,
                        p_note = "apa",
-                       max_width_in = 6,
                        digits = 2){
 
   split <- rlang::enquo(split)
@@ -130,11 +128,10 @@ table1_apa <- function(df,
     flextable::delete_part(part = "header") %>%
     flextable::add_header_row(values = c("", n, "p", ""),
                               colwidths = rep(1, times = c + 1)) %>%
-    theme_apa(caption = caption,
-              general_note = main_note,
-              p_note = p_note,
-              digits = digits,
-              max_width_in = max_width_in) %>%
+    apa_supp::theme_apa(caption = caption,
+                        general_note = main_note,
+                        p_note = p_note,
+                        digits = digits) %>%
     flextable::align(align = "center", part = "header") %>%
     flextable::align(j = 1, align = "left", part = "body") %>%
     flextable::align(j = -1, align = "right", part = "body") %>%

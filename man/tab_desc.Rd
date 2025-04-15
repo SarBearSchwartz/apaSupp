@@ -8,8 +8,7 @@ tab_desc(
   df,
   caption = "Summary of Quantiatative Variables",
   general_note = NA,
-  d = 2,
-  max_width_in = 6
+  d = 2
 )
 }
 \arguments{
@@ -20,12 +19,6 @@ tab_desc(
 \item{general_note}{Optional: Text. General note for footer of APA table}
 
 \item{d}{Optional: Number. Digits after the decimal place}
-
-\item{max_width_in}{= Optional: Number.  Inches wide the table can be}
-
-\item{p_note}{Optional: Text. (default = NULL) Significance note for APA table, If \code{p_note = "apa"} then the standard \code{"* p < .05. ** p < .01. *** p < .001."} will be used}
-
-\item{no_notes}{REQUIRED: Logical.  Defaults to \code{FALSE}, if \code{TRUE} will ignore \code{genderal_note} and \code{p_note}}
 }
 \value{
 a \code{flextable} table with caption

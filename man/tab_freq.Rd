@@ -9,8 +9,7 @@ tab_freq(
   split = NULL,
   caption = "Summary of Categorical Variables",
   general_note = NA,
-  d = 2,
-  max_width_in = 6
+  d = 2
 )
 }
 \arguments{
@@ -23,8 +22,6 @@ tab_freq(
 \item{general_note}{Optional: Text. General note for footer of APA table}
 
 \item{d}{Optional: Number. Digits after the decimal place}
-
-\item{max_width_in}{= Optional: Number.  Inches wide the table can be}
 }
 \value{
 a \code{flextable} table with caption

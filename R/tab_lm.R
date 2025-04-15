@@ -7,14 +7,13 @@
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa123"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
 #' @param no_notes REQUIRED: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `genderal_note` and `p_note`
 #' @param d Optional: Number. Digits after the decimal place
-#' @param breaks Optional: numeric vector of p-value cut-points
-#' @param symbols Optional: character vector for symbols denoting p-value cut-points
 #' @param fit Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"
 #' @param std Optional: Logical. (default = TRUE) Include standardized coefficients?
 #' @param vif Optional: Logical. (default = FALSE) Include variance inflation factors?
 #' @param eta2 Optional: logical. (default = TRUE) Include eta-squared (semi-partial correlations) and partial eta-squared (partial correlations)
 #' @param show_single_row  Optional: If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.
-#' @param max_width_in = Optional: Number.  Inches wide the table can be
+#' @param breaks Optional: numeric vector of p-value cut-points
+#' @param symbols Optional: character vector for symbols denoting p-value cut-points
 #'
 #' @returns a flextable object
 #' @import gtsummary
@@ -49,8 +48,7 @@ tab_lm <- function(x,
                    eta2            = TRUE,
                    show_single_row = NULL,
                    breaks          = c(.05, .01, .001),
-                   symbols         = c("*", "**", "***"),
-                   max_width_in    = 6){
+                   symbols         = c("*", "**", "***")){
 
 
   n_param <- x %>%
@@ -124,9 +122,9 @@ tab_lm <- function(x,
     apaSupp::theme_apa(caption      = caption,
                        main_note    = main_note,
                        p_note       = p_note,
+                       d            = d,
                        breaks       = breaks,
-                       symbols      = symbols,
-                       d            = d) %>%
+                       symbols      = symbols) %>%
     flextable::align( part = "all",   j = 2, align = "right") %>%
     flextable::align( part = "all",   j = 3, align = "left") %>%
     flextable::align( part = "footer",       align = "left")
@@ -151,9 +149,7 @@ tab_lm <- function(x,
       flextable::compose(part = "header", j = "eta.sq.part", value = flextable::as_paragraph("\u03B7\u209A\U00B2"))
   }
 
-  table <- table %>%
-    flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
-    flextable::autofit()
+  table <- table %>% flextable::autofit()
 
   return(table)
 }
