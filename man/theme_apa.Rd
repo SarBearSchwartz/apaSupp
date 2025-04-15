@@ -5,17 +5,17 @@
 \title{APA Formatted Table of a data.frame}
 \usage{
 theme_apa(
-  tab,
+  x,
   caption = "Replace this Table Caption",
-  general_note = NULL,
+  general_note = NA,
   p_note = NULL,
   no_notes = FALSE,
-  max_width_in = 6,
-  digits = 2
+  d = 2,
+  max_width_in = 6
 )
 }
 \arguments{
-\item{tab}{REQUIRED: A pre-created \code{flextable} object}
+\item{x}{REQUIRED: A pre-created \code{flextable} object}
 
 \item{caption}{REQUIRED: Text. Caption for the table}
 
@@ -25,9 +25,9 @@ theme_apa(
 
 \item{no_notes}{REQUIRED: Logical.  Defaults to \code{FALSE}, if \code{TRUE} will ignore \code{genderal_note} and \code{p_note}}
 
-\item{max_width_in}{= Optional: Number.  Inches wide take can be}
+\item{d}{Optional: Number. Digits after the decimal place}
 
-\item{digits}{Optional: Number. Digits after the decimal place}
+\item{max_width_in}{= Optional: Number.  Inches wide take can be}
 }
 \value{
 table
@@ -40,6 +40,7 @@ library(tidyverse)
 library(flextable)
 
 mtcars \%>\%
+  dplyr::select(mpg, disp, hp, drat, wt) \%>\%
   flextable::flextable() \%>\%
   theme_apa(caption = "Summary of Some Variables")
 }

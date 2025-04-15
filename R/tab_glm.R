@@ -11,8 +11,9 @@
 #' @param d Optional: Number. Digits after the decimal place
 #' @param vif Optional: Logical. (default = TRUE) Include variance inflation factors
 #' @param lrt Optional: Logical. (default = TRUE) Include LRT for single-predictor deletion
-#' @param d Optional: number. digits after the decimal, default = 2
 #' @param show_single_row	(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.
+#' @param d Optional: Number. Digits after the decimal place
+#' @param max_width_in = Optional: Number.  Inches wide the table can be
 #'
 #' @returns a flextable object
 #' @import gtsummary
@@ -54,10 +55,11 @@ tab_glm <- function(x,
                     general_note = NA,
                     fit = NULL,
                     pr2 = "tjur",
-                    d = 2,
                     vif = TRUE,
                     lrt = TRUE,
-                    show_single_row = NULL){
+                    show_single_row = NULL,
+                    d = 2,
+                    max_width_in = 6){
 
   n_obs   <- length(x$resid)
   n_param <- length(coef(x))
@@ -88,21 +90,18 @@ tab_glm <- function(x,
     flextable::as_chunk(ifelse(lrt == TRUE,
                                "Significance denotes Wald t-tests for individual parameter estimates, as well as Likelihood Ratio Tests (LRT) for single-predictor deletion. ",
                                "Significance denotes Wald t-tests for parameter estimates. ")),
-    flextable::as_chunk(case_when(pr2 == "both" ~ "Coefficient of deterination included for both Tjur and McFadden's psuedo R-squared",
-                                  pr2 == "tjur" ~ "Coefficient of deterination displays Tjur's psuedo R-squared",
-                                  pr2 == "mcfadden" ~ "Coefficient of deterination displays McFadden's psuedo R-squared",)),
+    flextable::as_chunk(case_when(pr2 == "both" ~ "Coefficient of deterination included for both Tjur and McFadden's ",
+                                  pr2 == "tjur" ~ "Coefficient of deterination displays Tjur's ",
+                                  pr2 == "mcfadden" ~ "Coefficient of deterination displays McFadden's ",)),
+    flextable::as_i(ifelse(pr2 == "none", NA, "pseudo-R\u00B2")),
     flextable::as_chunk(general_note)
   )
 
 
 
-  if (is.null(p_note)){
-    p_note <- NULL
-  } else if (p_note == "apa"){
-    p_note <- "* p < .05. ** p < .01. *** p < .001."
-  } else {
-    p_note <- p_note
-  }
+  if (p_note == "apa"){ p_note <- "* p < .05. ** p < .01. *** p < .001."}
+
+  sig_note <- flextable::as_paragraph(p_note)
 
 
   if (back_trans == "exp"){
@@ -138,7 +137,7 @@ tab_glm <- function(x,
 
   if (!is.null(fit)){
     get_tran <- get_tran %>%
-    gtsummary::add_glance_table(include = fit)
+      gtsummary::add_glance_table(include = fit)
   }
 
 
@@ -297,11 +296,14 @@ tab_glm <- function(x,
     flextable::hline(part = "header", i = 1,
                      border = flextable::fp_border_default(width = 0)) %>%
     flextable::add_footer_lines("") %>%
-    flextable::compose(i = 1, j = 1,
-                       value = main_note,
-                       part = "footer") %>%
+    flextable::compose(part = "footer", i = 1, j = 1, value = main_note) %>%
     flextable::hline(part = "header", i = 1, j = 2:3) %>%
     flextable::hline(part = "header", i = 1, j = 5:6)
+
+  if(!is.null(var_labels)){
+    table <- table %>%
+      flextable::labelizor(part = "body", labels = var_labels)
+  }
 
   if (lrt == TRUE){
     table <- table %>%
@@ -321,28 +323,24 @@ tab_glm <- function(x,
 
   }
 
-
   n_rows <- flextable::nrow_part(table, part = "body")
 
   if (n_fit > 0) {
     table <- table %>%
-  flextable::italic(part = "body", i = (n_rows - n_fit + 1):(n_rows)) %>%
-    flextable::hline(i = n_rows - n_fit)
+      flextable::italic(part = "body", i = (n_rows - n_fit + 1):(n_rows)) %>%
+      flextable::hline(i = n_rows - n_fit)
   }
 
-  if(!is.null(var_labels)){
-    table <- table %>%
-      flextable::labelizor(part = "body",
-                           labels = var_labels)
-  }
 
   if (!is.null(p_note)){
     table <- table %>%
       flextable::add_footer_lines("") %>%
-      flextable::compose(i = 2, j = 1,
-                         value = flextable::as_paragraph(flextable::as_chunk(p_note)),
-                         part = "footer")
+      flextable::compose(part = "footer", i = 2, j = 1, value = sig_note)
   }
+
+  table <- table %>%
+    flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
+    flextable::autofit()
 
   return(table)
 }

@@ -10,6 +10,7 @@
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param sort Optional: metrics to sort by, default = "AIC", but may use: "Model", "Tjur", "McFadden", "AIC",  "BIC", "RMSE"
 #' @param d Optional: Number. Digits after the decimal place
+#' @param max_width_in = Optional: Number.  Inches wide the table can be
 #'
 #' @returns a flextable object
 #' @import gtsummary
@@ -35,7 +36,8 @@ tab_glm_fits <- function(x,
                          caption = "Comparison of Generalized Linear Model Performane Metrics",
                          general_note = NA,
                          sort = "Tjur",
-                         d = 2){
+                         d = 2,
+                         max_width_in = 6){
 
   ns <- sapply(x,function(y) length(y$residuals))
 
@@ -46,14 +48,14 @@ tab_glm_fits <- function(x,
   }
 
 
-  final_note <- flextable::as_paragraph(flextable::as_i("Note. "),
-                                        flextable::as_chunk(ifelse(length(unique(ns)) == 1,
-                                                                   NA,
-                                                                   "Models fit to different samples. ")),
-                                        flextable::as_i("k"),
-                                        " = number of parameters estimated in each model. ",
-                                        "Larger values indicated better performance for pseudo R-squared values. Smaller values indicated better performance for Akaike's Information Criteria (AIC), Bayesian information criteria (BIC), and Root Mean Squared Error (RMSE).",
-                                        flextable::as_chunk(general_note))
+  main_note <- flextable::as_paragraph(
+    flextable::as_i("Note. "),
+    flextable::as_chunk(ifelse(length(unique(ns)) == 1, NA, "Models fit to different samples. ")),
+    flextable::as_i("k"), " = number of parameters estimated in each model. ",
+    "Larger ", flextable::as_equation("R^2")," values indicated better performance. ",
+    "Smaller values indicated better performance for Akaike's Information Criteria (AIC), Bayesian information criteria (BIC), and Root Mean Squared Error (RMSE).",
+    flextable::as_chunk(general_note))
+
 
   df <- performance::compare_performance(x) %>%
     data.frame() %>%
@@ -74,7 +76,8 @@ tab_glm_fits <- function(x,
   tab <- df %>%
     flextable::flextable() %>%
     apaSupp::theme_apa(caption = caption,
-                       p_note = NULL) %>%
+                       d = d,
+                       no_notes = TRUE) %>%
     flextable::colformat_double(j = c("N", "k"), big.mark = "", digits = 0) %>%
     flextable::colformat_double(j = c("AIC", "BIC", "RMSE"), big.mark = "", digits = d) %>%
     flextable::align(part = "all", j = c("N", "McFadden","AIC"), align = "right") %>%
@@ -86,13 +89,12 @@ tab_glm_fits <- function(x,
     flextable::hline(part = "header", i = 1, j = 4:5) %>%
     flextable::italic(part = "header", i = 2, j = c(2:3)) %>%
     flextable::compose(part = "header", i = 1, j = 4,
-                       value = flextable::as_paragraph(flextable::as_i(
-                         flextable::as_chunk("pseudo-R\u00B2")))) %>%
+                       value = flextable::as_paragraph("pseudo-", flextable::as_equation("R^2"))) %>%
     flextable::align(part = "header", i = 1, align = "center") %>%
     flextable::add_footer_lines("") %>%
-    flextable::compose(i = 1, j = 1,
-                       value = final_note,
-                       part = "footer")
+    flextable::compose(part = "footer", i = 1, j = 1, value = main_note) %>%
+    flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
+    flextable::autofit()
 
   return(tab)
 }

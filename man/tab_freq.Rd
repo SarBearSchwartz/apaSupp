@@ -8,9 +8,9 @@ tab_freq(
   df,
   split = NULL,
   caption = "Summary of Categorical Variables",
-  general_note = NULL,
-  max_width_in = 6,
-  digits = 2
+  general_note = NA,
+  d = 2,
+  max_width_in = 6
 )
 }
 \arguments{
@@ -22,9 +22,9 @@ tab_freq(
 
 \item{general_note}{Optional: Text. General note for footer of APA table}
 
-\item{max_width_in}{Optional: Number.  Inches wide table can be}
+\item{d}{Optional: Number. Digits after the decimal place}
 
-\item{digits}{Optional: Number. Digits after the decimal place}
+\item{max_width_in}{= Optional: Number.  Inches wide the table can be}
 }
 \value{
 a \code{flextable} table with caption
@@ -36,4 +36,6 @@ Frequency Table, total or split by a factor
 library(tidyverse)
 
 mtcars
+apaSupp::tab_freq(mtcars)
+
 }

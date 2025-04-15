@@ -7,8 +7,9 @@
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If p_note = "apa" then the standard "* p < .05. ** p < .01. *** p < .001." will be used
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param fit Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"
-#' @param d Optional: Number. Digits after the decimal place
 #' @param show_single_row	(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.
+#' @param d Optional: Number. Digits after the decimal place
+#' @param max_width_in = Optional: Number.  Inches wide the table can be
 #'
 #' @returns a flextable object
 #' @import gtsummary
@@ -30,11 +31,16 @@ tab_lms <- function(x,
                     narrow = FALSE,
                     p_note = "apa",
                     general_note = NULL,
-                    fit = c("r.squared",
+                    fit = c("AIC",
+                            "BIC",
+                            "r.squared",
                             "adj.r.squared"),
+                    show_single_row = NULL,
                     d = 2,
-                    show_single_row = NULL){
+                    max_width_in = 6){
 
+
+  ns <- sapply(x,function(y) length(y$residuals))
 
   n_param <- x %>%
     purrr::map(coef) %>%
@@ -44,6 +50,21 @@ tab_lms <- function(x,
 
   n_models <- length(x)
   n_fit <- length(fit)
+
+  main_note <- flextable::as_paragraph(
+    flextable::as_i("Note. "),
+    flextable::as_chunk(ifelse(length(unique(ns)) == 1,
+                               NA,
+                               "Models fit to different samples. ")),
+    flextable::as_i("k"), " = number of parameters estimated in each model. ",
+    "Larger ", flextable::as_equation("R^2")," values indicated better performance. ",
+    "Smaller values indicated better performance for Akaike's Information Criteria (AIC), Bayesian information criteria (BIC), and Root Mean Squared Error (RMSE).",
+    flextable::as_chunk(general_note))
+
+  if (p_note == "apa"){ p_note <- "* p < .05. ** p < .01. *** p < .001."}
+
+  sig_note <- flextable::as_paragraph(p_note)
+
 
   if(is.null(names(x))){
     mod_names <- paste("Model", 1:n_models)
@@ -71,13 +92,19 @@ tab_lms <- function(x,
 
   table <- table %>%
     apaSupp::theme_apa(caption = caption,
-                       p_note = p_note,
-                       general_note = general_note) %>%
+                       no_notes = TRUE,
+                       d = d) %>%
     flextable::hline(part = "body", i = n_rows - n_fit) %>%
     flextable::bold(part = "header", i = 1) %>%
     flextable::italic(part = "header", i = 2) %>%
     flextable::italic(part = "body", i = rows_fit) %>%
     flextable::align(part = "header", i = 1, align = "center")
+
+  if(!is.null(var_labels)){
+    table <- table %>%
+      flextable::labelizor(part = "body",
+                           labels = var_labels)
+  }
 
   if (narrow == FALSE){
     table <- table %>%
@@ -97,17 +124,15 @@ tab_lms <- function(x,
                        align = "left")
   }
 
-  if(!is.null(var_labels)){
-    table <- table %>%
-      flextable::labelizor(part = "body",
-                           labels = var_labels)
-  }
+
 
   table <- table %>%
     flextable::align(part = "header", i = 1, align = "center") %>%
     flextable::align(part = "footer", align = "left") %>%
     flextable::hline(part = "header", i = 1,
-                     border = flextable::fp_border_default(width = 0))
+                     border = flextable::fp_border_default(width = 0)) %>%
+    flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
+    flextable::autofit()
 
   return(table)
 

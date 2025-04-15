@@ -13,8 +13,9 @@ tab_glms(
   general_note = NA,
   fit = c("AIC", "BIC"),
   pr2 = "both",
+  show_single_row = NULL,
   d = 2,
-  show_single_row = NULL
+  max_width_in = 6
 )
 }
 \arguments{
@@ -34,9 +35,11 @@ tab_glms(
 
 \item{pr2}{Optional: character.  (default = "both") Include pseudo R-squared: "tjur", "mcfadden", "both", or "none"}
 
-\item{d}{Optional: number. digits after the decimal, default = 2}
-
 \item{show_single_row}{(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.}
+
+\item{d}{Optional: Number. Digits after the decimal place}
+
+\item{max_width_in}{= Optional: Number.  Inches wide the table can be}
 }
 \value{
 a flextable object

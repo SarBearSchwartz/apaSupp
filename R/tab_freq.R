@@ -4,8 +4,8 @@
 #' @param split Optional: Quoted variable name
 #' @param caption REQUIRED: Text. Caption for the table
 #' @param general_note Optional: Text. General note for footer of APA table
-#' @param max_width_in Optional: Number.  Inches wide table can be
-#' @param digits Optional: Number. Digits after the decimal place
+#' @param d Optional: Number. Digits after the decimal place
+#' @param max_width_in = Optional: Number.  Inches wide the table can be
 #'
 #' @return a `flextable` table with caption
 #' @import tidyverse
@@ -16,14 +16,16 @@
 #' library(tidyverse)
 #'
 #' mtcars
+#' apaSupp::tab_freq(mtcars)
+#'
 tab_freq <- function(df,
                      split = NULL,
                      caption = "Summary of Categorical Variables",
-                     general_note = NULL,
-                     max_width_in = 6,
-                     digits = 2){
+                     general_note = NA,
+                     d = 2,
+                     max_width_in = 6){
 
-  tab <- df %>%
+  table <- df %>%
     dplyr::select_if(is.factor) %>%
     dplyr::mutate_if(is.factor, forcats::fct_drop) %>%
     flextable::summarizor(by = split,
@@ -40,12 +42,15 @@ tab_freq <- function(df,
                               as_chunk("\t")) %>%
     apaSupp::theme_apa(caption = caption,
                        general_note = general_note,
-                       digits = digits,
+                       p_note = NULL,
+                       d = d,
                        max_width_in = max_width_in) %>%
     flextable::align(align = "right", part = "body") %>%
     flextable::align(j = 1:2, align = "left",  part = "all") %>%
     flextable::padding(j =  1, padding.left = 0, padding.right = 0) %>%
-    flextable::padding(j = -1, padding.left = 5, padding.right = 0)
+    flextable::padding(j = -1, padding.left = 5, padding.right = 0) %>%
+    flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
+    flextable::autofit()
 
-  return(tab)
+  return(table)
 }

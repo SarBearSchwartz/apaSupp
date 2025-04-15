@@ -5,26 +5,32 @@
 \title{Tabulate Pairwise Pearson's Correlation}
 \usage{
 tab_cor(
-  df,
-  caption = "Correlations",
-  general_note = NULL,
-  p_note = "* p < .05. ** p < .01. *** p < .001.",
+  x,
+  caption = "Pairwise Correlations",
+  p_note = "apa",
+  general_note = NA,
+  d = 2,
   max_width_in = 6,
-  digits = 2
+  breaks = c(0.05, 0.01, 0.001),
+  symbols = c("*", "**", "***")
 )
 }
 \arguments{
-\item{df}{REQUIRED: A dataframe with selected numeric variables}
-
 \item{caption}{REQUIRED: Text. Caption for the table}
-
-\item{general_note}{Optional: Text. General note for footer of APA table}
 
 \item{p_note}{Optional: Text. (default = NULL) Significance note for APA table, If \code{p_note = "apa"} then the standard \code{"* p < .05. ** p < .01. *** p < .001."} will be used}
 
-\item{max_width_in}{= Optional: Number.  Inches wide take can be}
+\item{general_note}{Optional: Text. General note for footer of APA table}
 
-\item{digits}{Optional: Number. Digits after the decimal place}
+\item{d}{Optional: Number. Digits after the decimal place}
+
+\item{max_width_in}{= Optional: Number.  Inches wide the table can be}
+
+\item{breaks}{statistical significance break points}
+
+\item{symbols}{symbols to assign to each break point}
+
+\item{xx}{REQUIRED: A dataframe with selected numeric variables}
 }
 \value{
 table
@@ -34,8 +40,7 @@ Tabulate Pairwise Pearson's Correlation
 }
 \examples{
 library(tidyverse)
-library(flextable)
 
-mtcars
+apaSupp::tab_cor(mtcars \%>\% dplyr::select(cyl, mpg, disp, hp))
 
 }

@@ -8,8 +8,10 @@
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param fit Optional: vector. quoted names of fit metrics from `performance::performance()` for glm (max of 4)
 #' @param pr2 Optional: character.  (default = "both") Include pseudo R-squared: "tjur", "mcfadden", "both", or "none"
-#' @param d Optional: number. digits after the decimal, default = 2
 #' @param show_single_row	(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.
+#' @param d Optional: Number. Digits after the decimal place
+#' @param max_width_in = Optional: Number.  Inches wide the table can be
+#'
 #'
 #' @returns a flextable object
 #' @import gtsummary
@@ -52,8 +54,9 @@ tab_glms <- function(x,
                      general_note = NA,
                      fit = c("AIC", "BIC"),
                      pr2 = "both",
+                     show_single_row = NULL,
                      d = 2,
-                     show_single_row = NULL){
+                     max_width_in = 6){
 
   ns <- sapply(x,function(y) length(y$residuals))
 
@@ -90,13 +93,9 @@ tab_glms <- function(x,
 
 
 
-  if (is.null(p_note)){
-    p_note <- NULL
-  } else if (p_note == "apa"){
-    p_note <- "* p < .05. ** p < .01. *** p < .001."
-  } else {
-    p_note <- p_note
-  }
+  if (p_note == "apa"){ p_note <- "* p < .05. ** p < .01. *** p < .001."}
+
+  sig_note <- flextable::as_paragraph(p_note)
 
 
 
@@ -242,7 +241,7 @@ tab_glms <- function(x,
   table <- table %>%
     apaSupp::theme_apa(caption = caption,
                        no_notes = TRUE,
-                       general_note = NA) %>%
+                       d = d) %>%
     flextable::bold(part = "header", i = 1) %>%
     flextable::italic(part = "header", i = 2) %>%
     flextable::align(part = "header", i = 1, align = "center")
@@ -287,9 +286,7 @@ tab_glms <- function(x,
     flextable::hline(part = "header", i = 1,
                      border = flextable::fp_border_default(width = 0)) %>%
     flextable::add_footer_lines("") %>%
-    flextable::compose(i = 1, j = 1,
-                       value = main_note,
-                       part = "footer")
+    flextable::compose(part = "footer", i = 1, j = 1, value = main_note)
 
   pad_lines <- c(pad_fit, pad_pr2)
 
@@ -302,12 +299,12 @@ tab_glms <- function(x,
   if (!is.null(p_note)){
     table <- table %>%
       flextable::add_footer_lines("") %>%
-      flextable::compose(i = 2, j = 1,
-                         value = flextable::as_paragraph(flextable::as_chunk(p_note)),
-                         part = "footer")
+      flextable::compose(part = "footer", i = 2, j = 1, value = sig_note)
   }
 
-
+  table <- table %>%
+    flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
+    flextable::autofit()
 
   return(table)
 

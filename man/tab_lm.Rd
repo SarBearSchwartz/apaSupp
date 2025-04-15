@@ -11,11 +11,12 @@ tab_lm(
   p_note = "apa",
   general_note = NA,
   fit = c("r.squared", "adj.r.squared"),
-  d = 2,
   std = TRUE,
   vif = FALSE,
   eta2 = TRUE,
-  show_single_row = NULL
+  show_single_row = NULL,
+  d = 2,
+  max_width_in = 6
 )
 }
 \arguments{
@@ -31,8 +32,6 @@ tab_lm(
 
 \item{fit}{Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"}
 
-\item{d}{Optional: Number. Digits after the decimal place}
-
 \item{std}{Optional: Logical. (default = TRUE) Include standardized coefficients?}
 
 \item{vif}{Optional: Logical. (default = FALSE) Include variance inflation factors?}
@@ -40,6 +39,10 @@ tab_lm(
 \item{eta2}{Optional: logical. (default = TRUE) Include eta-squared (semi-partial correlations) and partial eta-squared (partial correlations)}
 
 \item{show_single_row}{(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.}
+
+\item{d}{Optional: Number. Digits after the decimal place}
+
+\item{max_width_in}{= Optional: Number.  Inches wide the table can be}
 }
 \value{
 a flextable object
@@ -49,8 +52,10 @@ APA: flextable for ONElinear models
 }
 \examples{
 
-m <- lm(dist ~ speed, cars)
+m <- lm(mpg ~ disp + wt + hp, mtcars)
 
-tab_lm(m)
+apaSupp::tab_lm(m)
+
+
 
 }

@@ -9,7 +9,8 @@ tab_glm_fits(
   caption = "Comparison of Generalized Linear Model Performane Metrics",
   general_note = NA,
   sort = "Tjur",
-  d = 2
+  d = 2,
+  max_width_in = 6
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ tab_glm_fits(
 \item{sort}{Optional: metrics to sort by, default = "AIC", but may use: "Model", "Tjur", "McFadden", "AIC",  "BIC", "RMSE"}
 
 \item{d}{Optional: Number. Digits after the decimal place}
+
+\item{max_width_in}{= Optional: Number.  Inches wide the table can be}
 }
 \value{
 a flextable object
