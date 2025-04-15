@@ -58,7 +58,6 @@ tab_cor <- function(x,
     flextable::align(   part = "body",          j = 1:2, align = "left") %>%
     flextable::align(   part = "body",          j = 3:4, align = "right") %>%
     flextable::align(   part = "footer",                 align = "left") %>%
-    flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
     flextable::autofit()
 
   return(table)
