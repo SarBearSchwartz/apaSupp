@@ -40,7 +40,7 @@ tab_lms <- function(x,
                     symbols         = c("*", "**", "***")){
 
 
-  ns <- sapply(x,function(y) length(y$residuals))
+  ns <- sapply(x, function(y) length(y$residuals))
 
   n_param <- x %>%
     purrr::map(coef) %>%

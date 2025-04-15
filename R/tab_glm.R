@@ -140,8 +140,8 @@ tab_glm <- function(x,
     gtsummary::remove_abbreviation("OR = Odds Ratio") %>%
     gtsummary::remove_abbreviation("SE = Standard Error")  %>%
     gtsummary::remove_footnote_header() %>%
-    gtsummary::modify_fmt_fun(estimate  ~ function(x) p_num(x, d = (d + 1), stars = FALSE), rows =  stringr::str_detect(variable, "r.")) %>%
-    gtsummary::modify_fmt_fun(estimate  ~ function(x) p_num(x, d = (d - 1), stars = FALSE), rows = !stringr::str_detect(variable, "r.")) %>%
+    gtsummary::modify_fmt_fun(estimate  ~ function(x) apaSupp::p_num(x, d = (d + 1), stars = FALSE), rows =  stringr::str_detect(variable, "r.")) %>%
+    gtsummary::modify_fmt_fun(estimate  ~ function(x) apaSupp::p_num(x, d = (d - 1), stars = FALSE), rows = !stringr::str_detect(variable, "r.")) %>%
     gtsummary::modify_fmt_fun(estimate  ~ gtsummary::label_style_number(digits = d),        rows = (row_type == "label") ) %>%
     gtsummary::modify_fmt_fun(std.error ~ gtsummary::label_style_number(digits = d,         prefix = "(", suffix = ")"))
 
