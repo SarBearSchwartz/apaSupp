@@ -140,8 +140,10 @@ tab_glm <- function(x,
     gtsummary::remove_abbreviation("OR = Odds Ratio") %>%
     gtsummary::remove_abbreviation("SE = Standard Error")  %>%
     gtsummary::remove_footnote_header() %>%
-    gtsummary::modify_fmt_fun(estimate  ~ gtsummary::label_style_number(digits = d)) %>%
-    gtsummary::modify_fmt_fun(std.error ~ gtsummary::label_style_number(digits = d, prefix = "(", suffix = ")"))
+    gtsummary::modify_fmt_fun(estimate  ~ function(x) p_num(x, d = (d + 1), stars = FALSE), rows =  stringr::str_detect(variable, "r.")) %>%
+    gtsummary::modify_fmt_fun(estimate  ~ function(x) p_num(x, d = (d - 1), stars = FALSE), rows = !stringr::str_detect(variable, "r.")) %>%
+    gtsummary::modify_fmt_fun(estimate  ~ gtsummary::label_style_number(digits = d),        rows = (row_type == "label") ) %>%
+    gtsummary::modify_fmt_fun(std.error ~ gtsummary::label_style_number(digits = d,         prefix = "(", suffix = ")"))
 
 
 
@@ -251,12 +253,6 @@ tab_glm <- function(x,
 
   n_rows <- flextable::nrow_part(table, part = "body")
 
-  if (n_fit > 0) {
-    table <- table %>%
-      flextable::italic(part = "body", i = (n_rows - n_fit + 1):(n_rows)) %>%
-      flextable::hline( part = "body", i =  n_rows - n_fit)
-  }
-
   table <- table  %>%
     flextable::delete_rows(part = "header", i = 1) %>%
     flextable::add_header_row(values    = c(NA, abr[1], NA, abr[2], rep(NA, n_col - 6)),
@@ -276,6 +272,12 @@ tab_glm <- function(x,
     flextable::hline( part = "header", i = 1, j = 2:3) %>%
     flextable::hline( part = "header", i = 1, j = 5:6) %>%
     flextable::autofit()
+
+  if (n_fit > 0) {
+    table <- table %>%
+      flextable::italic(part = "body", i = (n_rows - n_fit + 1):(n_rows)) %>%
+      flextable::hline( part = "body", i =  n_rows - n_fit)
+  }
 
   return(table)
 }

@@ -10,6 +10,7 @@
 #' @import gtsummary
 #' @import tidyverse
 #' @import broom.helpers
+#' @import stringr
 #' @export
 #'
 #' @examples
@@ -36,17 +37,17 @@ gt_lm <- function(x,
   table <- x %>%
     gtsummary::tbl_regression(intercept = TRUE,
                               conf.int = FALSE,
-                              # pvalue_fun = ~ p_fun(.x, d = d),
+                              pvalue_fun = ~ apaSupp::p_fun(.x, d = d),
                               tidy_fun = broom.helpers::tidy_with_broom_or_parameters,
                               show_single_row = show_single_row)  %>%
     gtsummary::add_glance_table(include = all_of(fit)) %>%
     gtsummary::modify_column_unhide(column = std.error) %>%
     gtsummary::remove_footnote_header() %>%
     gtsummary::remove_abbreviation("SE = Standard Error")  %>%
-    gtsummary::modify_fmt_fun(estimate ~  gtsummary::label_style_number(digits = d)) %>%
-    gtsummary::modify_fmt_fun(std.error ~ gtsummary::label_style_number(digits = d, prefix = "(", suffix = ")")) %>%
-    gtsummary::modify_fmt_fun(estimate  ~ apaSupp::p_num(d = d + 1, stars = FALSE), rows   =  stringr::str_detect(variable, "r.")) %>%
-    gtsummary::modify_fmt_fun(estimate  ~ apaSupp::p_num(d = d - 1, stars = FALSE), rows   = !stringr::str_detect(variable, "r."))
+    gtsummary::modify_fmt_fun(estimate  ~ function(x) p_num(x, d = (d + 1), stars = FALSE), rows =  stringr::str_detect(variable, "r.")) %>%
+    gtsummary::modify_fmt_fun(estimate  ~ function(x) p_num(x, d = (d - 1), stars = FALSE), rows = !stringr::str_detect(variable, "r.")) %>%
+    gtsummary::modify_fmt_fun(estimate  ~ gtsummary::label_style_number(digits = d), rows = (row_type == "label") ) %>%
+    gtsummary::modify_fmt_fun(std.error ~ gtsummary::label_style_number(digits = d, prefix = "(", suffix = ")"))
 
 
   if (narrow == TRUE){

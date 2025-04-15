@@ -89,10 +89,10 @@ tab_lm <- function(x,
     gtsummary::modify_column_unhide(column = std.error) %>%
     gtsummary::remove_footnote_header() %>%
     gtsummary::remove_abbreviation("SE = Standard Error")  %>%
-    gtsummary::modify_fmt_fun(estimate  ~ gtsummary::label_style_number(digits = d)) %>%
+    gtsummary::modify_fmt_fun(estimate  ~ function(x) p_num(x, d = (d + 1), stars = FALSE), rows =  stringr::str_detect(variable, "r.")) %>%
+    gtsummary::modify_fmt_fun(estimate  ~ function(x) p_num(x, d = (d - 1), stars = FALSE), rows = !stringr::str_detect(variable, "r.")) %>%
+    gtsummary::modify_fmt_fun(estimate  ~ gtsummary::label_style_number(digits = d), rows = (row_type == "label") ) %>%
     gtsummary::modify_fmt_fun(std.error ~ gtsummary::label_style_number(digits = d, prefix = "(", suffix = ")")) %>%
-    gtsummary::modify_fmt_fun(estimate  ~ apaSupp::p_num(d = d + 1, stars = FALSE),
-                              rows     = stringr::str_detect(variable, "r.")) %>%
     gtsummary::modify_header(label     = "Variable",
                              estimate  = "b",
                              std.error = "(SE)",
@@ -135,6 +135,8 @@ tab_lm <- function(x,
   n_rows <- flextable::nrow_part(table, part = "body")
 
   table <- table %>%
+    flextable::compose(part = "header", i = 1, j = 1, value = flextable::as_paragraph(NA)) %>%
+    flextable::italic(part = "header") %>%
     flextable::hline( part = "body",  i = n_rows - n_fit) %>%
     flextable::italic(part = "body",  i = (n_rows - n_fit + 1):(n_rows))
 

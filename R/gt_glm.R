@@ -51,15 +51,18 @@ gt_glm <- function(x,
                               show_single_row = show_single_row)
 
 
-  if (sum(!is.na(fit)) > 0){ table <- table %>%  gtsummary::add_glance_table(include = all_of(fit)) }
+  if (sum(!is.na(fit)) > 0){
+    table <- table %>%
+      gtsummary::add_glance_table(include = all_of(fit))%>%
+      gtsummary::modify_fmt_fun(estimate  ~ apaSupp::p_num(d = d + 1, stars = FALSE), rows =  stringr::str_detect(variable, "r.")) %>%
+      gtsummary::modify_fmt_fun(estimate  ~ apaSupp::p_num(d = d - 1, stars = FALSE), rows = !stringr::str_detect(variable, "r."))
+  }
 
   table <- table %>%
     gtsummary::modify_column_hide(column = std.error) %>%
-    gtsummary::modify_fmt_fun(estimate  ~ gtsummary::label_style_number(digits = d)) %>%
+    gtsummary::modify_fmt_fun(estimate  ~ gtsummary::label_style_number(digits = d, rows = (row_type == "label"))) %>%
     gtsummary::modify_fmt_fun(conf.low  ~ gtsummary::label_style_number(digits = d, prefix = "[")) %>%
     gtsummary::modify_fmt_fun(conf.high ~ gtsummary::label_style_number(digits = d, suffix = "]")) %>%
-    gtsummary::modify_fmt_fun(estimate  ~ apaSupp::p_num(d = d + 1, stars = FALSE), rows =  stringr::str_detect(variable, "r.")) %>%
-    gtsummary::modify_fmt_fun(estimate  ~ apaSupp::p_num(d = d - 1, stars = FALSE), rows = !stringr::str_detect(variable, "r.")) %>%
     gtsummary::remove_abbreviation("OR = Odds Ratio") %>%
     gtsummary::remove_abbreviation("CI = Confidence Interval") %>%
     gtsummary::remove_abbreviation("SE = Standard Error")
