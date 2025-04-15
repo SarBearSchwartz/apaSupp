@@ -2,10 +2,13 @@
 #' @param x REQUIRED: A pre-created `flextable` object
 #' @param caption REQUIRED: Text. Caption for the table
 #' @param general_note Optional: Text. General note for footer of APA table
-#' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
+#' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa123"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
 #' @param no_notes REQUIRED: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `genderal_note` and `p_note`
+#' @param breaks Optional: numeric vector of p-value cut-points
+#' @param symbols Optional: character vector for symbols denoting p-value cut-points
 #' @param d Optional: Number. Digits after the decimal place
-#' @param max_width_in = Optional: Number.  Inches wide take can be
+#' @param max_width_in Optional: Number.  Inches wide take can be
+#' @param main_note Optional: alternative to `general_note` already in paragraph form
 #'
 #' @return table
 #' @import tidyverse
@@ -26,10 +29,11 @@ theme_apa <- function(x,
                       general_note = NA,
                       p_note       = NA,
                       no_notes     = FALSE,
+                      breaks       = c(.05, .01, .001),
+                      symbols      = c("*", "**", "***"),
                       d            = 2,
                       max_width_in = 6,
-                      main_note    = NA,
-                      sig_note     = NA){
+                      main_note    = NA){
 
   border.thick <- list("width" = 2.5, color = "black", style = "solid")
   border.thin  <- list("width" = 1.0, color = "black", style = "solid")
@@ -44,10 +48,23 @@ theme_apa <- function(x,
                                          flextable::as_chunk(general_note))
   }
 
-  if (!is.na(p_note) & p_note == "apa"){
-    sig_note  <- flextable::as_paragraph("* p < .05. ** p < .01. *** p < .001.")
-  } else if (!is.na(p_note)){
-    sig_note  <- flextable::as_paragraph(p_note)
+  if (sum(breaks == c(.05, .01, .001)) == length(breaks)) {ch_bk <- c(".05", ".01", ".001")}
+
+  if (!is.na(p_note)){
+    sig_note  <- flextable::as_paragraph(
+      flextable::as_chunk(ifelse(stringr::str_detect(p_note, "1"), symbols[1]  , NA)),
+      flextable::as_i(    ifelse(stringr::str_detect(p_note, "1"), " p < "     , NA)),
+      flextable::as_chunk(ifelse(stringr::str_detect(p_note, "1"), ch_bk[1]    , NA)),
+      flextable::as_chunk(ifelse(stringr::str_detect(p_note, "1"), ". "        , NA)),
+      flextable::as_chunk(ifelse(stringr::str_detect(p_note, "2"), symbols[2]  , NA)),
+      flextable::as_i(    ifelse(stringr::str_detect(p_note, "2"), " p < "     , NA)),
+      flextable::as_chunk(ifelse(stringr::str_detect(p_note, "2"), ch_bk[2]    , NA)),
+      flextable::as_chunk(ifelse(stringr::str_detect(p_note, "2"), ". "        , NA)),
+      flextable::as_chunk(ifelse(stringr::str_detect(p_note, "3"), symbols[3]  , NA)),
+      flextable::as_i(    ifelse(stringr::str_detect(p_note, "3"), " p < "     , NA)),
+      flextable::as_chunk(ifelse(stringr::str_detect(p_note, "3"), ch_bk[3]    , NA)),
+      flextable::as_chunk(ifelse(stringr::str_detect(p_note, "3"), ". "        , NA))
+    )
   }
 
   table <- x %>%

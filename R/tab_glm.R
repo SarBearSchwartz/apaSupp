@@ -4,8 +4,11 @@
 #' @param var_labels Optional: Vector. Text replacements for model terms, "old" = "new"
 #' @param type Optional: default = "logistic", more to come soon...
 #' @param caption Optional: Text. Caption for the table
-#' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If p_note = "apa" then the standard "* p < .05. ** p < .01. *** p < .001." will be used
 #' @param general_note Optional: Text. General note for footer of APA table
+#' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa123"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
+#' @param no_notes REQUIRED: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `genderal_note` and `p_note`
+#' @param breaks Optional: numeric vector of p-value cut-points
+#' @param symbols Optional: character vector for symbols denoting p-value cut-points
 #' @param fit Optional: Text. fit statistics: (default = NA) "nobs", null.deviance", "df.null", "deviance", "df.residual", "logLik", "AIC", "BIC"
 #' @param pr2 Optional: character.  (default = "both") Include pseudo R-squared: "tjur", "mcfadden", "both", or "none"
 #' @param d Optional: Number. Digits after the decimal place
@@ -49,17 +52,20 @@
 #'
 #'
 tab_glm <- function(x,
-                    var_labels = NULL,
-                    caption = "Generalized Regression Model",
-                    p_note = "apa",
-                    general_note = NA,
-                    fit = NULL,
-                    pr2 = "tjur",
-                    vif = TRUE,
-                    lrt = TRUE,
+                    var_labels      = NULL,
+                    caption         = "Parameter Estimates for Generalized Linear Regression",
+                    general_note    = NA,
+                    p_note          = "apa123",
+                    no_notes        = FALSE,
+                    d               = 2,
+                    fit             = NULL,
+                    pr2             = "tjur",
+                    vif             = TRUE,
+                    lrt             = TRUE,
                     show_single_row = NULL,
-                    d = 2,
-                    max_width_in = 6){
+                    breaks          = c(.05, .01, .001),
+                    symbols         = c("*", "**", "***"),
+                    max_width_in    = 6){
 
   n_obs   <- length(x$resid)
   n_param <- length(coef(x))
@@ -90,20 +96,12 @@ tab_glm <- function(x,
     flextable::as_chunk(ifelse(lrt == TRUE,
                                "Significance denotes Wald t-tests for individual parameter estimates, as well as Likelihood Ratio Tests (LRT) for single-predictor deletion. ",
                                "Significance denotes Wald t-tests for parameter estimates. ")),
-    flextable::as_chunk(case_when(pr2 == "both" ~ "Coefficient of deterination included for both Tjur and McFadden's ",
-                                  pr2 == "tjur" ~ "Coefficient of deterination displays Tjur's ",
-                                  pr2 == "mcfadden" ~ "Coefficient of deterination displays McFadden's ",)),
+    flextable::as_chunk(case_when(pr2 == "both"     ~ "Coefficient of deterination included for both Tjur and McFadden's ",
+                                  pr2 == "tjur"     ~ "Coefficient of deterination displays Tjur's ",
+                                  pr2 == "mcfadden" ~ "Coefficient of deterination displays McFadden's ")),
     flextable::as_i(ifelse(pr2 == "none", NA, "pseudo-R\u00B2")),
     flextable::as_chunk(general_note)
   )
-
-
-  if (!is.na(p_note) & p_note == "apa"){
-    sig_note  <- flextable::as_paragraph("* p < .05. ** p < .01. *** p < .001.")
-  } else if (!is.na(p_note)){
-    sig_note  <- flextable::as_paragraph(p_note)
-  }
-
 
   if (back_trans == "exp"){
     get_tran <- x %>%
@@ -114,22 +112,16 @@ tab_glm <- function(x,
                                 show_single_row = show_single_row) %>%
       gtsummary::modify_column_hide(column = std.error) %>%
       gtsummary::modify_column_hide(column = p.value) %>%
-      gtsummary::modify_fmt_fun(estimate ~
-                                  gtsummary::label_style_number(digits = d)) %>%
-      gtsummary::modify_fmt_fun(conf.low ~
-                                  gtsummary::label_style_number(digits = d,
-                                                                prefix = "[")) %>%
-      gtsummary::modify_fmt_fun(conf.high ~
-                                  gtsummary::label_style_number(digits = d,
-                                                                suffix = "]")) %>%
+      gtsummary::modify_fmt_fun(estimate  ~ gtsummary::label_style_number(digits = d)) %>%
+      gtsummary::modify_fmt_fun(conf.low  ~ gtsummary::label_style_number(digits = d, prefix = "[")) %>%
+      gtsummary::modify_fmt_fun(conf.high ~ gtsummary::label_style_number(digits = d, suffix = "]")) %>%
       gtsummary::remove_abbreviation("OR = Odds Ratio") %>%
       gtsummary::remove_abbreviation("CI = Confidence Interval") %>%
       gtsummary::remove_abbreviation("SE = Standard Error")  %>%
       gtsummary::modify_table_body(~.x %>%
                                      dplyr::mutate(estimate = ifelse(variable == "(Intercept)", NA, estimate)) %>%
                                      dplyr::mutate(conf.low = ifelse(variable == "(Intercept)", NA, conf.low))) %>%
-      gtsummary::modify_table_body(~.x %>%
-                                     dplyr::mutate(bk = NA)) %>%
+      gtsummary::modify_table_body(~.x %>% dplyr::mutate(bk = NA)) %>%
       gtsummary::modify_header(label = "Variable",
                                estimate = sym[1],
                                conf.low = "95% CI",
@@ -137,28 +129,23 @@ tab_glm <- function(x,
   }
 
   if (!is.null(fit)){
-    get_tran <- get_tran %>%
-      gtsummary::add_glance_table(include = all_of(fit))
+    get_tran <- get_tran %>% gtsummary::add_glance_table(include = all_of(fit))
   }
 
 
   get <- x %>%
-    gtsummary::tbl_regression(intercept = TRUE,
-                              conf.int = FALSE,
-                              exponentiate = FALSE,
-                              pvalue_fun = function(x) apaSupp::p_num(x, d = d + 1),
-                              tidy_fun = broom.helpers::tidy_with_broom_or_parameters,
+    gtsummary::tbl_regression(intercept       = TRUE,
+                              conf.int        = FALSE,
+                              exponentiate    = FALSE,
+                              pvalue_fun      = function(x) apaSupp::p_num(x, d = d + 1),
+                              tidy_fun        = broom.helpers::tidy_with_broom_or_parameters,
                               show_single_row = show_single_row) %>%
     gtsummary::modify_column_unhide(column = std.error) %>%
     gtsummary::remove_abbreviation("OR = Odds Ratio") %>%
     gtsummary::remove_abbreviation("SE = Standard Error")  %>%
     gtsummary::remove_footnote_header() %>%
-    gtsummary::modify_fmt_fun(estimate ~
-                                gtsummary::label_style_number(digits = d)) %>%
-    gtsummary::modify_fmt_fun(std.error ~
-                                gtsummary::label_style_number(digits = d,
-                                                              prefix = "(",
-                                                              suffix = ")"))
+    gtsummary::modify_fmt_fun(estimate  ~ gtsummary::label_style_number(digits = d)) %>%
+    gtsummary::modify_fmt_fun(std.error ~ gtsummary::label_style_number(digits = d, prefix = "(", suffix = ")"))
 
 
 
@@ -168,29 +155,28 @@ tab_glm <- function(x,
       gtsummary::modify_table_body(dplyr::left_join,
                                    apaSupp::pdr1_to_tibble(x, test = "Chisq", d = d),
                                    by = c("variable", "row_type")) %>%
-      gtsummary::modify_header(label = "Variable",
-                               estimate = sym[2],
+      gtsummary::modify_header(label     = "Variable",
+                               estimate  = sym[2],
                                std.error = "(SE)",
-                               p.value = "Wald",
-                               p_dr1 = "LRT") %>%
+                               p.value   = "Wald",
+                               p_dr1     = "LRT") %>%
       gtsummary::modify_fmt_fun(p_dr1 ~ function(x) apaSupp::p_num(x, d = d + 1))
 
   } else {
     get <- get %>%
-      gtsummary::modify_header(label = "Variable",
-                               estimate = sym[2],
+      gtsummary::modify_header(label     = "Variable",
+                               estimate  = sym[2],
                                std.error = "(SE)",
-                               p.value = "p")
+                               p.value   = "p")
   }
 
   get_orig <- get %>%
     gtsummary::modify_column_hide(column = starts_with("p")) %>%
-    gtsummary::modify_table_body(~.x %>%
-                                   dplyr::mutate(bk = NA)) %>%
-    gtsummary::modify_header(label = "Variable",
+    gtsummary::modify_table_body(~.x %>% dplyr::mutate(bk = NA)) %>%
+    gtsummary::modify_header(label    = "Variable",
                              estimate = sym[2],
                              conf.low = "95% CI",
-                             bk = "blank")
+                             bk       = "blank")
 
   get_sig <- get %>%
     gtsummary::modify_column_hide(column = estimate) %>%
@@ -217,110 +203,57 @@ tab_glm <- function(x,
     table <- list(get_tran,  get_orig,  get_sig) %>%
       gtsummary::tbl_merge(tab_spanner = c(abr[1],  abr[2],  "p")) %>%
       gtsummary::as_flex_table() %>%
-      flextable::compose(part = "header", j = c(4, 7),
-                         value = flextable::as_paragraph(NA)) %>%
-      flextable::compose(par = "body", j = c(4, 7),
-                         value = flextable::as_paragraph(NA))
+      flextable::compose(part = "header", j = c(4, 7), value = flextable::as_paragraph(NA)) %>%
+      flextable::compose(part = "body",   j = c(4, 7), value = flextable::as_paragraph(NA))
   }
 
-  n_col <- flextable::ncol_keys(table)
+  if(!is.null(var_labels)){
+    table <- table %>% flextable::labelizor(part = "body", labels = var_labels)
+  }
+
+  n_col  <- flextable::ncol_keys(table)
   n_rows <- flextable::nrow_part(table, part = "body")
 
 
-  r2_tjur <- performance::r2_tjur(x) %>%
-    unlist(use.names = FALSE) %>%
-    apaSupp::p_num(d = d + 1, stars = FALSE)
-
-  r2_mcfadden <- performance::r2_mcfadden(x) %>%
-    unlist(use.names = FALSE) %>%
-    apaSupp::p_num(d = d + 1, stars = FALSE)
+  r2_tjur     <- performance::r2_tjur(x)     %>% unlist(use.names = FALSE) %>% apaSupp::p_num(d = d + 1, stars = FALSE)
+  r2_mcfadden <- performance::r2_mcfadden(x) %>% unlist(use.names = FALSE) %>% apaSupp::p_num(d = d + 1, stars = FALSE)
 
 
   if (pr2 == "both"){
     table <- table %>%
-      flextable::add_body_row(top = FALSE,
-                              values = NA) %>%
-      flextable::compose(part = "body", i = (n_rows + 1), j = 1,
-                         value = flextable::as_paragraph(flextable::as_i("pseudo-R"),
-                                                         flextable::as_chunk("\u00B2"))) %>%
-      flextable::add_body_row(top = FALSE,
-                              values = NA) %>%
-      flextable::compose(part = "body", i = (n_rows + 2), j = 2,
-                         value = flextable::as_paragraph("Tjur")) %>%
-      flextable::compose(part = "body", i = (n_rows + 2), j = 3,
-                         value = flextable::as_paragraph(r2_tjur)) %>%
-      flextable::add_body_row(top = FALSE,
-                              values = NA) %>%
-      flextable::compose(part = "body", i = (n_rows + 3), j = 2,
-                         value = flextable::as_paragraph("McFadden")) %>%
-      flextable::compose(part = "body", i = (n_rows + 3), j = 3,
-                         value = flextable::as_paragraph(r2_mcfadden[1]))
-
+      flextable::add_body_row(top = FALSE, values = NA) %>%
+      flextable::compose(part  = "body", i = (n_rows + 1), j = 1,
+                         value = flextable::as_paragraph(flextable::as_i("pseudo-R\u00B2"))) %>%
+      flextable::add_body_row(top = FALSE, values = NA) %>%
+      flextable::compose(part  = "body", i = (n_rows + 2), j = 2, value = flextable::as_paragraph("Tjur")) %>%
+      flextable::compose(part  = "body", i = (n_rows + 2), j = 3, value = flextable::as_paragraph(r2_tjur)) %>%
+      flextable::add_body_row(top = FALSE, values = NA) %>%
+      flextable::compose(part  = "body", i = (n_rows + 3), j = 2, value = flextable::as_paragraph("McFadden")) %>%
+      flextable::compose(part  = "body", i = (n_rows + 3), j = 3, value = flextable::as_paragraph(r2_mcfadden[1]))
   } else if (pr2 == "tjur"){
     table <- table %>%
-      flextable::add_body_row(top = FALSE,
-                              values = NA) %>%
-      flextable::compose(part = "body", i = (n_rows + 1), j = 1,
-                         value = flextable::as_paragraph(flextable::as_i("pseudo-R"),
-                                                         flextable::as_chunk("\u00B2"))) %>%
-      flextable::compose(part = "body", i = (n_rows + 1), j = 2,
-                         value = flextable::as_paragraph(r2_tjur))
-
+      flextable::add_body_row(top = FALSE, values = NA) %>%
+      flextable::compose(part  = "body", i = (n_rows + 1), j = 1, value = flextable::as_paragraph(flextable::as_i("pseudo-R\u00B2"))) %>%
+      flextable::compose(part =  "body", i = (n_rows + 1), j = 2, value = flextable::as_paragraph(r2_tjur))
   } else if (pr2 == "mcfadden"){
     table <- table %>%
-      flextable::add_body_row(top = FALSE,
-                              values = NA) %>%
-      flextable::compose(part = "body", i = (n_rows + 1), j = 1,
-                         value = flextable::as_paragraph(flextable::as_i("pseudo-R"),
-                                                         flextable::as_chunk("\u00B2"))) %>%
-      flextable::compose(part = "body", i = (n_rows + 1), j = 2,
-                         value = flextable::as_paragraph(r2_mcfadden[1]))
-
-  }
-
-
-  n_col <- flextable::ncol_keys(table)
-  n_rows <- flextable::nrow_part(table, part = "body")
-
-  table <- table  %>%
-    flextable::delete_rows(part = "header", i = 1) %>%
-    flextable::add_header_row(values = c(NA, abr[1], NA, abr[2], rep(NA, n_col - 6)),
-                              colwidths = c(1, 2, 1, 2, rep(1, n_col - 6))) %>%
-    apaSupp::theme_apa(caption = caption,
-                       d = d,
-                       main_note = main_note,
-                       sig_note = sig_note) %>%
-    flextable::italic(part = "header", i = 2, j = 4:5) %>%
-    flextable::align(part = "all", j = c(2, 5), align = "right") %>%
-    flextable::align(part = "all", j = c(3, 6), align = "left") %>%
-    flextable::align(part = "header", i = 1, align = "center") %>%
-    flextable::align(part = "footer", align = "left") %>%
-    flextable::hline(part = "header", i = 1,
-                     border = flextable::fp_border_default(width = 0)) %>%
-    flextable::hline(part = "header", i = 1, j = 2:3) %>%
-    flextable::hline(part = "header", i = 1, j = 5:6)
-
-  if(!is.null(var_labels)){
-    table <- table %>%
-      flextable::labelizor(part = "body", labels = var_labels)
+      flextable::add_body_row(top = FALSE, values = NA) %>%
+      flextable::compose(part = "body", i = (n_rows + 1), j = 1, value = flextable::as_paragraph(flextable::as_i("pseudo-R\u00B2"))) %>%
+      flextable::compose(part = "body", i = (n_rows + 1), j = 2, value = flextable::as_paragraph(r2_mcfadden[1]))
   }
 
   if (lrt == TRUE){
     table <- table %>%
-      flextable::align(part = "all", j = c(8), align = "right") %>%
-      flextable::align(part = "all", j = c(9), align = "left") %>%
-      flextable::align(part = "header", i = 1, align = "center") %>%
+      flextable::align(   part = "all",           j = c(8), align = "right") %>%
+      flextable::align(   part = "all",           j = c(9), align = "left") %>%
+      flextable::align(   part = "header", i = 1,           align = "center") %>%
       flextable::merge_at(part = "header", i = 1, j = 8:9) %>%
-      flextable::compose(part = "header", i = 1, j = 8,
-                         value = flextable::as_paragraph(flextable::as_i("p"))) %>%
-      flextable::hline(part = "header", i = 1, j = 8:9)
+      flextable::compose( part = "header", i = 1, j = 8, value = flextable::as_paragraph(flextable::as_i("p"))) %>%
+      flextable::hline(   part = "header", i = 1, j = 8:9)
   } else {
     table <- table %>%
-      flextable::compose(part = "header", i = 1, j = 8,
-                         value = flextable::as_paragraph(NA)) %>%
-      flextable::compose(part = "header", i = 2, j = 8,
-                         value = flextable::as_paragraph(flextable::as_i("p")))
-
+      flextable::compose(part = "header", i = 1, j = 8, value = flextable::as_paragraph(NA)) %>%
+      flextable::compose(part = "header", i = 2, j = 8, value = flextable::as_paragraph(flextable::as_i("p")))
   }
 
   n_rows <- flextable::nrow_part(table, part = "body")
@@ -328,11 +261,27 @@ tab_glm <- function(x,
   if (n_fit > 0) {
     table <- table %>%
       flextable::italic(part = "body", i = (n_rows - n_fit + 1):(n_rows)) %>%
-      flextable::hline(i = n_rows - n_fit)
+      flextable::hline( part = "body", i =  n_rows - n_fit)
   }
 
-
-  table <- table %>%
+  table <- table  %>%
+    flextable::delete_rows(part = "header", i = 1) %>%
+    flextable::add_header_row(values = c(NA, abr[1], NA, abr[2], rep(NA, n_col - 6)),
+                              colwidths = c(1, 2, 1, 2, rep(1, n_col - 6))) %>%
+    apaSupp::theme_apa(caption   = caption,
+                       d         = d,
+                       main_note = main_note,
+                       p_note    = p_note,
+                       breaks    = breaks,
+                       symbols   = symbols) %>%
+    flextable::italic(part = "header", i = 2, j = 4:5) %>%
+    flextable::align( part = "all",           j = c(2, 5), align = "right") %>%
+    flextable::align( part = "all",           j = c(3, 6), align = "left") %>%
+    flextable::align( part = "header", i = 1,              align = "center") %>%
+    flextable::align( part = "footer",                     align = "left") %>%
+    flextable::hline( part = "header", i = 1, border = flextable::fp_border_default(width = 0)) %>%
+    flextable::hline( part = "header", i = 1, j = 2:3) %>%
+    flextable::hline( part = "header", i = 1, j = 5:6) %>%
     flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
     flextable::autofit()
 
