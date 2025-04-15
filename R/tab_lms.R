@@ -7,8 +7,10 @@
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If p_note = "apa" then the standard "* p < .05. ** p < .01. *** p < .001." will be used
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param fit Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"
-#' @param show_single_row	(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.
+#' @param show_single_row	 If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.
 #' @param d Optional: Number. Digits after the decimal place
+#' @param breaks Optional: numeric vector of p-value cut-points
+#' @param symbols Optional: character vector for symbols denoting p-value cut-points
 #' @param max_width_in = Optional: Number.  Inches wide the table can be
 #'
 #' @returns a flextable object
@@ -26,18 +28,18 @@
 #' tab_lms(list(m1, m2))
 #'
 tab_lms <- function(x,
-                    var_labels = NULL,
-                    caption = "Compare Regression Models",
-                    narrow = FALSE,
-                    p_note = "apa",
-                    general_note = NULL,
-                    fit = c("AIC",
-                            "BIC",
-                            "r.squared",
-                            "adj.r.squared"),
+                    var_labels      = NULL,
+                    caption         = "Compare Regression Models",
+                    narrow          = FALSE,
+                    general_note    = NA,
+                    p_note          = "apa123",
+                    no_notes        = FALSE,
+                    d               = 2,
+                    fit             = c("AIC", "BIC", "r.squared", "adj.r.squared"),
                     show_single_row = NULL,
-                    d = 2,
-                    max_width_in = 6){
+                    breaks          = c(.05, .01, .001),
+                    symbols         = c("*", "**", "***"),
+                    max_width_in    = 6){
 
 
   ns <- sapply(x,function(y) length(y$residuals))
@@ -49,7 +51,7 @@ tab_lms <- function(x,
     max()
 
   n_models <- length(x)
-  n_fit <- length(fit)
+  n_fit    <- length(fit)
 
   main_note <- flextable::as_paragraph(
     flextable::as_i("Note. "),
@@ -59,76 +61,60 @@ tab_lms <- function(x,
     flextable::as_i("k"), " = number of parameters estimated in each model. ",
     "Larger ", flextable::as_equation("R^2")," values indicated better performance. ",
     "Smaller values indicated better performance for Akaike's Information Criteria (AIC), Bayesian information criteria (BIC), and Root Mean Squared Error (RMSE).",
-    flextable::as_chunk(general_note))
-
-  if (p_note == "apa"){ p_note <- "* p < .05. ** p < .01. *** p < .001."}
-
-  sig_note <- flextable::as_paragraph(p_note)
+    flextable::as_chunk(general_note)
+  )
 
 
-  if(is.null(names(x))){
-    mod_names <- paste("Model", 1:n_models)
-  }else{
-    mod_names <- names(x)
+
+  if(is.null(names(x))){ mod_names <- paste("Model", 1:n_models)
+  } else{                mod_names <- names(x)
   }
 
   get <- x %>%
     purrr::map(apaSupp::gt_lm,
-               narrow = narrow,
-               fit = fit,
-               d = d,
+               narrow          = narrow,
+               fit             = fit,
+               d               = d,
                show_single_row = show_single_row) %>%
     gtsummary::tbl_merge(tab_spanner = mod_names) %>%
-    gtsummary::modify_table_body(~ .x %>%
-                                   dplyr::arrange(row_type == "glance_statistic"))
+    gtsummary::modify_table_body(~ .x %>% dplyr::arrange(row_type == "glance_statistic"))
 
   table <- get %>%
     gtsummary::as_flex_table()
 
   n_rows <- flextable::nrow_part(table, part = "body")
 
-  rows_fit <- (n_rows - n_fit + 1):(n_rows)
+  # rows_fit <- (n_rows - n_fit + 1):(n_rows)
 
 
   table <- table %>%
-    apaSupp::theme_apa(caption = caption,
-                       no_notes = TRUE,
-                       d = d) %>%
-    flextable::hline(part = "body", i = n_rows - n_fit) %>%
-    flextable::bold(part = "header", i = 1) %>%
+    apaSupp::theme_apa(caption      = caption,
+                       main_note    = main_note,
+                       p_note       = p_note,
+                       breaks       = breaks,
+                       symbols      = symbols,
+                       d            = d) %>%
+    flextable::hline( part = "body",   i = n_rows - n_fit) %>%
+    flextable::bold(  part = "header", i = 1) %>%
     flextable::italic(part = "header", i = 2) %>%
-    flextable::italic(part = "body", i = rows_fit) %>%
-    flextable::align(part = "header", i = 1, align = "center")
+    flextable::italic(part = "body",   i = rows_fit) %>%
+    flextable::align( part = "header", i = 1, align = "center")
 
-  if(!is.null(var_labels)){
-    table <- table %>%
-      flextable::labelizor(part = "body",
-                           labels = var_labels)
-  }
+  if(!is.null(var_labels)){ table <- table %>% flextable::labelizor(part = "body", labels = var_labels)}
 
   if (narrow == FALSE){
     table <- table %>%
-      flextable::align(part = "all",
-                       j = seq(from = 2, to = 3*n_models, by = 3),
-                       align = "right") %>%
-      flextable::align(part = "all",
-                       j = seq(from = 3, to = (3*n_models + 1), by = 3),
-                       align = "left")
+      flextable::align(part = "all", j = seq(from = 2, to =  3*n_models,      by = 3), align = "right") %>%
+      flextable::align(part = "all", j = seq(from = 3, to = (3*n_models + 1), by = 3), align = "left")
   } else {
     table <- table %>%
-      flextable::align(part = "all",
-                       j = seq(from = 2, to = 2*n_models, by = 2),
-                       align = "right") %>%
-      flextable::align(part = "all",
-                       j = seq(from = 3, to = (2*n_models + 1), by = 2),
-                       align = "left")
+      flextable::align(part = "all", j = seq(from = 2, to =  2*n_models,      by = 2), align = "right") %>%
+      flextable::align(part = "all", j = seq(from = 3, to = (2*n_models + 1), by = 2), align = "left")
   }
-
-
 
   table <- table %>%
     flextable::align(part = "header", i = 1, align = "center") %>%
-    flextable::align(part = "footer", align = "left") %>%
+    flextable::align(part = "footer",        align = "left") %>%
     flextable::hline(part = "header", i = 1,
                      border = flextable::fp_border_default(width = 0)) %>%
     flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%

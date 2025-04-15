@@ -30,10 +30,9 @@
 #'
 #'
 tab_desc <- function(df,
-                     caption = "Summary of Quantiatative Variables",
+                     caption      = "Summary of Quantiatative Variables",
                      general_note = NA,
-                     no_notes = FALSE,
-                     d = 2,
+                     d            = 2,
                      max_width_in = 6){
 
   n <- nrow(df)
@@ -50,7 +49,7 @@ tab_desc <- function(df,
   )
 
 
-  x <- df %>%
+  table <- df %>%
     dplyr::summarise(across(
       .cols = where(is.numeric),
       .fns = list(nmiss = ~ naniar::n_miss(.x),
@@ -68,30 +67,24 @@ tab_desc <- function(df,
                         names_pattern = "(.*)__(.*)") %>%
     dplyr::mutate(nmiss = as.integer(as.numeric(nmiss))) %>%
     dplyr::select("Variable" = var,
-                  "NA" = nmiss,
-                  "M" = M,
-                  "SD" = SD,
-                  "min" = min,
-                  "Q1" = q1,
-                  "Mdn" = Mdn,
-                  "Q3" = q3,
-                  "max" = max) %>%
-    as.data.frame()
-
-  table <- x %>%
+                  "NA"       = nmiss,
+                  "M"        = M,
+                  "SD"       = SD,
+                  "min"      = min,
+                  "Q1"       = q1,
+                  "Mdn"      = Mdn,
+                  "Q3"       = q3,
+                  "max"      = max) %>%
+    as.data.frame()%>%
     flextable::flextable() %>%
-    apaSupp::theme_apa(caption,
-                       general_note = NA,
-                       p_note = NULL,
-                       d = d,
-                       max_width_in = max_width_in) %>%
-    flextable::align(j = 1,   align = "left",  part = "all") %>%
-    flextable::align(j = 2:9, align = "right", part = "all") %>%
-    flextable::bold(j = c(3, 4, 7), part = "all") %>%
-    flextable::italic(part = "header") %>%
+    apaSupp::theme_apa(caption   = caption,
+                       main_note = main_note,
+                       d         = d) %>%
+    flextable::align(part = "all", j = 1,   align = "left") %>%
+    flextable::align(part = "all", j = 2:9, align = "right") %>%
+    flextable::bold( part = "all", j = c(3, 4, 7)) %>%
+    flextable::italic( part = "header") %>%
     flextable::compose(part = "header", i = 1, j = 1, value = flextable::as_paragraph(NA)) %>%
-    flextable::add_footer_lines("") %>%
-    flextable::compose(part = "footer", i = 1, j = 1, value = main_note) %>%
     flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
     flextable::autofit()
 

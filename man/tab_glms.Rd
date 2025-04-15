@@ -7,14 +7,17 @@
 tab_glms(
   x,
   var_labels = NULL,
-  caption = "Compare Regression Models",
+  caption = "Compare Generalized Regression Models",
   narrow = FALSE,
-  p_note = "apa",
   general_note = NA,
+  p_note = "apa123",
+  no_notes = FALSE,
+  d = 2,
   fit = c("AIC", "BIC"),
   pr2 = "both",
   show_single_row = NULL,
-  d = 2,
+  breaks = c(0.05, 0.01, 0.001),
+  symbols = c("*", "**", "***"),
   max_width_in = 6
 )
 }
@@ -27,17 +30,17 @@ tab_glms(
 
 \item{narrow}{Optional. Logical. Default = FALSE, but TRUE will exclude p-vlaues from the table to make it narrower}
 
+\item{general_note}{Optional: Text. General note for footer of APA table}
+
 \item{p_note}{Optional: Text. (default = NULL) Significance note for APA table, If p_note = "apa" then the standard "* p < .05. ** p < .01. *** p < .001." will be used}
 
-\item{general_note}{Optional: Text. General note for footer of APA table}
+\item{d}{Optional: Number. Digits after the decimal place}
 
 \item{fit}{Optional: vector. quoted names of fit metrics from \code{performance::performance()} for glm (max of 4)}
 
 \item{pr2}{Optional: character.  (default = "both") Include pseudo R-squared: "tjur", "mcfadden", "both", or "none"}
 
 \item{show_single_row}{(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.}
-
-\item{d}{Optional: Number. Digits after the decimal place}
 
 \item{max_width_in}{= Optional: Number.  Inches wide the table can be}
 }

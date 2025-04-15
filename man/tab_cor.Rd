@@ -7,7 +7,7 @@
 tab_cor(
   x,
   caption = "Pairwise Correlations",
-  p_note = "apa",
+  p_note = "apa123",
   general_note = NA,
   d = 2,
   max_width_in = 6,

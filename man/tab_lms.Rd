@@ -9,11 +9,14 @@ tab_lms(
   var_labels = NULL,
   caption = "Compare Regression Models",
   narrow = FALSE,
-  p_note = "apa",
-  general_note = NULL,
+  general_note = NA,
+  p_note = "apa123",
+  no_notes = FALSE,
+  d = 2,
   fit = c("AIC", "BIC", "r.squared", "adj.r.squared"),
   show_single_row = NULL,
-  d = 2,
+  breaks = c(0.05, 0.01, 0.001),
+  symbols = c("*", "**", "***"),
   max_width_in = 6
 )
 }
@@ -26,15 +29,19 @@ tab_lms(
 
 \item{narrow}{Optional. Logical. Default = FALSE, but TRUE will exclude p-vlaues from the table to make it narrower}
 
+\item{general_note}{Optional: Text. General note for footer of APA table}
+
 \item{p_note}{Optional: Text. (default = NULL) Significance note for APA table, If p_note = "apa" then the standard "* p < .05. ** p < .01. *** p < .001." will be used}
 
-\item{general_note}{Optional: Text. General note for footer of APA table}
+\item{d}{Optional: Number. Digits after the decimal place}
 
 \item{fit}{Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"}
 
-\item{show_single_row}{(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.}
+\item{show_single_row}{If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.}
 
-\item{d}{Optional: Number. Digits after the decimal place}
+\item{breaks}{Optional: numeric vector of p-value cut-points}
+
+\item{symbols}{Optional: character vector for symbols denoting p-value cut-points}
 
 \item{max_width_in}{= Optional: Number.  Inches wide the table can be}
 }

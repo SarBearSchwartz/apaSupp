@@ -51,5 +51,5 @@ library(flextable)
 mtcars \%>\%
   dplyr::select(mpg, disp, hp, drat, wt) \%>\%
   flextable::flextable() \%>\%
-  theme_apa(caption = "Summary of Some Variables")
+  apaSupp::theme_apa(caption = "Summary of Some Variables")
 }

@@ -8,7 +8,6 @@ tab_glm_fits(
   x,
   caption = "Comparison of Generalized Linear Model Performane Metrics",
   general_note = NA,
-  sort = "Tjur",
   d = 2,
   max_width_in = 6
 )
@@ -19,8 +18,6 @@ tab_glm_fits(
 \item{caption}{Optional: Text. Caption for the table}
 
 \item{general_note}{Optional: Text. General note for footer of APA table}
-
-\item{sort}{Optional: metrics to sort by, default = "AIC", but may use: "Model", "Tjur", "McFadden", "AIC",  "BIC", "RMSE"}
 
 \item{d}{Optional: Number. Digits after the decimal place}
 

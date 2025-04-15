@@ -121,17 +121,18 @@ tab_lm <- function(x,
 
   table <- get %>%
     gtsummary::as_flex_table() %>%
-    apaSupp::theme_apa(caption   = caption,
-                       d         = d,
-                       main_note = main_note,
-                       p_note    = p_note) %>%
+    apaSupp::theme_apa(caption      = caption,
+                       main_note    = main_note,
+                       p_note       = p_note,
+                       breaks       = breaks,
+                       symbols      = symbols,
+                       d            = d) %>%
     flextable::align( part = "all",   j = 2, align = "right") %>%
     flextable::align( part = "all",   j = 3, align = "left") %>%
     flextable::align( part = "footer",       align = "left")
 
-  if(!is.null(var_labels)){
-    table <- table %>% flextable::labelizor(part = "body", labels = var_labels)
-  }
+
+  if(!is.null(var_labels)){ table <- table %>% flextable::labelizor(part = "body", labels = var_labels)}
 
   n_rows <- flextable::nrow_part(table, part = "body")
 

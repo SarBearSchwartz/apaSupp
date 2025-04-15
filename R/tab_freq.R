@@ -19,10 +19,10 @@
 #' apaSupp::tab_freq(mtcars)
 #'
 tab_freq <- function(df,
-                     split = NULL,
-                     caption = "Summary of Categorical Variables",
+                     split        = NULL,
+                     caption      = "Summary of Categorical Variables",
                      general_note = NA,
-                     d = 2,
+                     d            = 2,
                      max_width_in = 6){
 
   table <- df %>%
@@ -40,13 +40,12 @@ tab_freq <- function(df,
     flextable::prepend_chunks(i = ~is.na(variable),
                               j = 1,
                               as_chunk("\t")) %>%
-    apaSupp::theme_apa(caption = caption,
+    apaSupp::theme_apa(caption      = caption,
                        general_note = general_note,
-                       p_note = NULL,
-                       d = d,
+                       d            = d,
                        max_width_in = max_width_in) %>%
-    flextable::align(align = "right", part = "body") %>%
-    flextable::align(j = 1:2, align = "left",  part = "all") %>%
+    flextable::align(  part = "body",         align = "right") %>%
+    flextable::align(  part = "all", j = 1:2, align = "left") %>%
     flextable::padding(j =  1, padding.left = 0, padding.right = 0) %>%
     flextable::padding(j = -1, padding.left = 5, padding.right = 0) %>%
     flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%

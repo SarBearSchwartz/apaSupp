@@ -207,9 +207,7 @@ tab_glm <- function(x,
       flextable::compose(part = "body",   j = c(4, 7), value = flextable::as_paragraph(NA))
   }
 
-  if(!is.null(var_labels)){
-    table <- table %>% flextable::labelizor(part = "body", labels = var_labels)
-  }
+  if(!is.null(var_labels)){ table <- table %>% flextable::labelizor(part = "body", labels = var_labels)}
 
   n_col  <- flextable::ncol_keys(table)
   n_rows <- flextable::nrow_part(table, part = "body")
@@ -266,14 +264,14 @@ tab_glm <- function(x,
 
   table <- table  %>%
     flextable::delete_rows(part = "header", i = 1) %>%
-    flextable::add_header_row(values = c(NA, abr[1], NA, abr[2], rep(NA, n_col - 6)),
-                              colwidths = c(1, 2, 1, 2, rep(1, n_col - 6))) %>%
-    apaSupp::theme_apa(caption   = caption,
-                       d         = d,
-                       main_note = main_note,
-                       p_note    = p_note,
-                       breaks    = breaks,
-                       symbols   = symbols) %>%
+    flextable::add_header_row(values    = c(NA, abr[1], NA, abr[2], rep(NA, n_col - 6)),
+                              colwidths = c( 1,     2,   1,     2,  rep( 1, n_col - 6))) %>%
+    apaSupp::theme_apa(caption      = caption,
+                       main_note    = main_note,
+                       p_note       = p_note,
+                       breaks       = breaks,
+                       symbols      = symbols,
+                       d            = d) %>%
     flextable::italic(part = "header", i = 2, j = 4:5) %>%
     flextable::align( part = "all",           j = c(2, 5), align = "right") %>%
     flextable::align( part = "all",           j = c(3, 6), align = "left") %>%

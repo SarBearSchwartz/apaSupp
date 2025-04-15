@@ -23,7 +23,7 @@
 #'
 tab_cor <- function(x,
                     caption = "Pairwise Correlations",
-                    p_note = "apa",
+                    p_note = "apa123",
                     general_note = NA,
                     d = 2,
                     max_width_in = 6,
@@ -39,10 +39,6 @@ tab_cor <- function(x,
     flextable::as_chunk(general_note)
   )
 
-  if (p_note == "apa"){ p_note <- "* p < .05. ** p < .01. *** p < .001."}
-
-  sig_note <- flextable::as_paragraph(p_note)
-
 
   table <- x %>%
     rstatix::cor_mat() %>%
@@ -52,27 +48,18 @@ tab_cor <- function(x,
     dplyr::mutate(p = apaSupp::p_num(p, breaks = breaks, symbols = symbols)) %>%
     dplyr::select("Variable Pair" = var1, var2, r, p) %>%
     flextable::flextable() %>%
-    apaSupp::theme_apa(caption = caption,
-                       general_note = NA,
-                       p_note = NULL,
-                       d = d,
-                       max_width_in = max_width_in) %>%
+    apaSupp::theme_apa(caption      = caption,
+                       main_note    = main_note,
+                       p_note       = p_note,
+                       breaks       = breaks,
+                       symbols      = symbols,
+                       d            = d) %>%
     flextable::merge_at(part = "header", i = 1, j = 1:2) %>%
-    flextable::italic(part = "header", i = 1, j = 3:4) %>%
-    flextable::align(part = "header", align = "center") %>%
-    flextable::align(part = "body", j = 1:2, align = "left") %>%
-    flextable::align(part = "body", j = 3:4, align = "right") %>%
-    flextable::align(part = "footer", align = "left") %>%
-    flextable::add_footer_lines("") %>%
-    flextable::compose(part = "footer", i = 1, j = 1, value = main_note)
-
-    if (!is.null(p_note)){
-      table <- table %>%
-        flextable::add_footer_lines("") %>%
-        flextable::compose(part = "footer", i = 2, j = 1, value = sig_note)
-    }
-
-  table <- table %>%
+    flextable::italic(  part = "header", i = 1, j = 3:4) %>%
+    flextable::align(   part = "header",                 align = "center") %>%
+    flextable::align(   part = "body",          j = 1:2, align = "left") %>%
+    flextable::align(   part = "body",          j = 3:4, align = "right") %>%
+    flextable::align(   part = "footer",                 align = "left") %>%
     flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
     flextable::autofit()
 

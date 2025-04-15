@@ -81,11 +81,11 @@ tab_xalpha <- function(df,
     length()
 
   main_note <- flextable::as_paragraph(
-    flextable::as_i("Note. "),
-    flextable::as_i("N"),
+    flextable::as_i(    "Note. "),
+    flextable::as_i(    "N"),
     flextable::as_chunk(glue::glue(" = {n}. ")),
-    flextable::as_i("Std"), " = standardized; ",
-    flextable::as_i("Mdn"), " = median. ",
+    flextable::as_i(    "Std"), " = standardized; ",
+    flextable::as_i(    "Mdn"), " = median. ",
     flextable::as_chunk(general_note)
   )
 
@@ -97,10 +97,8 @@ tab_xalpha <- function(df,
                           tidyr::pivot_wider(names_from = !!item,
                                              names_prefix = "item_",
                                              values_from = !!value))) %>%
-    dplyr::mutate(lo = purrr::map_dbl(data,
-                                      ~ min(.x %>% dplyr::select(!!value)))) %>%
-    dplyr::mutate(hi = purrr::map_dbl(data,
-                                      ~ max(.x %>% dplyr::select(!!value)))) %>%
+    dplyr::mutate(lo = purrr::map_dbl(data, ~ min(.x %>% dplyr::select(!!value)))) %>%
+    dplyr::mutate(hi = purrr::map_dbl(data, ~ max(.x %>% dplyr::select(!!value)))) %>%
     dplyr::mutate(psych_alpha = purrr::map(data_wide,
                                            ~ data.frame(.x) %>%
                                              dplyr::select(-!!id) %>%
@@ -141,27 +139,15 @@ tab_xalpha <- function(df,
 
   table <- y  %>%
     flextable::separate_header() %>%
-    apaSupp::theme_apa(caption = caption,
-              general_note = NA,
-              p_note = NULL,
-              d = d) %>%
-    flextable::italic(part = "header", i = 2, j = c(4, 5, 7, 8)) %>%   #added
-    flextable::align(j = -1, align = "center", part = "all") %>%
+    apaSupp::theme_apa(caption      = caption,
+                       main_note    = main_note,
+                       d            = d) %>%
     flextable::line_spacing(space = 1, part = "header") %>%
-    flextable::padding(j = c(6),
-                       padding.left = 5,
-                       padding.right = 5,
-                       part = "all") %>%
-    flextable::padding(j = c(4, 7),
-                       padding.left = 10,
-                       padding.right = 1,
-                       part = "all") %>%
-    flextable::padding(j = c(5, 8),
-                       padding.left = 1,
-                       padding.right = 10,
-                       part = "all") %>%
-    flextable::add_footer_lines("") %>%
-    flextable::compose(part = "footer", i = 1, j = 1, value = main_note)
+    flextable::italic( part = "header", i = 2, j = c(4, 5, 7, 8)) %>%   #added
+    flextable::align(  part = "all",  j = -1,      align = "center") %>%
+    flextable::padding(part = "all",  j = c(6),    padding.left =  5, padding.right = 5) %>%
+    flextable::padding(part = "all",  j = c(4, 7), padding.left = 10, padding.right = 1) %>%
+    flextable::padding(part = "all",  j = c(5, 8), padding.left =  1, padding.right = 10) %>%
     flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
     flextable::autofit()
 

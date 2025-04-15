@@ -47,16 +47,19 @@
 #'
 #'
 tab_glms <- function(x,
-                     var_labels = NULL,
-                     caption = "Compare Regression Models",
-                     narrow = FALSE,
-                     p_note = "apa",
-                     general_note = NA,
-                     fit = c("AIC", "BIC"),
-                     pr2 = "both",
+                     var_labels      = NULL,
+                     caption         = "Compare Generalized Regression Models",
+                     narrow          = FALSE,
+                     general_note    = NA,
+                     p_note          = "apa123",
+                     no_notes        = FALSE,
+                     d               = 2,
+                     fit             = c("AIC", "BIC"),
+                     pr2             = "both",
                      show_single_row = NULL,
-                     d = 2,
-                     max_width_in = 6){
+                     breaks          = c(.05, .01, .001),
+                     symbols         = c("*", "**", "***"),
+                     max_width_in    = 6){
 
   ns <- sapply(x,function(y) length(y$residuals))
 
@@ -92,23 +95,14 @@ tab_glms <- function(x,
   )
 
 
-
-  if (p_note == "apa"){ p_note <- "* p < .05. ** p < .01. *** p < .001."}
-
-  sig_note <- flextable::as_paragraph(p_note)
-
-
-
-  if(is.null(names(x))){
-    mod_names <- paste("Model", 1:n_models)
-  }else{
-    mod_names <- names(x)
+  if(is.null(names(x))){ mod_names <- paste("Model", 1:n_models)
+  } else{                mod_names <- names(x)
   }
 
   table <- x %>%
     purrr::map(apaSupp::gt_glm,
-               narrow = narrow,
-               d = d,
+               narrow          = narrow,
+               d               = d,
                show_single_row = show_single_row) %>%
     gtsummary::tbl_merge(tab_spanner = mod_names) %>%
     gtsummary::as_flex_table()
@@ -118,8 +112,7 @@ tab_glms <- function(x,
 
   if (length(unique(ns)) > 1){
     table <- table %>%
-      flextable::add_body_row(top = FALSE,
-                              values = NA) %>%
+      flextable::add_body_row(top = FALSE, values = NA) %>%
       flextable::compose(part = "body", i = (n_rows + 1), j = 1,
                          value = flextable::as_paragraph("N"))
 
@@ -144,8 +137,7 @@ tab_glms <- function(x,
   if (sum(!is.na(fit))  == 1){
 
     table <- table %>%
-      flextable::add_body_row(top = FALSE,
-                              values = NA) %>%
+      flextable::add_body_row(top = FALSE, values = NA) %>%
       flextable::compose(part = "body", i = (n_rows + 1), j = 1,
                          value = flextable::as_paragraph(names(df_fit[1])))
 
@@ -160,15 +152,13 @@ tab_glms <- function(x,
     pad_fit <- n_rows + (2:(1+length(fit)))
 
     table <- table %>%
-      flextable::add_body_row(top = FALSE,
-                              values = NA) %>%
+      flextable::add_body_row(top = FALSE, values = NA) %>%
       flextable::compose(part = "body", i = (n_rows + 1), j = 1,
                          value = flextable::as_paragraph("Fit Metrics"))
 
     for (i_fit in 1:length(fit)){
       table <- table %>%
-        flextable::add_body_row(top = FALSE,
-                                values = NA) %>%
+        flextable::add_body_row(top = FALSE, values = NA) %>%
         flextable::compose(part = "body", i = (n_rows + 1 + i_fit), j = 1,
                            value = flextable::as_paragraph(names(df_fit[i_fit])))
 
@@ -183,10 +173,10 @@ tab_glms <- function(x,
 
   df_r2 <- data.frame(num = 1:n_models) %>%
     dplyr::mutate(mod = x) %>%
-    dplyr::mutate(tjur = purrr::map_dbl(x, performance::r2_tjur)) %>%
+    dplyr::mutate(tjur     = purrr::map_dbl(x, ~performance::r2_tjur(.x))) %>%
     dplyr::mutate(mcfadden = purrr::map_dbl(x, ~performance::r2_mcfadden(.x)[[1]])) %>%
     dplyr::select(tjur, mcfadden) %>%
-    dplyr::mutate(tjur = apaSupp::p_num(tjur, d = d + 1, stars = FALSE))%>%
+    dplyr::mutate(tjur     = apaSupp::p_num(tjur,     d = d + 1, stars = FALSE)) %>%
     dplyr::mutate(mcfadden = apaSupp::p_num(mcfadden, d = d + 1, stars = FALSE))
 
 
@@ -195,8 +185,7 @@ tab_glms <- function(x,
 
   if (pr2 == "tjur" | pr2 == "mcfadden"){
     table <- table %>%
-      flextable::add_body_row(top = FALSE,
-                              values = NA) %>%
+      flextable::add_body_row(top = FALSE, values = NA) %>%
       flextable::compose(part = "body", i = (n_rows + 1), j = 1,
                          value = flextable::as_paragraph(flextable::as_i("pseudo-R"),
                                                          flextable::as_chunk("\u00B2")))
@@ -212,17 +201,14 @@ tab_glms <- function(x,
     pad_pr2 <- n_rows + (2:3)
 
     table <- table %>%
-      flextable::add_body_row(top = FALSE,
-                              values = NA) %>%
+      flextable::add_body_row(top = FALSE, values = NA) %>%
       flextable::compose(part = "body", i = (n_rows + 1), j = 1,
                          value = flextable::as_paragraph(flextable::as_i("pseudo-R"),
                                                          flextable::as_chunk("\u00B2"))) %>%
-      flextable::add_body_row(top = FALSE,
-                              values = NA) %>%
+      flextable::add_body_row(top = FALSE, values = NA) %>%
       flextable::compose(part = "body", i = (n_rows + 2), j = 1,
                          value = flextable::as_paragraph("Tjur")) %>%
-      flextable::add_body_row(top = FALSE,
-                              values = NA) %>%
+      flextable::add_body_row(top = FALSE, values = NA) %>%
       flextable::compose(part = "body", i = (n_rows + 3), j = 1,
                          value = flextable::as_paragraph("McFadden"))
 
@@ -239,12 +225,15 @@ tab_glms <- function(x,
 
 
   table <- table %>%
-    apaSupp::theme_apa(caption = caption,
-                       no_notes = TRUE,
-                       d = d) %>%
-    flextable::bold(part = "header", i = 1) %>%
+    apaSupp::theme_apa(caption      = caption,
+                       main_note    = main_note,
+                       p_note       = p_note,
+                       breaks       = breaks,
+                       symbols      = symbols,
+                       d            = d) %>%
+    flextable::bold(  part = "header", i = 1) %>%
     flextable::italic(part = "header", i = 2) %>%
-    flextable::align(part = "header", i = 1, align = "center")
+    flextable::align( part = "header", i = 1, align = "center")
 
 
   n_rows <- flextable::nrow_part(table, part = "body")
@@ -252,41 +241,21 @@ tab_glms <- function(x,
   if(n_fit > 0){
     table <- table %>%
       flextable::italic(part = "body", i = (n_rows + 1 - n_fit):(n_rows)) %>%
-      flextable::hline(part = "body", i = (n_rows - n_fit))
+      flextable::hline( part = "body", i = (n_rows - n_fit))
   }
 
 
   if (narrow == FALSE){
     table <- table %>%
-      flextable::align(part = "all",
-                       j = seq(from = 2, to = 3*n_models, by = 3),
-                       align = "right") %>%
-      flextable::align(part = "all",
-                       j = seq(from = 3, to = (3*n_models + 1), by = 3),
-                       align = "left")
+      flextable::align(part = "all", j = seq(from = 2, to =  3*n_models,      by = 3), align = "right") %>%
+      flextable::align(part = "all", j = seq(from = 3, to = (3*n_models + 1), by = 3), align = "left")
   } else {
     table <- table %>%
-      flextable::align(part = "all",
-                       j = seq(from = 2, to = 2*n_models, by = 2),
-                       align = "right") %>%
-      flextable::align(part = "all",
-                       j = seq(from = 3, to = (2*n_models + 1), by = 2),
-                       align = "left")
+      flextable::align(part = "all", j = seq(from = 2, to =  2*n_models,      by = 2),  align = "right") %>%
+      flextable::align(part = "all", j = seq(from = 3, to = (2*n_models + 1), by = 2), align = "left")
   }
 
-  if(!is.null(var_labels)){
-    table <- table %>%
-      flextable::labelizor(part = "body",
-                           labels = var_labels)
-  }
-
-  table <- table %>%
-    flextable::align(part = "header", i = 1, align = "center") %>%
-    flextable::align(part = "footer", align = "left") %>%
-    flextable::hline(part = "header", i = 1,
-                     border = flextable::fp_border_default(width = 0)) %>%
-    flextable::add_footer_lines("") %>%
-    flextable::compose(part = "footer", i = 1, j = 1, value = main_note)
+  if(!is.null(var_labels)){ table <- table %>% flextable::labelizor(part = "body", labels = var_labels) }
 
   pad_lines <- c(pad_fit, pad_pr2)
 
@@ -295,14 +264,10 @@ tab_glms <- function(x,
       flextable::padding(i = pad_lines, padding.left = 20)
   }
 
-
-  if (!is.null(p_note)){
-    table <- table %>%
-      flextable::add_footer_lines("") %>%
-      flextable::compose(part = "footer", i = 2, j = 1, value = sig_note)
-  }
-
   table <- table %>%
+    flextable::align(part = "header", i = 1, align = "center") %>%
+    flextable::align(part = "footer",        align = "left") %>%
+    flextable::hline(part = "header", i = 1, border = flextable::fp_border_default(width = 0)) %>%
     flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
     flextable::autofit()
 
