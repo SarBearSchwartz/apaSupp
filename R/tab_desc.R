@@ -80,12 +80,12 @@ tab_desc <- function(df,
     apaSupp::theme_apa(caption   = caption,
                        main_note = main_note,
                        d         = d) %>%
-    flextable::align(part = "all", j = 1,   align = "left") %>%
-    flextable::align(part = "all", j = 2:9, align = "right") %>%
-    flextable::bold( part = "all", j = c(3, 4, 7)) %>%
+    flextable::align(  part = "all", j = 1,   align = "left") %>%
+    flextable::align(  part = "all", j = 2:9, align = "right") %>%
+    flextable::bold(   part = "all", j = c(3, 4, 7)) %>%
     flextable::italic( part = "header") %>%
     flextable::compose(part = "header", i = 1, j = 1, value = flextable::as_paragraph(NA)) %>%
-    flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
+    # flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
     flextable::autofit()
 
   return(table)

@@ -65,7 +65,6 @@ tab_lms <- function(x,
   )
 
 
-
   if(is.null(names(x))){ mod_names <- paste("Model", 1:n_models)
   } else{                mod_names <- names(x)
   }
@@ -83,9 +82,7 @@ tab_lms <- function(x,
     gtsummary::as_flex_table()
 
   n_rows <- flextable::nrow_part(table, part = "body")
-
-  # rows_fit <- (n_rows - n_fit + 1):(n_rows)
-
+  rows_fit <- (n_rows - n_fit + 1):(n_rows)
 
   table <- table %>%
     apaSupp::theme_apa(caption      = caption,

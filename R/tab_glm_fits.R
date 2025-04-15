@@ -72,10 +72,10 @@ tab_glm_fits <- function(x,
     flextable::add_header_row(values = c(NA, "R2",NA), colwidths = c(3, 2, 3)) %>%
     flextable::colformat_double(j = c("N", "k"),             big.mark = "", digits = 0) %>%
     flextable::colformat_double(j = c("AIC", "BIC", "RMSE"), big.mark = "", digits = d) %>%
-    flextable::hline(  part = "header", i = 1, border = flextable::fp_border_default(width = 0)) %>%
+    flextable::hline(  part = "header", i = 1,        border = flextable::fp_border_default(width = 0)) %>%
+    flextable::compose(part = "header", i = 1, j = 4, value  = flextable::as_paragraph("pseudo-", flextable::as_equation("R^2"))) %>%
     flextable::hline(  part = "header", i = 1, j = 4:5) %>%
     flextable::italic( part = "header", i = 2, j = c(2:3)) %>%
-    flextable::compose(part = "header", i = 1, j = 4, value = flextable::as_paragraph("pseudo-", flextable::as_equation("R^2"))) %>%
     flextable::align(  part = "all",    j = c("N", "McFadden","AIC"), align = "right") %>%
     flextable::align(  part = "all",    j = c("k", "Tjur", "BIC"),    align = "left") %>%
     flextable::align(  part = "header", i = 1,                        align = "center") %>%

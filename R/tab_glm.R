@@ -196,8 +196,7 @@ tab_glm <- function(x,
     table <- list(get_tran, get_orig, get_sig, get_vif) %>%
       gtsummary::tbl_merge(tab_spanner = c(abr[1], abr[2], "p", NA)) %>%
       gtsummary::as_flex_table() %>%
-      flextable::compose(part = "all", j = c(4, 7),
-                         value = flextable::as_paragraph(NA))
+      flextable::compose(part = "all", j = c(4, 7), value = flextable::as_paragraph(NA))
 
   } else {
     table <- list(get_tran,  get_orig,  get_sig) %>%
