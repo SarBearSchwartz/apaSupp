@@ -37,7 +37,7 @@ gt_lm <- function(x,
   table <- x %>%
     gtsummary::tbl_regression(intercept = TRUE,
                               conf.int = FALSE,
-                              pvalue_fun = ~ apaSupp::p_fun(.x, d = d),
+                              pvalue_fun = ~ p_fun(.x, d = d),
                               tidy_fun = broom.helpers::tidy_with_broom_or_parameters,
                               show_single_row = show_single_row)  %>%
     gtsummary::add_glance_table(include = all_of(fit)) %>%

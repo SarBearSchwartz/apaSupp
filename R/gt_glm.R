@@ -46,7 +46,7 @@ gt_glm <- function(x,
     gtsummary::tbl_regression(intercept       = FALSE,
                               conf.int        = TRUE,
                               exponentiate    = TRUE,
-                              pvalue_fun      = ~ apaSupp::p_fun(.x, d = d),
+                              pvalue_fun      = ~ p_fun(.x, d = d),
                               tidy_fun        = broom.helpers::tidy_with_broom_or_parameters,
                               show_single_row = show_single_row)
 
