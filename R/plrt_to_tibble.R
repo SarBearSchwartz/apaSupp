@@ -29,8 +29,8 @@ plrt_to_tibble <- function(x,
     dplyr::select(variable, p_lrt = `Pr(>Chi)`) %>%
     dplyr::filter(!is.na(p_lrt)) %>%
     dplyr::mutate(row_type = "label")%>%
-    dplyr::mutate(p_lrt = apaSupp::p_num(value = p_lrt,
-                                         decimals = d + 1,
+    dplyr::mutate(p_lrt = apaSupp::p_num(value   = p_lrt,
+                                         d       = d + 1,
                                          leading = TRUE))
 
   return(result)
