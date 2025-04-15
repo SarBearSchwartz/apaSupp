@@ -6,12 +6,14 @@
 \usage{
 theme_apa(
   x,
-  caption = "Replace this Table Caption",
+  caption = "Table Caption",
   general_note = NA,
-  p_note = NULL,
+  p_note = NA,
   no_notes = FALSE,
   d = 2,
-  max_width_in = 6
+  max_width_in = 6,
+  main_note = NA,
+  sig_note = NA
 )
 }
 \arguments{

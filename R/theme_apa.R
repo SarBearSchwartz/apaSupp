@@ -22,72 +22,65 @@
 #'   theme_apa(caption = "Summary of Some Variables")
 
 theme_apa <- function(x,
-                      caption = "Replace this Table Caption",
+                      caption      = "Table Caption",
                       general_note = NA,
-                      p_note = NULL,
-                      no_notes = FALSE,
-                      d = 2,
-                      max_width_in = 6){
+                      p_note       = NA,
+                      no_notes     = FALSE,
+                      d            = 2,
+                      max_width_in = 6,
+                      main_note    = NA,
+                      sig_note     = NA){
 
   border.thick <- list("width" = 2.5, color = "black", style = "solid")
   border.thin  <- list("width" = 1.0, color = "black", style = "solid")
 
-
-
-  if (is.null(p_note)){
-    p_note <- NULL
-  } else if (p_note == "apa"){
-    p_note <- "* p < .05. ** p < .01. *** p < .001."
-  } else {
-    p_note <- p_note
+  if (no_notes == TRUE){
+    general_note <- NA
+    p_note       <- NA
   }
 
-  if (no_notes == TRUE){
-    main_note <- NA
-    p_note    <- NULL
-  } else if (is.null(general_note)){
-    main_note <- NA
-  } else if (!is.null(general_note)){
-    main_note <- general_note
+  if (!is.na(general_note)){
+    main_note <- flextable::as_paragraph(flextable::as_i("Note. "),
+                                         flextable::as_chunk(general_note))
+  }
+
+  if (!is.na(p_note) & p_note == "apa"){
+    sig_note  <- flextable::as_paragraph("* p < .05. ** p < .01. *** p < .001.")
+  } else if (!is.na(p_note)){
+    sig_note  <- flextable::as_paragraph(p_note)
   }
 
   table <- x %>%
     flextable::border_remove() %>%
-    flextable::hline_top(part = "header", border = border.thick) %>%
+    flextable::hline_top(part    = "header", border = border.thick) %>%
     flextable::hline_bottom(part = "header", border = border.thin) %>%
-    flextable::hline_bottom(part = "body", border = border.thick) %>%
+    flextable::hline_bottom(part = "body",   border = border.thick) %>%
     flextable::fix_border_issues() %>%
-    flextable::line_spacing(space = 1.5, part = "header") %>%
-    flextable::line_spacing(space = 0.5, part = "body") %>%
-    flextable::line_spacing(space = 1.5, part = "footer") %>%
-    flextable::valign(valign = "center", part = "all") %>%
-    flextable::align(part = "all", align = "center", ) %>%
-    flextable::align(part = "all", j = 1, align = "left") %>%
-    flextable::align(align = "left",     part = "footer") %>%
+    flextable::line_spacing(part = "header", space = 1.5) %>%
+    flextable::line_spacing(part = "body",   space = 0.5) %>%
+    flextable::line_spacing(part = "footer", space = 1.5) %>%
+    flextable::valign(part = "all",       valign = "center") %>%
+    flextable::align( part = "all",        align = "center", ) %>%
+    flextable::align( part = "all", j = 1, align = "left") %>%
+    flextable::align( part = "footer",     align = "left") %>%
     flextable::colformat_double(digits = d)  %>%
     flextable::set_caption(caption = caption, autonum = TRUE)
 
   if (!is.na(main_note)){
     table <- table %>%
       flextable::add_footer_lines("") %>%
-      flextable::compose(part = "footer",
-                         i = 1, j = 1,
-                         value = as_paragraph(flextable::as_i("Note. "),
-                                              as_chunk(main_note)))
+      flextable::compose(part = "footer", i = 1, j = 1, value = main_note)
   }
 
+  f <- flextable::nrow_part(table, part = "footer")
 
-  n_foot <- flextable::nrow_part(table, part = "footer")
-
-  if (!is.null(p_note)){
+  if (!is.na(p_note)){
     table <- table %>%
       flextable::add_footer_lines("") %>%
-      flextable::compose(part = "footer",
-                         i = n_foot + 1, j = 1,
-                         value = as_paragraph(as_chunk(p_note)))
+      flextable::compose(part = "footer", i = f + 1, j = 1, value = sig_note)
   }
 
-    table <- table %>%
+  table <- table %>%
     flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
     flextable::autofit()
 

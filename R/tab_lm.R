@@ -38,8 +38,7 @@ tab_lm <- function(x,
                    caption = "Regression Model",
                    p_note = "apa",
                    general_note = NA,
-                   fit = c("r.squared",
-                           "adj.r.squared"),
+                   fit = c("r.squared", "adj.r.squared"),
                    std = TRUE,
                    vif = FALSE,
                    eta2 = TRUE,
@@ -136,10 +135,20 @@ tab_lm <- function(x,
 
   table <- table %>%
     apaSupp::theme_apa(caption = caption,
-                       no_notes = TRUE,
-                       d = d) %>%
+                       d = d,
+                       main_note = main_note,
+                       sig_note = sig_note) %>%
+    flextable::align(part = "all", j = 2, align = "right") %>%
+    flextable::align(part = "all", j = 3, align = "left") %>%
+    flextable::align(part = "footer", align = "left") %>%
     flextable::hline(i = n_rows - n_fit) %>%
     flextable::italic(part = "body", i = (n_rows - n_fit + 1):(n_rows))
+
+  if(!is.null(var_labels)){
+    table <- table %>%
+      flextable::labelizor(part = "body",
+                           labels = var_labels)
+  }
 
 
   if (std == TRUE){
@@ -158,27 +167,8 @@ tab_lm <- function(x,
       flextable::compose(part = "header",
                          j = "eta.sq.part",
                          value = flextable::as_paragraph("\u03B7\u209A\U00B2"))
-
   }
 
-  if(!is.null(var_labels)){
-    table <- table %>%
-      flextable::labelizor(part = "body",
-                           labels = var_labels)
-  }
-
-  table <- table %>%
-    flextable::align(part = "all", j = 2, align = "right") %>%
-    flextable::align(part = "all", j = 3, align = "left") %>%
-    flextable::align(part = "footer", align = "left") %>%
-    flextable::add_footer_lines("") %>%
-    flextable::compose(part = "footer", i = 1, j = 1, value = main_note)
-
-  if (!is.null(p_note)){
-    table <- table %>%
-      flextable::add_footer_lines("") %>%
-      flextable::compose(part = "footer", i = 2, j = 1, value = sig_note)
-  }
 
   table <- table %>%
     flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%

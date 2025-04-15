@@ -98,10 +98,11 @@ tab_glm <- function(x,
   )
 
 
-
-  if (p_note == "apa"){ p_note <- "* p < .05. ** p < .01. *** p < .001."}
-
-  sig_note <- flextable::as_paragraph(p_note)
+  if (!is.na(p_note) & p_note == "apa"){
+    sig_note  <- flextable::as_paragraph("* p < .05. ** p < .01. *** p < .001.")
+  } else if (!is.na(p_note)){
+    sig_note  <- flextable::as_paragraph(p_note)
+  }
 
 
   if (back_trans == "exp"){
@@ -137,7 +138,7 @@ tab_glm <- function(x,
 
   if (!is.null(fit)){
     get_tran <- get_tran %>%
-      gtsummary::add_glance_table(include = fit)
+      gtsummary::add_glance_table(include = all_of(fit))
   }
 
 
@@ -286,8 +287,9 @@ tab_glm <- function(x,
     flextable::add_header_row(values = c(NA, abr[1], NA, abr[2], rep(NA, n_col - 6)),
                               colwidths = c(1, 2, 1, 2, rep(1, n_col - 6))) %>%
     apaSupp::theme_apa(caption = caption,
-                       no_notes = TRUE,
-                       d = d) %>%
+                       d = d,
+                       main_note = main_note,
+                       sig_note = sig_note) %>%
     flextable::italic(part = "header", i = 2, j = 4:5) %>%
     flextable::align(part = "all", j = c(2, 5), align = "right") %>%
     flextable::align(part = "all", j = c(3, 6), align = "left") %>%
@@ -295,8 +297,6 @@ tab_glm <- function(x,
     flextable::align(part = "footer", align = "left") %>%
     flextable::hline(part = "header", i = 1,
                      border = flextable::fp_border_default(width = 0)) %>%
-    flextable::add_footer_lines("") %>%
-    flextable::compose(part = "footer", i = 1, j = 1, value = main_note) %>%
     flextable::hline(part = "header", i = 1, j = 2:3) %>%
     flextable::hline(part = "header", i = 1, j = 5:6)
 
@@ -331,12 +331,6 @@ tab_glm <- function(x,
       flextable::hline(i = n_rows - n_fit)
   }
 
-
-  if (!is.null(p_note)){
-    table <- table %>%
-      flextable::add_footer_lines("") %>%
-      flextable::compose(part = "footer", i = 2, j = 1, value = sig_note)
-  }
 
   table <- table %>%
     flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
