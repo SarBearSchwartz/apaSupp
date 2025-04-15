@@ -8,8 +8,8 @@
 #' @param id REQUIRED: Bare variable name. Identify cases/subjects
 #' @param caption REQUIRED: Text. Caption for the table
 #' @param general_note Optional: Text. General note for footer of APA table
-#' @param max_width_in = Optional: Number.  Inches wide take can be
-#' @param digits Optional: Number. Digits after the decimal place
+#' @param d Optional: Number. Digits after the decimal place
+#' @param max_width_in = Optional: Number.  Inches wide the table can be
 #'
 #' @return a `flextable` table with caption
 #' @import tidyverse
@@ -51,9 +51,9 @@ tab_xalpha <- function(df,
                        value,
                        id,
                        caption = "Internal Consistency",
-                       general_note = NULL,
-                       max_width_in = 6,
-                       digits = 2){
+                       general_note = NA,
+                       d = 2,
+                       max_width_in = 6){
 
   measure <- rlang::enquo(measure)
   domain  <- rlang::enquo(domain)
@@ -80,13 +80,14 @@ tab_xalpha <- function(df,
     unique() %>%
     length()
 
-  standard_note <- glue::glue("Std = standardized. Mdn = median. N = {n}.")
-
-  if (is.null(general_note)){
-    main_note <- standard_note
-  } else {
-    main_note <- paste(general_note, standard_note, sep = " ")
-  }
+  main_note <- flextable::as_paragraph(
+    flextable::as_i("Note. "),
+    flextable::as_i("N"),
+    flextable::as_chunk(glue::glue(" = {n}. ")),
+    flextable::as_i("Std"), " = standardized; ",
+    flextable::as_i("Mdn"), " = median. ",
+    flextable::as_chunk(general_note)
+  )
 
 
   x <- dfc %>%
@@ -138,12 +139,13 @@ tab_xalpha <- function(df,
     y <- x %>% flextable::flextable()
   }
 
-  tab <- y  %>%
+  table <- y  %>%
     flextable::separate_header() %>%
-    theme_apa(caption = caption,
-              general_note = main_note,
+    apaSupp::theme_apa(caption = caption,
+              general_note = NA,
               p_note = NULL,
-              digits = digits) %>%
+              d = d) %>%
+    flextable::italic(part = "header", i = 2, j = c(4, 5, 7, 8)) %>%   #added
     flextable::align(j = -1, align = "center", part = "all") %>%
     flextable::line_spacing(space = 1, part = "header") %>%
     flextable::padding(j = c(6),
@@ -158,9 +160,12 @@ tab_xalpha <- function(df,
                        padding.left = 1,
                        padding.right = 10,
                        part = "all") %>%
-    flextable::fit_to_width(max_width = max_width_in, unit = "in")
+    flextable::add_footer_lines("") %>%
+    flextable::compose(part = "footer", i = 1, j = 1, value = main_note)
+    flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
+    flextable::autofit()
 
-  return(tab)
+  return(table)
 
 }
 

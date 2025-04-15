@@ -6,11 +6,12 @@
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If p_note = "apa" then the standard "* p < .05. ** p < .01. *** p < .001." will be used
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param fit Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"
-#' @param d Optional: Number. Digits after the decimal place
 #' @param std Optional: Logical. (default = TRUE) Include standardized coefficients?
 #' @param vif Optional: Logical. (default = FALSE) Include variance inflation factors?
 #' @param eta2 Optional: logical. (default = TRUE) Include eta-squared (semi-partial correlations) and partial eta-squared (partial correlations)
 #' @param show_single_row	(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.
+#' @param d Optional: Number. Digits after the decimal place
+#' @param max_width_in = Optional: Number.  Inches wide the table can be
 #'
 #' @returns a flextable object
 #' @import gtsummary
@@ -25,9 +26,11 @@
 #'
 #' @examples
 #'
-#' m <- lm(dist ~ speed, cars)
+#' m <- lm(mpg ~ disp + wt + hp, mtcars)
 #'
-#' tab_lm(m)
+#' apaSupp::tab_lm(m)
+#'
+#'
 #'
 
 tab_lm <- function(x,
@@ -37,121 +40,52 @@ tab_lm <- function(x,
                    general_note = NA,
                    fit = c("r.squared",
                            "adj.r.squared"),
-                   d = 2,
                    std = TRUE,
                    vif = FALSE,
                    eta2 = TRUE,
-                   show_single_row = NULL){
+                   show_single_row = NULL,
+                   d = 2,
+                   max_width_in = 6){
 
   n_param <- x %>%
     coef() %>%
     length()
 
-  if (n_param < 2) vif <- FALSE
+  if (n_param < 2) {
+    vif <- FALSE
+    eta2 <- FALSE
+  }
 
   n_fit <- length(fit)
 
+  main_note <- flextable::as_paragraph(
+    flextable::as_i("Note. "),
+    flextable::as_i("N"),
+    flextable::as_chunk(glue::glue(" = {length(x$resid)}. ")),
+    flextable::as_i(ifelse(vif  == FALSE, NA, "VIF")),
+    flextable::as_chunk(ifelse(vif  == FALSE, NA, " = variance inflation factor; ")),
+    flextable::as_i(ifelse(eta2 == FALSE, NA, "\U03B7\U00B2")),
+    flextable::as_chunk(ifelse(eta2 == FALSE, NA, " = semi-partial correlation; ")),
+    flextable::as_i(ifelse(eta2 == FALSE, NA, "\U03B7\U209A\U00B2")),
+    flextable::as_chunk(ifelse(eta2 == FALSE, NA, " = partial correlation; ")),
+    flextable::as_i(ifelse(std  == FALSE, NA,"b\U002A")),
+    flextable::as_chunk(ifelse(std  == FALSE, NA, " = standardize coefficient; ")),
+    flextable::as_i("p"), " = significance from Wald t-test for parameter estimate. ",
+    flextable::as_chunk(general_note)
+  )
 
-  if (is.null(p_note)){
-    p_note <- NULL
-  } else if (p_note == "apa"){
-    p_note <- "* p < .05. ** p < .01. *** p < .001."
-  } else {
-    p_note <- p_note
-  }
+  if (p_note == "apa"){ p_note <- "* p < .05. ** p < .01. *** p < .001."}
 
+  sig_note <- flextable::as_paragraph(p_note)
 
-  if (std == TRUE & vif == TRUE & eta2 == TRUE){
-    main_note <- flextable::as_paragraph(
-      flextable::as_i("Note. "),
-      flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
-      flextable::as_i("p"),
-      " = significance from Wald t-test for parameter estimate; ",
-      flextable::as_i("b\U002A"),
-      " = standardized estimate; VIF = variance inflation factor; ",
-      flextable::as_i("\U03B7\U00B2"),
-      "= semi-partial correlation; ",
-      flextable::as_i("\U03B7\U209A\U00B2"),
-      "= partial correlation.",
-      flextable::as_chunk(general_note))
-  } else if (std == FALSE & vif == TRUE & eta2 == TRUE){
-    main_note <- flextable::as_paragraph(
-      flextable::as_i("Note. "),
-      flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
-      flextable::as_i("p"),
-      " = significance from Wald t-test for parameter estimate; ",
-      "VIF = variance inflation factor; ",
-      flextable::as_i("\U03B7\U00B2"),
-      "= semi-partial correlation; ",
-      flextable::as_i("\U03B7\U209A\U00B2"),
-      "= partial correlation.",
-      flextable::as_chunk(general_note))
-  } else if (std == TRUE & vif == FALSE & eta2 == TRUE){
-    main_note <- flextable::as_paragraph(
-      flextable::as_i("Note. "),
-      flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
-      flextable::as_i("p"),
-      " = significance from Wald t-test for parameter estimate; ",
-      flextable::as_i("b\U002A"),
-      " = standardized estimate; ",
-      flextable::as_i("\U03B7\U00B2"),
-      "= semi-partial correlation; ",
-      flextable::as_i("\U03B7\U209A\U00B2"),
-      "= partial correlation.",
-      flextable::as_chunk(general_note))
-  } else if (std == TRUE & vif == TRUE & eta2 == FALSE){
-    main_note <- flextable::as_paragraph(
-      flextable::as_i("Note. "),
-      flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
-      flextable::as_i("p"),
-      " = significance from Wald t-test for parameter estimate; ",
-      flextable::as_i("b\U002A"),
-      " = standardized estimate; VIF = variance inflation factor. ",
-      flextable::as_chunk(general_note))
-  } else if (std == TRUE & vif == FALSE & eta2 == FALSE){
-    main_note <- flextable::as_paragraph(
-      flextable::as_i("Note. "),
-      flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
-      flextable::as_i("p"),
-      " = significance from Wald t-test for parameter estimate; ",
-      flextable::as_i("b\U002A"),
-      " = standardized estimate. ",
-      flextable::as_chunk(general_note))
-  } else if (std == FALSE & vif == TRUE & eta2 == FALSE){
-    main_note <- flextable::as_paragraph(
-      flextable::as_i("Note. "),
-      flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
-      flextable::as_i("p"),
-      " = significance from Wald t-test for parameter estimate; ",
-      "VIF = variance inflation factor.",
-      flextable::as_chunk(general_note))
-  } else if (std == FALSE & vif == FALSE & eta2 == TRUE){
-    main_note <- flextable::as_paragraph(
-      flextable::as_i("Note. "),
-      flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
-      flextable::as_i("p"),
-      " = significance from Wald t-test for parameter estimate; ",
-      flextable::as_i("\U03B7\U00B2"),
-      "= semi-partial correlation; ",
-      flextable::as_i("\U03B7\U209A\U00B2"),
-      "= partial correlation.",
-      flextable::as_chunk(general_note))
-  } else {
-    main_note <- flextable::as_paragraph(
-      flextable::as_i("Note. "),
-      flextable::as_chunk(glue::glue("N = {length(x$resid)}. ")),
-      flextable::as_i("p"),
-      " = significance from Wald t-test for parameter estimate. ",
-      flextable::as_chunk(general_note))
-  }
 
   get <- x %>%
     gtsummary::tbl_regression(intercept = TRUE,
                               conf.int = FALSE,
-                              pvalue_fun = apaSupp::p_num,
+                              pvalue_fun = function(x) apaSupp::p_num(x, d = d + 1),
                               tidy_fun = broom.helpers::tidy_with_broom_or_parameters,
                               show_single_row = show_single_row) %>%
-    gtsummary::add_glance_table(include = fit) %>%
+    gtsummary::add_glance_table(include = all_of(fit)) %>%
     gtsummary::modify_column_unhide(column = std.error) %>%
     gtsummary::remove_footnote_header() %>%
     gtsummary::remove_abbreviation("SE = Standard Error")  %>%
@@ -161,10 +95,14 @@ tab_lm <- function(x,
                                 gtsummary::label_style_number(digits = d,
                                                               prefix = "(",
                                                               suffix = ")")) %>%
+    gtsummary::modify_fmt_fun(estimate ~
+                                apaSupp::p_num(digits = d + 1, stars = FALSE),
+                              rows = stringr::str_detect(variable, "r.")) %>%
     gtsummary::modify_header(label = "Variable",
                              estimate = "b",
                              std.error = "(SE)",
                              p.value = "p")
+
 
   if(std == TRUE){
     get <- get %>%
@@ -196,14 +134,13 @@ tab_lm <- function(x,
 
   n_rows <- flextable::nrow_part(table, part = "body")
 
-  rows_fit <- (n_rows - n_fit + 1):(n_rows)
-
   table <- table %>%
     apaSupp::theme_apa(caption = caption,
-                       no_notes = FALSE,
+                       no_notes = TRUE,
                        d = d) %>%
     flextable::hline(i = n_rows - n_fit) %>%
-    flextable::italic(part = "body", i = rows_fit)
+    flextable::italic(part = "body", i = (n_rows - n_fit + 1):(n_rows))
+
 
   if (std == TRUE){
     table <- table %>%
@@ -235,19 +172,17 @@ tab_lm <- function(x,
     flextable::align(part = "all", j = 3, align = "left") %>%
     flextable::align(part = "footer", align = "left") %>%
     flextable::add_footer_lines("") %>%
-    flextable::compose(i = 1, j = 1,
-                       value = main_note,
-                       part = "footer")
-
+    flextable::compose(part = "footer", i = 1, j = 1, value = main_note)
 
   if (!is.null(p_note)){
     table <- table %>%
       flextable::add_footer_lines("") %>%
-      flextable::compose(i = 2, j = 1,
-                         value = flextable::as_paragraph(flextable::as_chunk(p_note)),
-                         part = "footer")
+      flextable::compose(part = "footer", i = 2, j = 1, value = sig_note)
   }
 
+  table <- table %>%
+    flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
+    flextable::autofit()
 
   return(table)
 }

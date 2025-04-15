@@ -42,7 +42,7 @@ gt_lm <- function(x,
                               pvalue_fun = ~ p_fun(.x, d = d),
                               tidy_fun = broom.helpers::tidy_with_broom_or_parameters,
                               show_single_row = show_single_row)  %>%
-    gtsummary::add_glance_table(include = fit) %>%
+    gtsummary::add_glance_table(include = all_of(fit)) %>%
     gtsummary::modify_column_unhide(column = std.error) %>%
     gtsummary::remove_footnote_header() %>%
     gtsummary::remove_abbreviation("SE = Standard Error")  %>%

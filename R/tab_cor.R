@@ -1,67 +1,81 @@
 #' Tabulate Pairwise Pearson's Correlation
 #'
-#' @param df REQUIRED: A dataframe with selected numeric variables
+#' @param xx REQUIRED: A dataframe with selected numeric variables
 #' @param caption REQUIRED: Text. Caption for the table
-#' @param general_note Optional: Text. General note for footer of APA table
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
-#' @param max_width_in = Optional: Number.  Inches wide take can be
-#' @param digits Optional: Number. Digits after the decimal place
+#' @param general_note Optional: Text. General note for footer of APA table
+#' @param d Optional: Number. Digits after the decimal place
+#' @param max_width_in = Optional: Number.  Inches wide the table can be
+#' @param breaks statistical significance break points
+#' @param symbols symbols to assign to each break point
 #'
 #' @return table
 #' @import tidyverse
 #' @import flextable
 #' @import rstatix
+#' @import equatags
 #' @export
 #'
 #' @examples
 #' library(tidyverse)
-#' library(flextable)
 #'
-#' mtcars
+#' apaSupp::tab_cor(mtcars %>% dplyr::select(cyl, mpg, disp, hp))
 #'
-tab_cor <- function(df,
-                    caption = "Correlations",
-                    general_note = NULL,
-                    p_note = "* p < .05. ** p < .01. *** p < .001.",
+tab_cor <- function(x,
+                    caption = "Pairwise Correlations",
+                    p_note = "apa",
+                    general_note = NA,
+                    d = 2,
                     max_width_in = 6,
-                    digits = 2){
+                    breaks = c(.05, .01, .001),
+                    symbols = c("*", "**", "***")){
 
-  if (is.null(general_note)){
-    main_notes <- glue::glue("r = Pearson's Product-Moment correlation coefficient. N = {nrow(df)}.")
-  } else {
-    main_notes <- glue::glue("{general_note} r = Pearson's Product-Moment correlation coefficient. N = {nrow(df)}.")
-  }
+  main_note <- flextable::as_paragraph(
+    flextable::as_i("Note. "),
+    flextable::as_i("N"),
+    flextable::as_chunk(glue::glue(" = {nrow(x)}. ")),
+    flextable::as_i("r"),
+    flextable::as_chunk(" = Pearson's Product-Moment correlation coefficient."),
+    flextable::as_chunk(general_note)
+  )
 
-  x <- df %>%
+  if (p_note == "apa"){ p_note <- "* p < .05. ** p < .01. *** p < .001."}
+
+  sig_note <- flextable::as_paragraph(p_note)
+
+
+  table <- x %>%
     rstatix::cor_mat() %>%
     rstatix::pull_lower_triangle() %>%
     rstatix::cor_gather() %>%
-    dplyr::rename(r = cor) %>%
-    dplyr::mutate(stars = case_when(p <= .001 ~ "***",
-                                    p <= .010 ~ "**",
-                                    p <= .050 ~ "*")) %>%
-    dplyr::mutate(p = apaSupp::p_num(p,
-                                     symbols = c("", "", ""))) %>%
-    dplyr::select(var2, everything())
+    dplyr::mutate(r = apaSupp::p_num(cor, stars = FALSE)) %>%
+    dplyr::mutate(p = apaSupp::p_num(p, breaks = breaks, symbols = symbols)) %>%
+    dplyr::select("Variable Pair" = var1, var2, r, p) %>%
+    flextable::flextable() %>%
+    apaSupp::theme_apa(caption = caption,
+                       general_note = NA,
+                       p_note = NULL,
+                       d = d,
+                       max_width_in = max_width_in) %>%
+    flextable::merge_at(part = "header", i = 1, j = 1:2) %>%
+    flextable::italic(part = "header", i = 1, j = 3:4) %>%
+    flextable::align(part = "header", align = "center") %>%
+    flextable::align(part = "body", j = 1:2, align = "left") %>%
+    flextable::align(part = "body", j = 3:4, align = "right") %>%
+    flextable::align(part = "footer", align = "left") %>%
+    flextable::add_footer_lines("") %>%
+    flextable::compose(part = "footer", i = 1, j = 1, value = main_note)
 
-  tab <- x %>%
-    flextable::as_flextable(max_row = 100) %>%
-    flextable::delete_part(part = "header") %>%
-    flextable::add_header_row(values = c("Variables", "r", "p"),
-                              colwidths = c(2, 1, 2)) %>%
-    theme_apa(caption = caption,
-              general_note = main_notes,
-              p_note = p_note,
-              digits = digits,
-              max_width_in = max_width_in) %>%
-    flextable::colformat_double(j = "r", digits = 3) %>%
-    flextable::align(align = "center", part = "header") %>%
-    flextable::align(j = 1:2, align = "left", part = "body") %>%
-    flextable::align(j = 3:4, align = "right", part = "body") %>%
-    flextable::align(j = 5, align = "left", part = "body") %>%
-    flextable::padding(padding.right = 0, j = "p",     part  = "all")  %>%
-    flextable::padding(padding.left = 0, j = "stars", part  = "all")
+    if (!is.null(p_note)){
+      table <- table %>%
+        flextable::add_footer_lines("") %>%
+        flextable::compose(part = "footer", i = 2, j = 1, value = sig_note)
+    }
 
-  return(tab)
+  table <- table %>%
+    flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
+    flextable::autofit()
+
+  return(table)
 
 }

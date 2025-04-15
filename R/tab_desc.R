@@ -2,11 +2,11 @@
 #'
 #' @param df REQUIRED: Data frame
 #' @param caption REQUIRED: Text. Caption for the table
-#' @param general_note Optional: Text. General note for footer of APA table
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
+#' @param general_note Optional: Text. General note for footer of APA table
 #' @param no_notes REQUIRED: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `genderal_note` and `p_note`
-#' @param max_width_in Optional: Number.  Inches wide table can be
-#' @param digits Optional: Number. Digits after the decimal place
+#' @param d Optional: Number. Digits after the decimal place
+#' @param max_width_in = Optional: Number.  Inches wide the table can be
 #'
 #' @return a `flextable` table with caption
 #' @import tidyverse
@@ -31,28 +31,28 @@
 #'
 tab_desc <- function(df,
                      caption = "Summary of Quantiatative Variables",
-                     general_note = NULL,
-                     p_note = NULL,
+                     general_note = NA,
                      no_notes = FALSE,
-                     max_width_in = 6,
-                     digits = 2){
+                     d = 2,
+                     max_width_in = 6){
 
   n <- nrow(df)
 
-  standard_note <- glue::glue("NA = not available or missing. Mdn = median. Q1 = 25th percentile, Q3 = 75th percentile. N = {n}.")
+  main_note <- flextable::as_paragraph(
+    flextable::as_i("Note. "),
+    flextable::as_i("N"),
+    flextable::as_chunk(glue::glue(" = {n}. ")),
+    flextable::as_i("NA"),  " = not available or missing; ",
+    flextable::as_i("Mdn"), " = median; ",
+    flextable::as_i("Q1"),  " = 25th percentile; " ,
+    flextable::as_i("Q3"),  " = 75th percentile. ",
+    flextable::as_chunk(general_note)
+  )
 
-  if (no_notes == TRUE){
-    main_note <- NULL
-  } else if (is.null(general_note)){
-    main_note <- standard_note
-  } else {
-    main_note <- paste(general_note, standard_note, sep = " ")
-  }
 
   x <- df %>%
-    dplyr::select(where(is.numeric)) %>%
     dplyr::summarise(across(
-      .cols = is.numeric,
+      .cols = where(is.numeric),
       .fns = list(nmiss = ~ naniar::n_miss(.x),
                   M     = ~ base::mean(.x, na.rm = TRUE),
                   SD    = ~ stats::sd(.x, na.rm = TRUE),
@@ -78,17 +78,22 @@ tab_desc <- function(df,
                   "max" = max) %>%
     as.data.frame()
 
-  tab <- x %>%
+  table <- x %>%
     flextable::flextable() %>%
     apaSupp::theme_apa(caption,
-                       general_note = main_note,
-                       p_note = p_note,
-                       no_notes = no_notes,
-                       max_width_in = max_width_in,
-                       digits = digits) %>%
+                       general_note = NA,
+                       p_note = NULL,
+                       d = d,
+                       max_width_in = max_width_in) %>%
     flextable::align(j = 1,   align = "left",  part = "all") %>%
     flextable::align(j = 2:9, align = "right", part = "all") %>%
-    flextable::bold(j = c(3, 4, 7), part = "all")
+    flextable::bold(j = c(3, 4, 7), part = "all") %>%
+    flextable::italic(part = "header") %>%
+    flextable::compose(part = "header", i = 1, j = 1, value = flextable::as_paragraph(NA)) %>%
+    flextable::add_footer_lines("") %>%
+    flextable::compose(part = "footer", i = 1, j = 1, value = main_note) %>%
+    flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
+    flextable::autofit()
 
-  return(tab)
+  return(table)
 }
