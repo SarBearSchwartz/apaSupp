@@ -104,8 +104,6 @@ tab_glms <- function(x,
                                  d               = d,
                                  show_single_row = show_single_row)) %>%
     gtsummary::tbl_merge(tab_spanner = mod_names) %>%
-    gtsummary::modify_table_body(~ .x %>%
-                                   dplyr::arrange(desc(row_type))) %>%
     gtsummary::as_flex_table()
 
 
