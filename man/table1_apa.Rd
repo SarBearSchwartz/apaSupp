@@ -12,8 +12,8 @@ table1_apa(
   test = TRUE,
   na.rm = FALSE,
   general_note = NULL,
-  p_note = "apa",
-  digits = 2
+  p_note = "apa123",
+  d = 2
 )
 }
 \arguments{
@@ -33,7 +33,7 @@ table1_apa(
 
 \item{p_note}{Optional: Text. (default = NULL) Significance note for APA table, If \code{p_note = "apa"} then the standard \code{"* p < .05. ** p < .01. *** p < .001."} will be used}
 
-\item{digits}{Optional: Number. Digits after the decimal place}
+\item{d}{Optional: Number. Digits after the decimal place}
 }
 \description{
 Convert a \code{furniture::table1()} to a \code{flextable::flextable()} with APA formatting

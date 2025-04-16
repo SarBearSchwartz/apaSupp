@@ -8,7 +8,7 @@
 #' @param na.rm Optional: Logical. Defaults to NOT list-wise delete cases
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
-#' @param digits Optional: Number. Digits after the decimal place
+#' @param d Optional: Number. Digits after the decimal place
 #' @export
 #' @import tidyverse
 #' @import furniture
@@ -27,8 +27,8 @@ table1_apa <- function(df,
                        test = TRUE,
                        na.rm = FALSE,
                        general_note = NULL,
-                       p_note = "apa",
-                       digits = 2){
+                       p_note = "apa123",
+                       d = 2){
 
   split <- rlang::enquo(split)
 
@@ -55,7 +55,7 @@ table1_apa <- function(df,
     furniture::table1(total = total,
                       test = test,
                       na.rm = na.rm,
-                      digits = digits) %>%
+                      digits = d) %>%
     testthat::capture_messages()
 
   warn <- data.frame(warn = warnings) %>%
@@ -79,7 +79,7 @@ table1_apa <- function(df,
     furniture::table1(total = total,
                       test = test,
                       na.rm = na.rm,
-                      digits = digits) %>%
+                      digits = d) %>%
     as.data.frame() %>%
     dplyr::rename(Variable = !!names(.[1]))
 
@@ -131,7 +131,7 @@ table1_apa <- function(df,
     apaSupp::theme_apa(caption = caption,
                        general_note = main_note,
                        p_note = p_note,
-                       digits = digits) %>%
+                       d = d) %>%
     flextable::align(align = "center", part = "header") %>%
     flextable::align(j = 1, align = "left", part = "body") %>%
     flextable::align(j = -1, align = "right", part = "body") %>%
