@@ -56,9 +56,6 @@ tab_lms <- function(x,
     flextable::as_chunk(ifelse(length(unique(ns)) == 1,
                                NA,
                                "Models fit to different samples. ")),
-    flextable::as_i("k"), " = number of parameters estimated in each model. ",
-    "Larger ", flextable::as_equation("R^2")," values indicated better performance. ",
-    "Smaller values indicated better performance for Akaike's Information Criteria (AIC), Bayesian information criteria (BIC), and Root Mean Squared Error (RMSE).",
     flextable::as_chunk(general_note)
   )
 

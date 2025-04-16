@@ -24,10 +24,10 @@
 #'
 #' library(tidyverse)
 #'
-#' mtcars <- mtcars %>% dplyr::mutate(cyl = factor(cyl))
+#' mtcars <- mtcars %>% dplyr::mutate(vs = factor(vs))
 #'
 #' fit_glm1 <- glm(vs ~ wt, data = mtcars, family = "binomial")
-#' fit_glm2 <- glm(vs ~ wt + mpg + cyl, data = mtcars, family = "binomial")
+#' fit_glm2 <- glm(vs ~ wt + mpg, data = mtcars, family = "binomial")
 #'
 #' apaSupp::tab_glms(list(fit_glm1, fit_glm2))
 #' apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), pr2 = "both")
@@ -38,7 +38,7 @@
 #' apaSupp::tab_glms(list("M1" = fit_glm1, "M2" = fit_glm2), narrow = TRUE, fit = "AIC", pr2 = "tjur")
 #'
 #'
-#' fit_glm3 <- glm(vs ~ wt + mpg + cyl, data = mtcars[1:30,], family = "binomial")
+#' fit_glm3 <- glm(vs ~ wt + mpg, data = mtcars[1:30,], family = "binomial")
 #'
 #' apaSupp::tab_glms(list(fit_glm1, fit_glm2, fit_glm3), narrow = TRUE)
 #' apaSupp::tab_glms(list(fit_glm1, fit_glm2, fit_glm3), narrow = TRUE, fit = "AIC", pr2 = "tjur")
@@ -100,7 +100,7 @@ tab_glms <- function(x,
   table <- x %>%
     purrr::map(~ apaSupp::gt_glm(.x,
                                  narrow          = narrow,
-                                 fit             = fit,
+                                 fit             = NA,
                                  d               = d,
                                  show_single_row = show_single_row)) %>%
     gtsummary::tbl_merge(tab_spanner = mod_names) %>%
@@ -172,8 +172,8 @@ tab_glms <- function(x,
 
   df_r2 <- data.frame(num = 1:n_models) %>%
     dplyr::mutate(mod = x) %>%
-    dplyr::mutate(tjur     = purrr::map_dbl(x, ~performance::r2_tjur(.x))) %>%
-    dplyr::mutate(mcfadden = purrr::map_dbl(x, ~performance::r2_mcfadden(.x)[[1]])) %>%
+    dplyr::mutate(tjur     = purrr::map_dbl(mod, function(x) performance::r2_tjur(x))) %>%
+    dplyr::mutate(mcfadden = purrr::map_dbl(mod, function(x) performance::r2_mcfadden(x)[[1]])) %>%
     dplyr::select(tjur, mcfadden) %>%
     dplyr::mutate(tjur     = apaSupp::p_num(tjur,     d = d + 1, stars = FALSE)) %>%
     dplyr::mutate(mcfadden = apaSupp::p_num(mcfadden, d = d + 1, stars = FALSE))
