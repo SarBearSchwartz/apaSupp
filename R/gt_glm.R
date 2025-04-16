@@ -48,14 +48,12 @@ gt_glm <- function(x,
                               exponentiate    = TRUE,
                               pvalue_fun      = ~ p_fun(.x, d = d),
                               tidy_fun        = broom.helpers::tidy_with_broom_or_parameters,
-                              show_single_row = show_single_row)
+                              show_single_row = all_of(show_single_row))
 
 
   if (sum(!is.na(fit)) > 0){
     table <- table %>%
-      gtsummary::add_glance_table(include = all_of(fit))%>%
-      gtsummary::modify_fmt_fun(estimate  ~ apaSupp::p_num(d = d + 1, stars = FALSE), rows =  stringr::str_detect(variable, "r.")) %>%
-      gtsummary::modify_fmt_fun(estimate  ~ apaSupp::p_num(d = d - 1, stars = FALSE), rows = !stringr::str_detect(variable, "r."))
+      gtsummary::add_glance_table(include = all_of(fit))
   }
 
   table <- table %>%

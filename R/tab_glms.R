@@ -98,11 +98,11 @@ tab_glms <- function(x,
   }
 
   table <- x %>%
-    purrr::map(gt_glm,
-               narrow          = narrow,
-               fit             = fit,
-               d               = d,
-               show_single_row = show_single_row) %>%
+    purrr::map(~ apaSupp::gt_glm(.x,
+                                 narrow          = narrow,
+                                 fit             = fit,
+                                 d               = d,
+                                 show_single_row = show_single_row)) %>%
     gtsummary::tbl_merge(tab_spanner = mod_names) %>%
     gtsummary::as_flex_table()
 

@@ -53,6 +53,6 @@ APA: flextable for 2-3 linear models
 m1 <- lm(dist ~ 1, cars)
 m2 <- lm(dist ~ speed, cars)
 
-tab_lms(list(m1, m2))
+apaSupp::tab_lms(list(m1, m2))
 
 }
