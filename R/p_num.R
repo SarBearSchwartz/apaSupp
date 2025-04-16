@@ -37,8 +37,8 @@ p_num <- function(value,
   }
 
   dplyr::case_when(value <  breaks[3] ~ glue::glue("< {value_apa_min}{symbols[3]}"),
-                   value == breaks[3] ~ glue::glue("{value_apa_min}{symbols[3]}"),
-                   value <= breaks[2] ~ glue::glue("{value_apa}{symbols[2]}"),
-                   value <= breaks[1] ~ glue::glue("{value_apa}{symbols[1]}"),
-                   value  > breaks[1] ~ glue::glue("{value_apa}"))
+                   value == breaks[3] ~ glue::glue("  {value_apa_min}{symbols[3]}"),
+                   value <= breaks[2] ~ glue::glue("  {value_apa}{symbols[2]} "),
+                   value <= breaks[1] ~ glue::glue("  {value_apa}{symbols[1]}  "),
+                   value  > breaks[1] ~ glue::glue("  {value_apa}   "))
 }

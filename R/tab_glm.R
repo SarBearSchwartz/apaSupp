@@ -95,7 +95,7 @@ tab_glm <- function(x,
     flextable::as_chunk(case_when(pr2 == "both"     ~ "Coefficient of deterination included for both Tjur and McFadden's ",
                                   pr2 == "tjur"     ~ "Coefficient of deterination displays Tjur's ",
                                   pr2 == "mcfadden" ~ "Coefficient of deterination displays McFadden's ")),
-    flextable::as_i(ifelse(pr2 == "none", NA, "pseudo-R\u00B2")),
+    flextable::as_i(ifelse(pr2 == "none", NA, "pseudo-R\u00B2. ")),
     flextable::as_chunk(general_note)
   )
 

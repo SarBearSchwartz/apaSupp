@@ -88,12 +88,7 @@ tab_lms <- function(x,
                        symbols      = symbols) %>%
     flextable::bold(  part = "header", i = 1) %>%
     flextable::italic(part = "header", i = 2) %>%
-    flextable::italic(part = "body",   i = rows_fit) %>%
-    flextable::align( part = "header", i = 1, align = "center") %>%
-    flextable::align( part = "header", i = 1, align = "center") %>%
-    flextable::align( part = "footer",        align = "left") %>%
-    flextable::hline( part = "body",   i = n_rows - n_fit) %>%
-    flextable::hline( part = "header", i = 1, border = flextable::fp_border_default(width = 0))
+    flextable::italic(part = "body",   i = rows_fit)
 
   if(!is.null(var_labels)){ table <- table %>% flextable::labelizor(part = "body", labels = var_labels)}
 
@@ -107,7 +102,13 @@ tab_lms <- function(x,
       flextable::align(part = "all", j = seq(from = 3, to = (2*n_models + 1), by = 2), align = "left")
   }
 
-  table <- table %>% flextable::autofit()
+  table <- table %>%
+    flextable::align( part = "header", i = 1, align = "center") %>%
+    flextable::align( part = "header", i = 1, align = "center") %>%
+    flextable::align( part = "footer",        align = "left") %>%
+    flextable::hline( part = "body",   i = n_rows - n_fit) %>%
+    flextable::hline( part = "header", i = 1, border = flextable::fp_border_default(width = 0)) %>%
+    flextable::autofit()
 
   return(table)
 

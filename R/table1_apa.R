@@ -128,10 +128,10 @@ table1_apa <- function(df,
     flextable::delete_part(part = "header") %>%
     flextable::add_header_row(values = c("", n, "p", ""),
                               colwidths = rep(1, times = c + 1)) %>%
-    apa_supp::theme_apa(caption = caption,
-                        general_note = main_note,
-                        p_note = p_note,
-                        digits = digits) %>%
+    apaSupp::theme_apa(caption = caption,
+                       general_note = main_note,
+                       p_note = p_note,
+                       digits = digits) %>%
     flextable::align(align = "center", part = "header") %>%
     flextable::align(j = 1, align = "left", part = "body") %>%
     flextable::align(j = -1, align = "right", part = "body") %>%
