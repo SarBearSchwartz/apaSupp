@@ -9,7 +9,6 @@
 #' @param caption REQUIRED: Text. Caption for the table
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param d Optional: Number. Digits after the decimal place
-#' @param max_width_in = Optional: Number.  Inches wide the table can be
 #'
 #' @return a `flextable` table with caption
 #' @import tidyverse
@@ -52,8 +51,7 @@ tab_xalpha <- function(df,
                        id,
                        caption = "Internal Consistency",
                        general_note = NA,
-                       d = 2,
-                       max_width_in = 6){
+                       d = 2){
 
   measure <- rlang::enquo(measure)
   domain  <- rlang::enquo(domain)
@@ -148,7 +146,6 @@ tab_xalpha <- function(df,
     flextable::padding(part = "all",  j = c(6),    padding.left =  5, padding.right = 5) %>%
     flextable::padding(part = "all",  j = c(4, 7), padding.left = 10, padding.right = 1) %>%
     flextable::padding(part = "all",  j = c(5, 8), padding.left =  1, padding.right = 10) %>%
-    flextable::fit_to_width(max_width = max_width_in, unit = "in") %>%
     flextable::autofit()
 
   return(table)
