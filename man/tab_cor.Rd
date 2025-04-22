@@ -10,9 +10,6 @@ tab_cor(
   general_note = NA,
   p_note = "apa123",
   d = 2,
-  miss = "pair",
-  method = "pearson",
-  alternative = "two.sided",
   breaks = c(0.05, 0.01, 0.001),
   symbols = c("*", "**", "***")
 )
@@ -28,19 +25,19 @@ tab_cor(
 
 \item{d}{Optional: Number. Digits after the decimal place}
 
-\item{method}{Optional: character string indicating which correlation coefficient is to be used for the test. One of "pearson", "kendall", or "spearman", can be abbreviated.}
-
-\item{alternative}{Optional: indicates the alternative hypothesis and must be one of "two.sided", "greater" or "less". You can specify just the initial letter. "greater" corresponds to positive association, "less" to negative association.}
-
 \item{breaks}{statistical significance break points}
 
 \item{symbols}{symbols to assign to each break point}
-
-\item{drop.na}{Optional.  logical. If TRUE, drop rows containing missing values after gathering the data.}
 }
 \value{
 table
 }
 \description{
 Tabulate Pairwise Pearson's Correlation
+}
+\examples{
+library(tidyverse)
+
+apaSupp::tab_cor(mtcars \%>\% dplyr::select(cyl, mpg, disp, hp))
+
 }
