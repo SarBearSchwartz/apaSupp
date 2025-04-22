@@ -80,7 +80,7 @@ tab_glm <- function(x,
     back_trans <- "exp"
     abr <- c("Odds Ratio","Logit Scale")
     sym <- c("OR", "b")
-  } else if (family(x)$famiy == "poisson" & family(x)$link == "log") {
+  } else if (family(x)$family == "poisson" & family(x)$link == "log") {
     back_trans <- "exp"
     abr <- c("Incident Rate Ratio","Log Scale")
     sym <- c("IRR", "b")
