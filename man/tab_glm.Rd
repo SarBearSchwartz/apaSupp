@@ -38,7 +38,7 @@ tab_glm(
 
 \item{fit}{Optional: Text. fit statistics: (default = NA) "nobs", null.deviance", "df.null", "deviance", "df.residual", "logLik", "AIC", "BIC"}
 
-\item{pr2}{Optional: character.  (default = "both") Include pseudo R-squared: "tjur", "mcfadden", "both", or "none"}
+\item{pr2}{Optional: character.  (default = "both") Include pseudo R-squared: "tjur", "mcfadden", "both", or "none" for logistic or "nagelkerke" for poisson}
 
 \item{vif}{Optional: Logical. (default = TRUE) Include variance inflation factors}
 

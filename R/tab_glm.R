@@ -8,7 +8,7 @@
 #' @param no_notes REQUIRED: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `genderal_note` and `p_note`
 #' @param d Optional: Number. Digits after the decimal place
 #' @param fit Optional: Text. fit statistics: (default = NA) "nobs", null.deviance", "df.null", "deviance", "df.residual", "logLik", "AIC", "BIC"
-#' @param pr2 Optional: character.  (default = "both") Include pseudo R-squared: "tjur", "mcfadden", "both", or "none"
+#' @param pr2 Optional: character.  (default = "both") Include pseudo R-squared: "tjur", "mcfadden", "both", or "none" for logistic or "nagelkerke" for poisson
 #' @param vif Optional: Logical. (default = TRUE) Include variance inflation factors
 #' @param lrt Optional: Logical. (default = TRUE) Include LRT for single-predictor deletion
 #' @param show_single_row	 a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.
@@ -84,7 +84,7 @@ tab_glm <- function(x,
     back_trans <- "exp"
     abr <- c("Incident Rate Ratio","Log Scale")
     sym <- c("IRR", "b")
-
+    pr2 <- "nagelkerke"
   }
 
 
@@ -99,7 +99,8 @@ tab_glm <- function(x,
                                "Significance denotes Wald t-tests for parameter estimates. ")),
     flextable::as_chunk(case_when(pr2 == "both"     ~ "Coefficient of deterination included for both Tjur and McFadden's ",
                                   pr2 == "tjur"     ~ "Coefficient of deterination displays Tjur's ",
-                                  pr2 == "mcfadden" ~ "Coefficient of deterination displays McFadden's ")),
+                                  pr2 == "mcfadden" ~ "Coefficient of deterination displays McFadden's ",
+                                  pr2 == "nagelkerke" ~ "Coefficient of deterination displays Nagelkerke's")),
     flextable::as_i(ifelse(pr2 == "none", NA, "pseudo-R\u00B2. ")),
     flextable::as_chunk(general_note)
   )
@@ -116,7 +117,6 @@ tab_glm <- function(x,
       gtsummary::modify_fmt_fun(estimate  ~ gtsummary::label_style_number(digits = d)) %>%
       gtsummary::modify_fmt_fun(conf.low  ~ gtsummary::label_style_number(digits = d, prefix = "[")) %>%
       gtsummary::modify_fmt_fun(conf.high ~ gtsummary::label_style_number(digits = d, suffix = "]")) %>%
-      gtsummary::remove_abbreviation("OR = Odds Ratio") %>%
       gtsummary::remove_abbreviation("CI = Confidence Interval") %>%
       gtsummary::remove_abbreviation("SE = Standard Error")  %>%
       gtsummary::modify_table_body(~.x %>%
@@ -127,6 +127,14 @@ tab_glm <- function(x,
                                estimate = sym[1],
                                conf.low = "95% CI",
                                bk = "blank")
+  }
+
+  if (family(x)$link == "logit"){
+    get_tran <- get_tran %>%
+      gtsummary::remove_abbreviation("OR = Odds Ratio")
+  } else if (family(x)$family == "poisson"){
+    get_tran <- get_tran %>%
+      gtsummary::remove_abbreviation("IRR = Incidence Rate Ratio")
   }
 
   if (!is.null(fit)){
@@ -142,7 +150,6 @@ tab_glm <- function(x,
                               tidy_fun        = broom.helpers::tidy_with_broom_or_parameters,
                               show_single_row = show_single_row) %>%
     gtsummary::modify_column_unhide(column = std.error) %>%
-    gtsummary::remove_abbreviation("OR = Odds Ratio") %>%
     gtsummary::remove_abbreviation("SE = Standard Error")  %>%
     gtsummary::remove_footnote_header() %>%
     gtsummary::modify_fmt_fun(estimate  ~ function(x) apaSupp::p_num(x, d = (d + 1), stars = FALSE), rows =  stringr::str_detect(variable, "r.")) %>%
@@ -150,7 +157,13 @@ tab_glm <- function(x,
     gtsummary::modify_fmt_fun(estimate  ~ gtsummary::label_style_number(digits = d),        rows = (row_type == "label") ) %>%
     gtsummary::modify_fmt_fun(std.error ~ gtsummary::label_style_number(digits = d,         prefix = "(", suffix = ")"))
 
-
+  if (family(x)$link == "logit"){
+    get <- get %>%
+      gtsummary::remove_abbreviation("OR = Odds Ratio")
+  } else if (family(x)$family == "poisson"){
+    get <- get %>%
+      gtsummary::remove_abbreviation("IRR = Incidence Rate Ratio")
+  }
 
 
   if (lrt == TRUE){
@@ -215,9 +228,13 @@ tab_glm <- function(x,
   n_rows <- flextable::nrow_part(table, part = "body")
 
 
-  r2_tjur     <- performance::r2_tjur(x)     %>% unlist(use.names = FALSE) %>% apaSupp::p_num(d = d + 1, stars = FALSE)
-  r2_mcfadden <- performance::r2_mcfadden(x) %>% unlist(use.names = FALSE) %>% apaSupp::p_num(d = d + 1, stars = FALSE)
+  if (family(x)$link == "logit"){
+    r2_tjur     <- performance::r2_tjur(x)     %>% unlist(use.names = FALSE) %>% apaSupp::p_num(d = d + 1, stars = FALSE)
+    r2_mcfadden <- performance::r2_mcfadden(x) %>% unlist(use.names = FALSE) %>% apaSupp::p_num(d = d + 1, stars = FALSE)
 
+  } else if (family(x)$family == "poisson"){
+    r2_nagelkerke     <- performance::r2_nagelkerke(x)     %>% unlist(use.names = FALSE) %>% apaSupp::p_num(d = d + 1, stars = FALSE)
+  }
 
   if (pr2 == "both"){
     table <- table %>%
@@ -240,6 +257,11 @@ tab_glm <- function(x,
       flextable::add_body_row(top = FALSE, values = NA) %>%
       flextable::compose(part = "body", i = (n_rows + 1), j = 1, value = flextable::as_paragraph(flextable::as_i("pseudo-R\u00B2"))) %>%
       flextable::compose(part = "body", i = (n_rows + 1), j = 2, value = flextable::as_paragraph(r2_mcfadden[1]))
+  } else if (pr2 == "nagelkerke"){
+    table <- table %>%
+      flextable::add_body_row(top = FALSE, values = NA) %>%
+      flextable::compose(part  = "body", i = (n_rows + 1), j = 1, value = flextable::as_paragraph(flextable::as_i("pseudo-R\u00B2"))) %>%
+      flextable::compose(part =  "body", i = (n_rows + 1), j = 2, value = flextable::as_paragraph(r2_nagelkerke))
   }
 
   if (lrt == TRUE){
@@ -263,7 +285,7 @@ tab_glm <- function(x,
     flextable::add_header_row(values    = c(NA, abr[1], NA, abr[2], rep(NA, n_col - 6)),
                               colwidths = c( 1,     2,   1,     2,  rep( 1, n_col - 6))) %>%
     apaSupp::theme_apa(caption      = caption,
-                       main_note    = main_note,
+                       general_note    = main_note,
                        p_note       = p_note,
                        d            = d,
                        breaks       = breaks,

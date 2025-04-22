@@ -37,9 +37,8 @@ gt_glm <- function(x,
     sym <- c("OR", "b")
   } else if (family(x)$family == "poisson" & family(x)$link == "log") {
     back_trans <- "exp"
-    abr <- c("Incident Rate Ratio","Log Scale")
+    abr <- c("Incidence Rate Ratio","Log Scale")
     sym <- c("IRR", "b")
-
   }
 
   if (narrow == FALSE){ p_fun <- function(x, d = d) apaSupp::p_num(x, d = d + 1)
@@ -55,20 +54,23 @@ gt_glm <- function(x,
                               tidy_fun        = broom.helpers::tidy_with_broom_or_parameters,
                               show_single_row = all_of(show_single_row))
 
-
-  if (sum(!is.na(fit)) > 0){
-    table <- table %>%
-      gtsummary::add_glance_table(include = all_of(fit))
-  }
+  glm_possion_1
 
   table <- table %>%
     gtsummary::modify_column_hide(column = std.error) %>%
     gtsummary::modify_fmt_fun(estimate  ~ gtsummary::label_style_number(digits = d, rows = (row_type == "label"))) %>%
     gtsummary::modify_fmt_fun(conf.low  ~ gtsummary::label_style_number(digits = d, prefix = "[")) %>%
     gtsummary::modify_fmt_fun(conf.high ~ gtsummary::label_style_number(digits = d, suffix = "]")) %>%
-    gtsummary::remove_abbreviation("OR = Odds Ratio") %>%
     gtsummary::remove_abbreviation("CI = Confidence Interval") %>%
     gtsummary::remove_abbreviation("SE = Standard Error")
+
+  if (family(x)$link == "logit"){
+    table <- table %>%
+      gtsummary::remove_abbreviation("OR = Odds Ratio")
+  } else if (family(x)$family == "poisson"){
+    table <- table %>%
+      gtsummary::remove_abbreviation("IRR = Incidence Rate Ratio")
+  }
 
   if (narrow == TRUE){
     table <- table %>%

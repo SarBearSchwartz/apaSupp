@@ -72,12 +72,26 @@ tab_glms <- function(x,
   pad_fit  <- NULL
   pad_pr2  <- NULL
 
+
+  if (family(x[[1]])$link == "logit"){
+    back_trans <- "exp"
+    abr <- c("Odds Ratio","Logit Scale")
+    sym <- c("OR", "b")
+  } else if (family(x[[1]])$family == "poisson" & family(x[[1]])$link == "log") {
+    back_trans <- "exp"
+    abr <- c("Incident Rate Ratio","Log Scale")
+    sym <- c("IRR", "b")
+    pr2 <- "nagelkerke"
+  }
+
+
   n_fit   <- sum(!is.na(fit)*length(fit),
                  length(unique(ns)) > 1,
                  1*(length(fit)> 1),
                  3*(pr2 == "both"),
                  1*(pr2 == "tjur"),
-                 1*(pr2 == "mcfadden"))
+                 1*(pr2 == "mcfadden"),
+                 1*(pr2 == "nagelkerke"))
 
 
   main_note <- flextable::as_paragraph(
@@ -88,7 +102,8 @@ tab_glms <- function(x,
     "CI = confidence interval.",
     flextable::as_chunk(case_when(pr2 == "both" ~ "Coefficient of deterination estiamted with both Tjur and McFadden's psuedo R-squared",
                                   pr2 == "tjur" ~ "Coefficient of deterination estiamted by Tjur's psuedo R-squared",
-                                  pr2 == "mcfadden" ~ "Coefficient of deterination estimated by McFadden's psuedo R-squared",)),
+                                  pr2 == "mcfadden" ~ "Coefficient of deterination estimated by McFadden's psuedo R-squared",
+                                  pr2 == "nagelkerke" ~ "Coefficient of deterination estimated by Nagelkerke's psuedo R-squared")),
     flextable::as_chunk(general_note)
   )
 
