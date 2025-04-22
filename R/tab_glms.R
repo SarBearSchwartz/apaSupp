@@ -77,11 +77,13 @@ tab_glms <- function(x,
     back_trans <- "exp"
     abr <- c("Odds Ratio","Logit Scale")
     sym <- c("OR", "b")
+    int <- FALSE
   } else if (family(x[[1]])$family == "poisson" & family(x[[1]])$link == "log") {
     back_trans <- "exp"
     abr <- c("Incident Rate Ratio","Log Scale")
     sym <- c("IRR", "b")
     pr2 <- "nagelkerke"
+    int <- TRUE
   }
 
 
@@ -185,6 +187,7 @@ tab_glms <- function(x,
   }
 
 
+  if (family(x[[1]])$link == "logit"){
   df_r2 <- data.frame(num = 1:n_models) %>%
     dplyr::mutate(mod = x) %>%
     dplyr::mutate(tjur     = purrr::map_dbl(mod, function(x) performance::r2_tjur(x))) %>%
@@ -192,12 +195,18 @@ tab_glms <- function(x,
     dplyr::select(tjur, mcfadden) %>%
     dplyr::mutate(tjur     = apaSupp::p_num(tjur,     d = d + 1, stars = FALSE)) %>%
     dplyr::mutate(mcfadden = apaSupp::p_num(mcfadden, d = d + 1, stars = FALSE))
-
+  } else if (family(x[[1]])$family == "poisson") {
+    df_r2 <- data.frame(num = 1:n_models) %>%
+      dplyr::mutate(mod = x) %>%
+      dplyr::mutate(nagelkerke     = purrr::map_dbl(mod, function(x) performance::r2_nagelkerke(x))) %>%
+      dplyr::select(nagelkerke) %>%
+      dplyr::mutate(nagelkerke     = apaSupp::p_num(nagelkerke,     d = d + 1, stars = FALSE))
+  }
 
   n_rows <- flextable::nrow_part(table, part = "body")
 
 
-  if (pr2 == "tjur" | pr2 == "mcfadden"){
+  if (pr2 == "tjur" | pr2 == "mcfadden" | pr2 == "nagelkerke"){
     table <- table %>%
       flextable::add_body_row(top = FALSE, values = NA) %>%
       flextable::compose(part = "body", i = (n_rows + 1), j = 1,
@@ -232,8 +241,8 @@ tab_glms <- function(x,
                            value = flextable::as_paragraph(unlist(df_r2[i_mod, 1]))) %>%
         flextable::compose(part = "body", i = (n_rows + 3), j = 2 + (i_mod-1)*(3-narrow),
                            value = flextable::as_paragraph(unlist(df_r2[i_mod, 2])))
-    }
 
+    }
 
   }
 

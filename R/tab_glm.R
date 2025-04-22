@@ -63,29 +63,35 @@ tab_glm <- function(x,
                     breaks          = c(.05, .01, .001),
                     symbols         = c("*", "**", "***")){
 
-  n_obs   <- length(x$resid)
-  n_param <- length(coef(x))
-  n_fit   <- sum(!is.na(fit),
-                 3*(pr2 == "both"),
-                 1*(pr2 == "tjur"),
-                 1*(pr2 == "mcfadden"))
-
-  if (n_param <= 2) {
-    vif <- FALSE
-    lrt <- FALSE
-  }
 
 
   if (family(x)$link == "logit"){
     back_trans <- "exp"
     abr <- c("Odds Ratio","Logit Scale")
     sym <- c("OR", "b")
+    int <- FALSE
   } else if (family(x)$family == "poisson" & family(x)$link == "log") {
     back_trans <- "exp"
     abr <- c("Incident Rate Ratio","Log Scale")
     sym <- c("IRR", "b")
     pr2 <- "nagelkerke"
+    int <- TRUE
   }
+
+
+  n_obs   <- length(x$resid)
+  n_param <- length(coef(x))
+  n_fit   <- sum(!is.na(fit),
+                 3*(pr2 == "both"),
+                 1*(pr2 == "tjur"),
+                 1*(pr2 == "mcfadden"),
+                 1*(pr2 == "nagelkerke"))
+
+  if (n_param <= 2) {
+    vif <- FALSE
+    lrt <- FALSE
+  }
+
 
 
   main_note <- flextable::as_paragraph(
@@ -100,18 +106,18 @@ tab_glm <- function(x,
     flextable::as_chunk(case_when(pr2 == "both"     ~ "Coefficient of deterination included for both Tjur and McFadden's ",
                                   pr2 == "tjur"     ~ "Coefficient of deterination displays Tjur's ",
                                   pr2 == "mcfadden" ~ "Coefficient of deterination displays McFadden's ",
-                                  pr2 == "nagelkerke" ~ "Coefficient of deterination displays Nagelkerke's")),
+                                  pr2 == "nagelkerke" ~ "Coefficient of deterination displays Nagelkerke's ")),
     flextable::as_i(ifelse(pr2 == "none", NA, "pseudo-R\u00B2. ")),
     flextable::as_chunk(general_note)
   )
 
   if (back_trans == "exp"){
     get_tran <- x %>%
-      gtsummary::tbl_regression(intercept = TRUE,
+      gtsummary::tbl_regression(intercept = int,
                                 conf.int = TRUE,
                                 exponentiate = TRUE,
                                 tidy_fun = broom.helpers::tidy_with_broom_or_parameters,
-                                show_single_row = show_single_row) %>%
+                                show_single_row = all_of(show_single_row)) %>%
       gtsummary::modify_column_hide(column = std.error) %>%
       gtsummary::modify_column_hide(column = p.value) %>%
       gtsummary::modify_fmt_fun(estimate  ~ gtsummary::label_style_number(digits = d)) %>%
@@ -120,8 +126,8 @@ tab_glm <- function(x,
       gtsummary::remove_abbreviation("CI = Confidence Interval") %>%
       gtsummary::remove_abbreviation("SE = Standard Error")  %>%
       gtsummary::modify_table_body(~.x %>%
-                                     dplyr::mutate(estimate = ifelse(variable == "(Intercept)", NA, estimate)) %>%
-                                     dplyr::mutate(conf.low = ifelse(variable == "(Intercept)", NA, conf.low))) %>%
+                                     dplyr::mutate(estimate = ifelse(variable == "(Intercept)" & int == FALSE, NA, estimate)) %>%
+                                     dplyr::mutate(conf.low = ifelse(variable == "(Intercept)" & int == FALSE, NA, conf.low))) %>%
       gtsummary::modify_table_body(~.x %>% dplyr::mutate(bk = NA)) %>%
       gtsummary::modify_header(label = "Variable",
                                estimate = sym[1],
@@ -285,7 +291,7 @@ tab_glm <- function(x,
     flextable::add_header_row(values    = c(NA, abr[1], NA, abr[2], rep(NA, n_col - 6)),
                               colwidths = c( 1,     2,   1,     2,  rep( 1, n_col - 6))) %>%
     apaSupp::theme_apa(caption      = caption,
-                       general_note    = main_note,
+                       main_note    = main_note,
                        p_note       = p_note,
                        d            = d,
                        breaks       = breaks,

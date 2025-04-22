@@ -35,10 +35,12 @@ gt_glm <- function(x,
     back_trans <- "exp"
     abr <- c("Odds Ratio","Logit Scale")
     sym <- c("OR", "b")
+    int <- FALSE
   } else if (family(x)$family == "poisson" & family(x)$link == "log") {
     back_trans <- "exp"
     abr <- c("Incidence Rate Ratio","Log Scale")
     sym <- c("IRR", "b")
+    int <- TRUE
   }
 
   if (narrow == FALSE){ p_fun <- function(x, d = d) apaSupp::p_num(x, d = d + 1)
@@ -47,14 +49,13 @@ gt_glm <- function(x,
 
 
   table <- x %>%
-    gtsummary::tbl_regression(intercept       = FALSE,
+    gtsummary::tbl_regression(intercept       = int,
                               conf.int        = TRUE,
                               exponentiate    = TRUE,
                               pvalue_fun      = ~ p_fun(.x, d = d),
                               tidy_fun        = broom.helpers::tidy_with_broom_or_parameters,
                               show_single_row = all_of(show_single_row))
 
-  glm_possion_1
 
   table <- table %>%
     gtsummary::modify_column_hide(column = std.error) %>%
