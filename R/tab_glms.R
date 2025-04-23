@@ -102,10 +102,10 @@ tab_glms <- function(x,
                                glue::glue("N = {unique(ns)}. "),
                                "Models fit to different samples. ")),
     "CI = confidence interval.",
-    flextable::as_chunk(case_when(pr2 == "both" ~ "Coefficient of deterination estiamted with both Tjur and McFadden's psuedo R-squared",
-                                  pr2 == "tjur" ~ "Coefficient of deterination estiamted by Tjur's psuedo R-squared",
-                                  pr2 == "mcfadden" ~ "Coefficient of deterination estimated by McFadden's psuedo R-squared",
-                                  pr2 == "nagelkerke" ~ "Coefficient of deterination estimated by Nagelkerke's psuedo R-squared")),
+    flextable::as_chunk(case_when(pr2 == "both" ~ "Coefficient of determination estiamted with both Tjur and McFadden's psuedo R-squared",
+                                  pr2 == "tjur" ~ "Coefficient of determination estiamted by Tjur's psuedo R-squared",
+                                  pr2 == "mcfadden" ~ "Coefficient of determination estimated by McFadden's psuedo R-squared",
+                                  pr2 == "nagelkerke" ~ "Coefficient of determination estimated by Nagelkerke's psuedo R-squared")),
     flextable::as_chunk(general_note)
   )
 
