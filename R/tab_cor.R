@@ -42,7 +42,7 @@ tab_cor <- function(x,
     rstatix::cor_mat() %>%
     rstatix::pull_lower_triangle() %>%
     rstatix::cor_gather() %>%
-    dplyr::mutate(r = apaSupp::p_num(cor, stars = FALSE)) %>%
+    dplyr::mutate(r = MOTE::apa(cor, decimals = d + 3, leading = FALSE)) %>%
     dplyr::mutate(p = apaSupp::p_num(p, breaks = breaks, symbols = symbols)) %>%
     dplyr::select("Variable Pair" = var1, var2, r, p) %>%
     flextable::flextable() %>%
