@@ -44,7 +44,7 @@ tab_cor <- function(x,
     rstatix::cor_gather() %>%
     dplyr::mutate(r = MOTE::apa(cor, decimals = d + 1, leading = FALSE)) %>%
     dplyr::mutate(p = apaSupp::p_num(p, breaks = breaks, symbols = symbols)) %>%
-    dplyr::select("Variable Pair" = var2, var3, r, p) %>%
+    dplyr::select("Variable Pair" = var2, var1, r, p) %>%
     flextable::flextable() %>%
     apaSupp::theme_apa(caption      = caption,
                        main_note    = main_note,
