@@ -100,15 +100,15 @@ tab_lms <- function(x,
     table <- table %>%
       flextable::align(j = seq(from = 2, to = 1 + k*n_models, by = k), align = "right") %>%
       flextable::align(j = seq(from = 3, to = 1 + k*n_models, by = k), align = "left")  %>%
-      flextable::width(j = seq(from = 2, to = 1 + k*n_models, by = k), width = .50)     %>%
+      flextable::width(j = seq(from = 2, to = 1 + k*n_models, by = k), width = .40)     %>%
       flextable::width(j = seq(from = 3, to = 1 + k*n_models, by = k), width = .75)
   } else if (narrow == FALSE) {
     table <- table %>%
-      flextable::align(j = seq(from = 2, to = 1 + k*n_models, by = k), align = "right") %>%
-      flextable::align(j = seq(from = 3, to = 1 + k*n_models, by = k), align = "left")  %>%
-      flextable::align(j = seq(from = 4, to = 1 + k*n_models, by = k), align = "left")  %>%
-      flextable::width(j = seq(from = 2, to = 1 + k*n_models, by = k), width = .50)     %>%
-      flextable::width(j = seq(from = 3, to = 1 + k*n_models, by = k), width = .50)     %>%
+      flextable::align(part = "all", j = seq(from = 2, to = 1 + k*n_models, by = k), align = "right") %>%
+      flextable::align(part = "all", j = seq(from = 3, to = 1 + k*n_models, by = k), align = "left")  %>%
+      flextable::align(part = "all", j = seq(from = 4, to = 1 + k*n_models, by = k), align = "left")  %>%
+      flextable::width(j = seq(from = 2, to = 1 + k*n_models, by = k), width = .40)     %>%
+      flextable::width(j = seq(from = 3, to = 1 + k*n_models, by = k), width = .40)     %>%
       flextable::width(j = seq(from = 4, to = 1 + k*n_models, by = k), width = .75)
   }
 
