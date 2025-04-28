@@ -147,7 +147,6 @@ tab_xalpha <- function(df,
     apaSupp::theme_apa(caption      = caption,
                        main_note    = main_note,
                        d            = d) %>%
-    flextable::line_spacing(space = 1, part = "header") %>%
     flextable::italic( part = "header", i = 2, j = c(2, 5, 6, 8, 9)) %>%   #added
     flextable::align(  part = "all",  j = c(1, 6, 9),    align = "left") %>%
     flextable::align(  part = "all",  j = c(5, 8),       align = "right") %>%
