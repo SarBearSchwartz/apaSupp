@@ -42,8 +42,6 @@ tab_lms <- function(x,
 
   ns <- sapply(x, function(y) length(y$residuals))
 
-  k  <- ifelse(narrow == TRUE, 2, 3)
-
   n_param <- x %>%
     purrr::map(coef) %>%
     purrr::map(length) %>%
@@ -52,6 +50,9 @@ tab_lms <- function(x,
 
   n_models <- length(x)
   n_fit    <- length(fit)
+
+  k     <- ifelse(narrow == TRUE, 2, 3)
+  n_col <- 1 + k*n_models
 
   main_note <- flextable::as_paragraph(
     flextable::as_i("Note. "),
@@ -95,22 +96,30 @@ tab_lms <- function(x,
   if(!is.null(var_labels)){ table <- table %>% flextable::labelizor(part = "body", labels = var_labels)}
 
 
-
   if (narrow == TRUE){
     table <- table %>%
-      flextable::align(j = seq(from = 2, to = 1 + k*n_models, by = k), align = "right") %>%
-      flextable::align(j = seq(from = 3, to = 1 + k*n_models, by = k), align = "left")  %>%
-      flextable::width(j = seq(from = 2, to = 1 + k*n_models, by = k), width = .40)     %>%
-      flextable::width(j = seq(from = 3, to = 1 + k*n_models, by = k), width = .75)
+      flextable::align(part = "all", j = seq(from = 2, to = n_col, by = k), align = "right") %>%
+      flextable::align(part = "all", j = seq(from = 3, to = n_col, by = k), align = "left")  %>%
+      flextable::width(j = seq(from = 2, to = n_col, by = k), width = .40)     %>%
+      flextable::width(j = seq(from = 3, to = n_col, by = k), width = .75)
   } else if (narrow == FALSE) {
     table <- table %>%
-      flextable::align(part = "all", j = seq(from = 2, to = 1 + k*n_models, by = k), align = "right") %>%
-      flextable::align(part = "all", j = seq(from = 3, to = 1 + k*n_models, by = k), align = "left")  %>%
-      flextable::align(part = "all", j = seq(from = 4, to = 1 + k*n_models, by = k), align = "left")  %>%
-      flextable::width(j = seq(from = 2, to = 1 + k*n_models, by = k), width = .40)     %>%
-      flextable::width(j = seq(from = 3, to = 1 + k*n_models, by = k), width = .40)     %>%
-      flextable::width(j = seq(from = 4, to = 1 + k*n_models, by = k), width = .75)
+      flextable::align(part = "all", j = seq(from = 2, to = n_col, by = k), align = "right") %>%
+      flextable::align(part = "all", j = seq(from = 3, to = n_col, by = k), align = "left")  %>%
+      flextable::align(part = "all", j = seq(from = 4, to = n_col, by = k), align = "left")  %>%
+      flextable::width(j = seq(from = 2, to = n_col, by = k), width = .40)     %>%
+      flextable::width(j = seq(from = 3, to = n_col, by = k), width = .40)     %>%
+      flextable::width(j = seq(from = 4, to = n_col, by = k), width = .75)
   }
+
+
+  for (r in rows_fit){
+    for (m in 1:n_models){
+      table <- table %>%
+        flextable::merge_at(i = r, j = (2 + (m-1)*k):(3 + (m-1)*k))
+    }
+  }
+
 
 
   table <- table %>%
@@ -118,7 +127,8 @@ tab_lms <- function(x,
     flextable::align( part = "header", i = 1, align = "center") %>%
     flextable::align( part = "footer",        align = "left") %>%
     flextable::hline( part = "body",   i = n_rows - n_fit) %>%
-    flextable::hline( part = "header", i = 1, border = flextable::fp_border_default(width = 0)) %>%
+    flextable::hline( part = "header", i = 1,
+                      border = flextable::fp_border_default(width = 0)) %>%
     flextable::width(j = 1,             width = 1.25) %>%
     flextable::line_spacing(part = "header", space = 1.5) %>%
     flextable::line_spacing(part = "body",   space = 0.5) %>%
