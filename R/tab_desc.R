@@ -85,7 +85,10 @@ tab_desc <- function(df,
     flextable::width(j = 1,   width = 1.75) %>%
     flextable::width(j = 2,   width = 0.25) %>%
     flextable::width(j = 2:9, width = 0.50) %>%
-    flextable::width(j = 5,   width = 0.75)
+    flextable::width(j = 5,   width = 0.75) %>%
+    flextable::line_spacing(part = "header", space = 1.5) %>%
+    flextable::line_spacing(part = "body",   space = 0.5) %>%
+    flextable::line_spacing(part = "footer", space = 1.5)
 
   return(table)
 }

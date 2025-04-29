@@ -157,8 +157,10 @@ tab_xalpha <- function(df,
     flextable::compose(part = "header", j = 1, value = flextable::as_paragraph(NA)) %>%
     flextable::autofit() %>%
     flextable::width(j = 1,   width = 2.00, unit = "in") %>%
-    flextable::width(j = 2:9, width = 0.50, unit = "in")
-
+    flextable::width(j = 2:9, width = 0.50, unit = "in") %>%
+    flextable::line_spacing(part = "header", space = 1.5) %>%
+    flextable::line_spacing(part = "body",   space = 0.5) %>%
+    flextable::line_spacing(part = "footer", space = 1.5)
 
   return(table)
 

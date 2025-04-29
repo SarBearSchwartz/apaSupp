@@ -56,8 +56,12 @@ tab_cor <- function(x,
     flextable::italic(  part = "header", i = 1, j = 3:4) %>%
     flextable::align(   part = "header",                 align = "center") %>%
     flextable::align(   part = "body",          j = 1:2, align = "left") %>%
-    flextable::align(   part = "body",          j = 3:4, align = "right") %>%
+    flextable::align(   part = "body",          j = 3,   align = "center") %>%
+    flextable::align(   part = "body",          j = 4,   align = "left") %>%
     flextable::align(   part = "footer",                 align = "left") %>%
+    flextable::line_spacing(part = "header", space = 1.5) %>%
+    flextable::line_spacing(part = "body",   space = 0.5) %>%
+    flextable::line_spacing(part = "footer", space = 1.5) %>%
     flextable::autofit()
 
   return(table)
