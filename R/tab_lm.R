@@ -141,7 +141,8 @@ tab_lm <- function(x,
     flextable::compose(part = "header", i = 1, j = 1, value = flextable::as_paragraph(NA)) %>%
     flextable::italic( part = "header") %>%
     flextable::hline(  part = "body",  i = n_rows - n_fit) %>%
-    flextable::italic( part = "body",  i = (n_rows - n_fit + 1):(n_rows))
+    flextable::italic( part = "body",  i = (n_rows - n_fit + 1):(n_rows))%>%
+    flextable::align(  part = "body",  i = (n_rows - n_fit + 1):(n_rows), align = "center")
 
   if (std == TRUE){
     table <- table %>%
@@ -157,7 +158,17 @@ tab_lm <- function(x,
                          value = flextable::as_paragraph(flextable::as_equation("\\eta^2_p")))
   }
 
-  table <- table %>% flextable::autofit()
+  for (r in (n_rows - n_fit + 1):n_rows){
+      table <- table %>%
+        flextable::merge_at(i = r, j = 2:3) %>%
+        flextable::align(   i = r, j = 1,   align = "left") %>%
+        flextable::align(   i = r, j = 2:3, align = "center")
+  }
+
+  table <- table %>%
+    flextable::width(         width = 0.50, unit = "in") %>%
+    flextable::width(j = 1,   width = 1.75, unit = "in") %>%
+    flextable::width(j = 2:4, width = 0.75, unit = "in")
 
   return(table)
 }

@@ -93,7 +93,10 @@ tab_lms <- function(x,
     flextable::italic(part = "header", i = 2) %>%
     flextable::italic(part = "body",   i = rows_fit)
 
-  if(!is.null(var_labels)){ table <- table %>% flextable::labelizor(part = "body", labels = var_labels)}
+  if(!is.null(var_labels)){
+    table <- table %>%
+      flextable::labelizor(part = "body", labels = var_labels)
+    }
 
 
   if (narrow == TRUE){
@@ -116,7 +119,9 @@ tab_lms <- function(x,
   for (r in rows_fit){
     for (m in 1:n_models){
       table <- table %>%
-        flextable::merge_at(i = r, j = (2 + (m-1)*k):(3 + (m-1)*k))
+        flextable::merge_at(i = r, j = (2 + (m-1)*k):(3 + (m-1)*k)) %>%
+        flextable::align(   i = r, j = (2 + (m-1)*k):(3 + (m-1)*k),
+                            align = "center")
     }
   }
 
@@ -129,7 +134,7 @@ tab_lms <- function(x,
     flextable::hline( part = "body",   i = n_rows - n_fit) %>%
     flextable::hline( part = "header", i = 1,
                       border = flextable::fp_border_default(width = 0)) %>%
-    flextable::width(j = 1, width = 1.25) %>%
+    flextable::width(j = 1, width = 1.55) %>%
     flextable::line_spacing(part = "header", space = 1.5) %>%
     flextable::line_spacing(part = "body",   space = 0.5) %>%
     flextable::line_spacing(part = "footer", space = 1.5)
