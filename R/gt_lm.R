@@ -14,13 +14,15 @@
 #' @export
 #'
 #' @examples
-#' library(datasets)
+#'
 #' library(tidyverse)
 #'
 #' mtcars <- mtcars %>% dplyr::mutate(vs = factor(vs))
 #'
 #' m <- lm(mpg ~ vs + disp, data = mtcars)
 #'
+#' apaSupp::gt_lm(m)
+#' apaSupp::gt_lm(m, show_single_row = "vs")
 #' apaSupp::gt_lm(m, d = 3)
 #' apaSupp::gt_lm(m, narrow = TRUE)
 #'
@@ -44,9 +46,12 @@ gt_lm <- function(x,
     gtsummary::modify_column_unhide(column = std.error) %>%
     gtsummary::remove_footnote_header() %>%
     gtsummary::remove_abbreviation("SE = Standard Error")  %>%
-    gtsummary::modify_fmt_fun(estimate  ~ function(x) p_num(x, d = (d + 1), stars = FALSE), rows =  stringr::str_detect(variable, "r.")) %>%
-    gtsummary::modify_fmt_fun(estimate  ~ function(x) p_num(x, d = (d - 1), stars = FALSE), rows = !stringr::str_detect(variable, "r.")) %>%
-    gtsummary::modify_fmt_fun(estimate  ~ gtsummary::label_style_number(digits = d), rows = (row_type == "label") ) %>%
+    gtsummary::modify_fmt_fun(estimate  ~ function(x) MOTE::apa(x, decimals = (d + 1), leading = FALSE),
+                              rows = stringr::str_detect(variable, "r.squared")) %>%
+    gtsummary::modify_fmt_fun(estimate  ~ function(x) MOTE::apa(x, decimals = d, leading = TRUE),
+                              rows = !stringr::str_detect(variable, "r.squared")) %>%
+    gtsummary::modify_fmt_fun(estimate  ~ gtsummary::label_style_number(digits = d),
+                              rows = (row_type %in% c("label", "level"))) %>%
     gtsummary::modify_fmt_fun(std.error ~ gtsummary::label_style_number(digits = d, prefix = "(", suffix = ")"))
 
 

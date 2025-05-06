@@ -129,7 +129,7 @@ tab_lms <- function(x,
     flextable::hline( part = "body",   i = n_rows - n_fit) %>%
     flextable::hline( part = "header", i = 1,
                       border = flextable::fp_border_default(width = 0)) %>%
-    flextable::width(j = 1,             width = 1.25) %>%
+    flextable::width(j = 1, width = 1.25) %>%
     flextable::line_spacing(part = "header", space = 1.5) %>%
     flextable::line_spacing(part = "body",   space = 0.5) %>%
     flextable::line_spacing(part = "footer", space = 1.5)

@@ -66,15 +66,15 @@ tab_lm <- function(x,
     flextable::as_i(    "Note. "),
     flextable::as_i(    "N"),
     flextable::as_chunk(glue::glue(" = {length(x$resid)}. ")),
-    flextable::as_i(    ifelse(vif  == FALSE, NA, "VIF")),
-    flextable::as_chunk(ifelse(vif  == FALSE, NA, " = variance inflation factor; ")),
-    flextable::as_i(    ifelse(eta2 == FALSE, NA, "\U03B7\U00B2")),
-    flextable::as_chunk(ifelse(eta2 == FALSE, NA, " = semi-partial correlation; ")),
-    flextable::as_i(    ifelse(eta2 == FALSE, NA, "\U03B7\U209A\U00B2")),
-    flextable::as_chunk(ifelse(eta2 == FALSE, NA, " = partial correlation; ")),
-    flextable::as_i(    ifelse(std  == FALSE, NA,"b\U002A")),
-    flextable::as_chunk(ifelse(std  == FALSE, NA, " = standardize coefficient; ")),
-    flextable::as_i(    "p"),
+    flextable::as_equation(ifelse(eta2 == FALSE, NA, "b^*")),
+    flextable::as_chunk(   ifelse(std  == FALSE, NA, " = standardize coefficient; ")),
+    flextable::as_i(       ifelse(vif  == FALSE, NA, "VIF")),
+    flextable::as_chunk(   ifelse(vif  == FALSE, NA, " = variance inflation factor; ")),
+    flextable::as_equation(ifelse(eta2 == FALSE, NA, "\\eta^2")),
+    flextable::as_chunk(   ifelse(eta2 == FALSE, NA, " = semi-partial correlation; ")),
+    flextable::as_equation(ifelse(eta2 == FALSE, NA, "\\eta^2_p")),
+    flextable::as_chunk(   ifelse(eta2 == FALSE, NA, " = partial correlation; ")),
+    flextable::as_i("p"),
     flextable::as_chunk(" = significance from Wald t-test for parameter estimate. "),
     flextable::as_chunk(general_note)
   )
@@ -89,9 +89,12 @@ tab_lm <- function(x,
     gtsummary::modify_column_unhide(column = std.error) %>%
     gtsummary::remove_footnote_header() %>%
     gtsummary::remove_abbreviation("SE = Standard Error")  %>%
-    gtsummary::modify_fmt_fun(estimate  ~ function(x) apaSupp::p_num(x, d = (d + 1), stars = FALSE), rows =  stringr::str_detect(variable, "r.")) %>%
-    gtsummary::modify_fmt_fun(estimate  ~ function(x) apaSupp::p_num(x, d = (d - 1), stars = FALSE), rows = !stringr::str_detect(variable, "r.")) %>%
-    gtsummary::modify_fmt_fun(estimate  ~ gtsummary::label_style_number(digits = d), rows = (row_type == "label") ) %>%
+    gtsummary::modify_fmt_fun(estimate  ~ function(x) MOTE::apa(x, decimals = d + 1, leading = FALSE),
+                              rows =  stringr::str_detect(variable, "r.squared")) %>%
+    gtsummary::modify_fmt_fun(estimate  ~ function(x) MOTE::apa(x, decimals = d, leading = TRUE),
+                              rows = !stringr::str_detect(variable, "r.squared")) %>%
+    gtsummary::modify_fmt_fun(estimate  ~ gtsummary::label_style_number(digits = d),
+                              rows = (row_type %in% c("label", "level"))) %>%
     gtsummary::modify_fmt_fun(std.error ~ gtsummary::label_style_number(digits = d, prefix = "(", suffix = ")")) %>%
     gtsummary::modify_header(label     = "Variable",
                              estimate  = "b",
@@ -136,19 +139,22 @@ tab_lm <- function(x,
 
   table <- table %>%
     flextable::compose(part = "header", i = 1, j = 1, value = flextable::as_paragraph(NA)) %>%
-    flextable::italic(part = "header") %>%
-    flextable::hline( part = "body",  i = n_rows - n_fit) %>%
-    flextable::italic(part = "body",  i = (n_rows - n_fit + 1):(n_rows))
+    flextable::italic( part = "header") %>%
+    flextable::hline(  part = "body",  i = n_rows - n_fit) %>%
+    flextable::italic( part = "body",  i = (n_rows - n_fit + 1):(n_rows))
 
   if (std == TRUE){
     table <- table %>%
-      flextable::compose(part = "header",  j = "bs", value = flextable::as_paragraph("b\U002A"))
+      flextable::compose(part = "header",  j = "bs",
+                         value = flextable::as_paragraph(flextable::as_equation("b^*")))
   }
 
   if (eta2 == TRUE){
     table <- table %>%
-      flextable::compose(part = "header", j = "eta.sq",      value = flextable::as_paragraph("\u03B7\U00B2")) %>%
-      flextable::compose(part = "header", j = "eta.sq.part", value = flextable::as_paragraph("\u03B7\u209A\U00B2"))
+      flextable::compose(part = "header", j = "eta.sq",
+                         value = flextable::as_paragraph(flextable::as_equation("\\eta^2"))) %>%
+      flextable::compose(part = "header", j = "eta.sq.part",
+                         value = flextable::as_paragraph(flextable::as_equation("\\eta^2_p")))
   }
 
   table <- table %>% flextable::autofit()
