@@ -19,6 +19,8 @@ APA: calculate eta-squared effect sizes
 }
 \examples{
 
+library(tidyverse)
+
 mtcars <- mtcars \%>\% dplyr::mutate(cyl = factor(cyl))
 
 fit_lm1 <- lm(mpg ~ wt + hp + cyl, data = mtcars)

@@ -19,7 +19,6 @@ APA: Round a numeric value to \code{n} decimal places, keeping leading zero
 }
 \examples{
 n <- 1/3
-apa
-n2(n, d = 2)
+apan(n, d = 2)
 
 }

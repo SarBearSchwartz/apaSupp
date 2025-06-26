@@ -5,7 +5,7 @@
 \title{P-value Labels: 3-decimal places, no leading zero, and stars}
 \usage{
 p_lab(
-  x,
+  value,
   breaks = c(0.05, 0.01, 0.001),
   symbols = c("*", "**", "***"),
   d = 3,
@@ -13,7 +13,7 @@ p_lab(
 )
 }
 \arguments{
-\item{x}{a numeric value for a statistical significance (p-value)}
+\item{value}{a numeric value for a statistical significance (p-value)}
 
 \item{breaks}{statistical significance break points}
 
@@ -30,6 +30,6 @@ character of the form "p = .231", "p = .022**", or "< .001***"
 P-value Labels: 3-decimal places, no leading zero, and stars
 }
 \examples{
-x <- c(.36521, .02456, .0000000056)
-p_lab(x)
+nums <- c(.36521, .02456, .0000000056)
+p_lab(nums)
 }

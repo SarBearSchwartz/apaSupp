@@ -31,6 +31,8 @@ tab_glms(
 
 \item{p_note}{Optional: Text. (default = NULL) Significance note for APA table, If p_note = "apa" then the standard "* p < .05. ** p < .01. *** p < .001." will be used}
 
+\item{no_notes}{REQUIRED: Logical.  Defaults to \code{FALSE}, if \code{TRUE} will ignore \code{general_note} and \code{p_note}}
+
 \item{d}{Optional: Number. Digits after the decimal place}
 
 \item{narrow}{Optional. Logical. Default = FALSE, but TRUE will exclude p-vlaues from the table to make it narrower}
@@ -40,6 +42,10 @@ tab_glms(
 \item{pr2}{Optional: character.  (default = "both") Include pseudo R-squared: "tjur", "mcfadden", "both", or "none"}
 
 \item{show_single_row}{(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.}
+
+\item{breaks}{Optional: numeric vector of p-value cut-points}
+
+\item{symbols}{Optional: character vector for symbols denoting p-value cut-points}
 }
 \value{
 a flextable object

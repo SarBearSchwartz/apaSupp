@@ -30,6 +30,8 @@ tab_lms(
 
 \item{p_note}{Optional: Text. (default = NULL) Significance note for APA table, If p_note = "apa" then the standard "* p < .05. ** p < .01. *** p < .001." will be used}
 
+\item{no_notes}{REQUIRED: Logical.  Defaults to \code{FALSE}, if \code{TRUE} will ignore \code{general_note} and \code{p_note}}
+
 \item{d}{Optional: Number. Digits after the decimal place}
 
 \item{narrow}{Optional. Logical. Default = FALSE, but TRUE will exclude p-vlaues from the table to make it narrower}

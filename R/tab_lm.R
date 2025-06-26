@@ -5,12 +5,13 @@
 #' @param caption Optional: Text. Caption for the table
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa123"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
-#' @param no_notes REQUIRED: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `genderal_note` and `p_note`
+#' @param no_notes REQUIRED: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `general_note` and `p_note`
 #' @param d Optional: Number. Digits after the decimal place
 #' @param fit Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"
 #' @param std Optional: Logical. (default = TRUE) Include standardized coefficients?
 #' @param vif Optional: Logical. (default = FALSE) Include variance inflation factors?
 #' @param eta2 Optional: logical. (default = TRUE) Include eta-squared (semi-partial correlations) and partial eta-squared (partial correlations)
+#' @param ci Optional: logical. (default = FALSE) Include a confidence interval for the estimated beta
 #' @param show_single_row  Optional: If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.
 #' @param breaks Optional: numeric vector of p-value cut-points
 #' @param symbols Optional: character vector for symbols denoting p-value cut-points
@@ -46,6 +47,7 @@ tab_lm <- function(x,
                    std             = TRUE,
                    vif             = FALSE,
                    eta2            = TRUE,
+                   ci              = FALSE,
                    show_single_row = NULL,
                    breaks          = c(.05, .01, .001),
                    symbols         = c("*", "**", "***")){
@@ -81,7 +83,7 @@ tab_lm <- function(x,
 
   get <- x %>%
     gtsummary::tbl_regression(intercept = TRUE,
-                              conf.int = FALSE,
+                              conf.int = ci,
                               pvalue_fun = function(x) apaSupp::p_num(x, d = d + 1),
                               tidy_fun = broom.helpers::tidy_with_broom_or_parameters,
                               show_single_row = show_single_row) %>%
@@ -140,7 +142,7 @@ tab_lm <- function(x,
   table <- table %>%
     flextable::compose(part = "header", i = 1, j = 1, value = flextable::as_paragraph(NA)) %>%
     flextable::italic( part = "header") %>%
-    flextable::hline(  part = "body",  i = n_rows - n_fit) %>%
+    flextable::hline(  part = "body",  i =  n_rows - n_fit) %>%
     flextable::italic( part = "body",  i = (n_rows - n_fit + 1):(n_rows))%>%
     flextable::align(  part = "body",  i = (n_rows - n_fit + 1):(n_rows), align = "center")
 

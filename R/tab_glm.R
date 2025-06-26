@@ -5,7 +5,7 @@
 #' @param caption Optional: Text. Caption for the table
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa123"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
-#' @param no_notes REQUIRED: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `genderal_note` and `p_note`
+#' @param no_notes REQUIRED: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `general_note` and `p_note`
 #' @param d Optional: Number. Digits after the decimal place
 #' @param fit Optional: Text. fit statistics: (default = NA) "nobs", null.deviance", "df.null", "deviance", "df.residual", "logLik", "AIC", "BIC"
 #' @param pr2 Optional: character.  (default = "both") Include pseudo R-squared: "tjur", "mcfadden", "both", or "none" for logistic or "nagelkerke" for poisson

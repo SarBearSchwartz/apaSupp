@@ -1,7 +1,7 @@
 Type: Package
 Package: apaSupp
 Title: APA Formatted Supplemental Materials
-Version: 0.0.0.9000
+Version: 0.0.1.1
 Authors@R: person("Sarah", "Schwartz", email = "sarah.schwartz@usu.edu", role = c("aut", "cre"))
 Description: Prepare supplemental material documents for publications.
 License: MIT + file LICENSE
@@ -9,17 +9,26 @@ URL: https://github.com/SarBearSchwartz/apaSupp
 Depends: R (>= 4.1.0)
 Imports: 
     tidyverse,
+    dplyr,
+    tidyr,
+    forcats,
+    purrr,
+    stringr,
+    rlang,
+    testthat,
+    tibble,
     ggplot2,
     glue,
     DescTools,
     broom.helpers,
     car,
     gtsummary,
+    cardx,
     rstatix,
     performance,
     parameters,
-    tidyr,
     flextable,
+    lme4,
     MOTE,
     psych,
     naniar,

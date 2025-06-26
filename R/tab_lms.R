@@ -5,6 +5,7 @@
 #' @param caption Optional: Text. Caption for the table
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If p_note = "apa" then the standard "* p < .05. ** p < .01. *** p < .001." will be used
+#' @param no_notes REQUIRED: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `general_note` and `p_note`
 #' @param d Optional: Number. Digits after the decimal place
 #' @param narrow  Optional. Logical. Default = FALSE, but TRUE will exclude p-vlaues from the table to make it narrower
 #' @param fit Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"
@@ -120,8 +121,7 @@ tab_lms <- function(x,
     for (m in 1:n_models){
       table <- table %>%
         flextable::merge_at(i = r, j = (2 + (m-1)*k):(3 + (m-1)*k)) %>%
-        flextable::align(   i = r, j = (2 + (m-1)*k):(3 + (m-1)*k),
-                            align = "center")
+        flextable::align(   i = r,          align = "center")
     }
   }
 
@@ -130,6 +130,7 @@ tab_lms <- function(x,
   table <- table %>%
     flextable::align( part = "header", i = 1, align = "center") %>%
     flextable::align( part = "header", i = 1, align = "center") %>%
+    flextable::align( part = "body",   j = 1, align = "left") %>%
     flextable::align( part = "footer",        align = "left") %>%
     flextable::hline( part = "body",   i = n_rows - n_fit) %>%
     flextable::hline( part = "header", i = 1,

@@ -13,9 +13,31 @@
 #'
 #' @examples
 #' library(tidyverse)
+#' library(forcats)
 #'
-#' mtcars
-#' apaSupp::tab_freq(mtcars)
+#' data(mtcars)
+#'
+#' mtcars <- mtcars %>%
+#'   dplyr::mutate(vs = factor(vs,
+#'                             levels = 0:1,
+#'                             labels = c("V Shaped", "Straight"))) %>%
+#'   dplyr::mutate(am = factor(am,
+#'                             levels = 0:1,
+#'                             labels = c("Automatic", "Manual"))) %>%
+#'   dplyr::mutate(cyl  = factor(cyl)) %>%
+#'   dplyr::mutate(gear = factor(gear))
+#'
+#'
+#' tab_freq(mtcars)
+#'
+#' mtcars %>%
+#'   dplyr::select(cyl,
+#'                 "Engine Type" = vs,
+#'                 "Transmission" = am,
+#'                 "Forward Gears" = gear) %>%
+#'   tab_freq(split = "cyl",
+#'            caption = "Summary of Automobile Engines by Number of Cylinders",
+#'            general_note = "Data from the 1974 Motor Trend US magazine.")
 #'
 tab_freq <- function(df,
                      split        = NULL,

@@ -9,8 +9,7 @@
 #'
 #' @examples
 #' n <- 1/3
-#' apa
-#' n2(n, d = 2)
+#' apan(n, d = 2)
 #'
 apan <- function(x, d){
   MOTE::apa(value = x,

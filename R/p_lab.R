@@ -1,6 +1,6 @@
 #' P-value Labels: 3-decimal places, no leading zero, and stars
 #'
-#' @param x a numeric value for a statistical significance (p-value)
+#' @param value a numeric value for a statistical significance (p-value)
 #' @param breaks statistical significance break points
 #' @param symbols symbols to assign to each break point
 #' @param d number of digits after the decimal point
@@ -14,15 +14,15 @@
 #' @export
 #'
 #' @examples
-#' x <- c(.36521, .02456, .0000000056)
-#' p_lab(x)
-p_lab <- function(x,
+#' nums <- c(.36521, .02456, .0000000056)
+#' p_lab(nums)
+p_lab <- function(value,
                   breaks = c(.05, .01, .001),
                   symbols = c("*", "**", "***"),
                   d = 3,
                   leading = FALSE){
 
-  value_apa = MOTE::apa(value = x,
+  value_apa = MOTE::apa(value = value,
                         decimals = d,
                         leading = leading)
 
