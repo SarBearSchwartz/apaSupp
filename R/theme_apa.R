@@ -8,6 +8,11 @@
 #' @param d Optional: Number. Digits after the decimal place
 #' @param breaks Optional: numeric vector of p-value cut-points
 #' @param symbols Optional: character vector for symbols denoting p-value cut-points
+<<<<<<< Updated upstream
+=======
+#' @param d Optional: Number. Digits after the decimal place
+#' @param main_note Optional: alternative to `general_note` already in paragraph form
+>>>>>>> Stashed changes
 #'
 #' @return table
 #' @import tidyverse
@@ -30,8 +35,12 @@ theme_apa <- function(x,
                       p_note       = NA,
                       no_notes     = FALSE,
                       d            = 2,
+<<<<<<< Updated upstream
                       breaks       = c(.05, .01, .001),
                       symbols      = c("*", "**", "***")){
+=======
+                      main_note    = NA){
+>>>>>>> Stashed changes
 
   border.thick <- list("width" = 2.5, color = "black", style = "solid")
   border.thin  <- list("width" = 1.0, color = "black", style = "solid")
@@ -95,7 +104,12 @@ theme_apa <- function(x,
       flextable::compose(part = "footer", i = f + 1, j = 1, value = sig_note)
   }
 
+<<<<<<< Updated upstream
   table <- table %>% flextable::autofit()
+=======
+  table <- table %>%
+    flextable::autofit()
+>>>>>>> Stashed changes
 
   return(table)
 }

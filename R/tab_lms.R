@@ -82,6 +82,10 @@ tab_lms <- function(x,
 
   n_rows <- flextable::nrow_part(table, part = "body")
   rows_fit <- (n_rows - n_fit + 1):(n_rows)
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 
   table <- table %>%
     apaSupp::theme_apa(caption      = caption,
@@ -92,7 +96,16 @@ tab_lms <- function(x,
                        symbols      = symbols) %>%
     flextable::bold(  part = "header", i = 1) %>%
     flextable::italic(part = "header", i = 2) %>%
+<<<<<<< Updated upstream
     flextable::italic(part = "body",   i = rows_fit)
+=======
+    flextable::italic(part = "body",   i = rows_fit) %>%
+    flextable::align( part = "header", i = 1, align = "center") %>%
+    flextable::align(part = "header", i = 1, align = "center") %>%
+    flextable::align(part = "footer",        align = "left") %>%
+    flextable::hline(part = "header", i = 1,
+                     border = flextable::fp_border_default(width = 0))
+>>>>>>> Stashed changes
 
   if(!is.null(var_labels)){
     table <- table %>%
@@ -128,6 +141,7 @@ tab_lms <- function(x,
 
 
   table <- table %>%
+<<<<<<< Updated upstream
     flextable::align( part = "header", i = 1, align = "center") %>%
     flextable::align( part = "header", i = 1, align = "center") %>%
     flextable::align( part = "body",   j = 1, align = "left") %>%
