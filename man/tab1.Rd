@@ -13,7 +13,7 @@ tab1(
   total_last = TRUE,
   test = TRUE,
   na.rm = FALSE,
-  caption = "Stratified Summary of Variables",
+  caption = "Summary of Variables",
   general_note = NA,
   no_notes = FALSE,
   p_note = "apa123",
