@@ -69,7 +69,6 @@ tab_glm <- function(x,
     back_trans <- "exp"
     abr <- c("Odds Ratio","Logit Scale")
     sym <- c("OR", "b")
-<<<<<<< Updated upstream
     int <- FALSE
   } else if (family(x)$family == "poisson" & family(x)$link == "log") {
     back_trans <- "exp"
@@ -77,12 +76,12 @@ tab_glm <- function(x,
     sym <- c("IRR", "b")
     pr2 <- "nagelkerke"
     int <- TRUE
-=======
+
   } else if (family(x)$family == "poisson" & family(x)$link == "log"){
     back_trans <- "exp"
     abr <- c("Incident Rate Ratio","Log Scale")
     sym <- c("IRR", "b")
->>>>>>> Stashed changes
+
   }
 
 

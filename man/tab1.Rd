@@ -131,11 +131,6 @@ mtcars <- mtcars \%>\%
 tab1(mtcars)
 
 
-
-
-
-
-
 mtcars \%>\%
   dplyr::select(cyl,
                 "Fuel Economy, mpg" = mpg,
@@ -149,21 +144,4 @@ mtcars \%>\%
        caption      = "Descriptive Summary of Car Road Tests",
        general_note = "Data extracted from the 1974 Motor Trend US magazine.",
        p_note       = "apa3")
-
-
-
-mtcars \%>\%
-  dplyr::select(vs,
-                "Fuel Economy, mpg" = mpg,
-                "Dispacement, cu-in" = disp,
-                "Gross Horsepower" = hp,
-                "Real Axel Ratio" = drat,
-                "Weight, 1000 lbs" = wt,
-                "Cylinders" = cyl) \%>\%
-  tab1(split        = "vs",
-       test         = FALSE,
-       caption      = "Descriptive Summary of Car Road Tests",
-       general_note = "Data extracted from the 1974 Motor Trend US magazine.",
-       p_note       = "apa3")
-
 }
