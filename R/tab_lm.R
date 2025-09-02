@@ -13,6 +13,7 @@
 #' @param eta2 Optional: logical. (default = TRUE) Include eta-squared (semi-partial correlations) and partial eta-squared (partial correlations)
 #' @param ci Optional: logical. (default = FALSE) Include a confidence interval for the estimated beta
 #' @param show_single_row  Optional: If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.
+#' @param tab_width Optional: numberic value (default is .9) % of available width
 #' @param breaks Optional: numeric vector of p-value cut-points
 #' @param symbols Optional: character vector for symbols denoting p-value cut-points
 #'
@@ -49,6 +50,7 @@ tab_lm <- function(x,
                    eta2            = TRUE,
                    ci              = FALSE,
                    show_single_row = NULL,
+                   tab_width       = .9,
                    breaks          = c(.05, .01, .001),
                    symbols         = c("*", "**", "***")){
 
@@ -65,10 +67,10 @@ tab_lm <- function(x,
   n_fit <- length(fit)
 
   main_note <- flextable::as_paragraph(
-    flextable::as_i(    "Note. "),
-    flextable::as_i(    "N"),
+    flextable::as_i("Note. "),
+    flextable::as_i("N"),
     flextable::as_chunk(glue::glue(" = {length(x$resid)}. ")),
-    flextable::as_equation(ifelse(eta2 == FALSE, NA, "b^*")),
+    flextable::as_equation(ifelse(std == FALSE, NA, "b^*")),
     flextable::as_chunk(   ifelse(std  == FALSE, NA, " = standardize coefficient; ")),
     flextable::as_i(       ifelse(vif  == FALSE, NA, "VIF")),
     flextable::as_chunk(   ifelse(vif  == FALSE, NA, " = variance inflation factor; ")),
@@ -168,9 +170,8 @@ tab_lm <- function(x,
   }
 
   table <- table %>%
-    flextable::width(         width = 0.50, unit = "in") %>%
-    flextable::width(j = 1,   width = 1.75, unit = "in") %>%
-    flextable::width(j = 2:4, width = 0.75, unit = "in")
+    flextable::set_table_properties(layout = "autofit",
+                                    width = tab_width)
 
   return(table)
 }

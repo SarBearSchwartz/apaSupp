@@ -2,16 +2,18 @@
 #'
 #' @param df (`data.frame`)\cr A data frame.
 #' @param split Optional: Quoted variable name
+#' @param caption Optional: Text. Caption for the table
+#' @param path Optional: Text.  Word file to store the table.  Must end with ".docx"
+#' @param no_notes Optional: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `general_note` and `p_note`
+#' @param general_note Optional: Text. General note for footer of APA table
+#' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa123"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
+
 #' @param total Optional: Logical. Default = TRUE to include a total column in a split table
 #' @param var_lab Optional: Text. Label to print above the variable names in the header
 #' @param total_lab Optional: Text. Label above the total column in a split table
 #' @param total_last Optional: Logical. Default = TRUE to include the total column last vs first
 #' @param test Optional: Logical. Default = TRUE to run comparisons in a split table
 #' @param na.rm Optional: Logical. Default = FALSE, do not remove instances with a missing value from the entire table
-#' @param caption Optional: Text. Caption for the table
-#' @param general_note Optional: Text. General note for footer of APA table
-#' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa123"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
-#' @param no_notes Optional: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `general_note` and `p_note`
 #' @param breaks Optional: numeric vector of p-value cut-points
 #' @param symbols Optional: character vector for symbols denoting p-value cut-points
 #' @param d Optional: Number. Digits after the decimal place
@@ -96,16 +98,17 @@
 
 tab1 <- function(df,
                  split        = NULL,
+                 caption      = "Summary of Variables",
+                 path         = NA,
+                 no_notes     = FALSE,
+                 general_note = NA,
+                 p_note       = "apa123",
                  total        = TRUE,
                  var_lab      = " ",
+                 test         = TRUE,
                  total_lab    = "Total\nN = {N}",
                  total_last   = TRUE,
-                 test         = TRUE,
                  na.rm        = FALSE,
-                 caption      = "Summary of Variables",
-                 general_note = NA,
-                 no_notes     = FALSE,
-                 p_note       = "apa123",
                  breaks       = c(.05, .01, .001),
                  symbols      = c("*", "**", "***"),
                  d            = 2,
@@ -234,6 +237,9 @@ tab1 <- function(df,
                        breaks       = breaks,
                        symbols      = symbols)
 
+  if (!is.na(path)){
+    flextable::save_as_docx(ft, path = path)
+  }
 
   return(ft)
 }
