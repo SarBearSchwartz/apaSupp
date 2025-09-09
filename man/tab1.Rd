@@ -7,16 +7,17 @@
 tab1(
   df,
   split = NULL,
+  caption = "Summary of Variables",
+  path = NA,
+  no_notes = FALSE,
+  general_note = NA,
+  p_note = "apa123",
   total = TRUE,
   var_lab = " ",
+  test = TRUE,
   total_lab = "Total\\nN = {N}",
   total_last = TRUE,
-  test = TRUE,
   na.rm = FALSE,
-  caption = "Summary of Variables",
-  general_note = NA,
-  no_notes = FALSE,
-  p_note = "apa123",
   breaks = c(0.05, 0.01, 0.001),
   symbols = c("*", "**", "***"),
   d = 2,
@@ -37,25 +38,27 @@ tab1(
 
 \item{split}{Optional: Quoted variable name}
 
+\item{caption}{Optional: Text. Caption for the table}
+
+\item{path}{Optional: Text.  Word file to store the table.  Must end with ".docx"}
+
+\item{no_notes}{Optional: Logical.  Defaults to \code{FALSE}, if \code{TRUE} will ignore \code{general_note} and \code{p_note}}
+
+\item{general_note}{Optional: Text. General note for footer of APA table}
+
+\item{p_note}{Optional: Text. (default = NULL) Significance note for APA table, If \code{p_note = "apa123"} then the standard \code{"* p < .05. ** p < .01. *** p < .001."} will be used}
+
 \item{total}{Optional: Logical. Default = TRUE to include a total column in a split table}
 
 \item{var_lab}{Optional: Text. Label to print above the variable names in the header}
+
+\item{test}{Optional: Logical. Default = TRUE to run comparisons in a split table}
 
 \item{total_lab}{Optional: Text. Label above the total column in a split table}
 
 \item{total_last}{Optional: Logical. Default = TRUE to include the total column last vs first}
 
-\item{test}{Optional: Logical. Default = TRUE to run comparisons in a split table}
-
 \item{na.rm}{Optional: Logical. Default = FALSE, do not remove instances with a missing value from the entire table}
-
-\item{caption}{Optional: Text. Caption for the table}
-
-\item{general_note}{Optional: Text. General note for footer of APA table}
-
-\item{no_notes}{Optional: Logical.  Defaults to \code{FALSE}, if \code{TRUE} will ignore \code{general_note} and \code{p_note}}
-
-\item{p_note}{Optional: Text. (default = NULL) Significance note for APA table, If \code{p_note = "apa123"} then the standard \code{"* p < .05. ** p < .01. *** p < .001."} will be used}
 
 \item{breaks}{Optional: numeric vector of p-value cut-points}
 
