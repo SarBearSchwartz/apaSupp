@@ -34,6 +34,10 @@ theme_apa(
 \item{breaks}{Optional: numeric vector of p-value cut-points}
 
 \item{symbols}{Optional: character vector for symbols denoting p-value cut-points}
+
+\item{docx}{Optional: filename. must end with ".docx"}
+
+\item{tab_width}{Optional: numberic value (default is .9) \% of available width}
 }
 \value{
 table

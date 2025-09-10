@@ -6,7 +6,7 @@
 \usage{
 tab_lmer_fits(
   x,
-  caption = "Comparison of Linear Model Performane Metrics",
+  caption = "Comparison of MLM Performane Metrics",
   docx = NA,
   tab_width = 0.9,
   general_note = NA,

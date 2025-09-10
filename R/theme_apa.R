@@ -1,6 +1,8 @@
 #' APA Formatted Table of a data.frame
 #' @param x REQUIRED: A pre-created `flextable` object
 #' @param caption REQUIRED: Text. Caption for the table
+#' @param docx Optional: filename. must end with ".docx"
+#' @param tab_width Optional: numberic value (default is .9) % of available width
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param main_note Optional: alternative to `general_note` already in paragraph form
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa123"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
@@ -100,8 +102,13 @@ theme_apa <- function(x,
 
 
   table <- table %>%
-    flextable::autofit()
+    flextable::set_table_properties(layout = "autofit",
+                                    width = tab_width)
 
+  if (!is.na(docx)){
+    flextable::save_as_docx(table,
+                            path = docx)
+  }
 
   return(table)
 }
