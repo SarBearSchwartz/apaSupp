@@ -3,6 +3,8 @@
 #' @param x REQUIRED: a glm models, bare name
 #' @param var_labels Optional: Vector. Text replacements for model terms, "old" = "new"
 #' @param caption Optional: Text. Caption for the table
+#' @param docx Optional: filename. must end with ".docx"
+#' @param tab_width Optional: numberic value (default is .9) % of available width
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa123"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
 #' @param no_notes REQUIRED: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `general_note` and `p_note`
@@ -51,6 +53,8 @@
 tab_glm <- function(x,
                     var_labels      = NULL,
                     caption         = "Parameter Estimates for Generalized Linear Regression",
+                    docx            = NA,
+                    tab_width       = .9,
                     general_note    = NA,
                     p_note          = "apa123",
                     no_notes        = FALSE,
@@ -309,13 +313,19 @@ tab_glm <- function(x,
     flextable::align( part = "footer",                     align = "left") %>%
     flextable::hline( part = "header", i = 1, border = flextable::fp_border_default(width = 0)) %>%
     flextable::hline( part = "header", i = 1, j = 2:3) %>%
-    flextable::hline( part = "header", i = 1, j = 5:6) %>%
-    flextable::autofit()
+    flextable::hline( part = "header", i = 1, j = 5:6)%>%
+    flextable::set_table_properties(layout = "autofit",
+                                    width = tab_width)
 
   if (n_fit > 0) {
     table <- table %>%
       flextable::italic(part = "body", i = (n_rows - n_fit + 1):(n_rows)) %>%
       flextable::hline( part = "body", i =  n_rows - n_fit)
+  }
+
+  if (!is.na(docx)){
+    flextable::save_as_docx(table,
+                            path = docx)
   }
 
   return(table)

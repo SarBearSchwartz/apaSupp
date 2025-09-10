@@ -8,14 +8,14 @@ tab_lmer(
   x,
   var_labels = NULL,
   caption = "Parameter Estimates for Mixed Effects Regression",
+  docx = NA,
+  tab_width = 0.9,
   general_note = NA,
   p_note = "apa123",
   no_notes = FALSE,
   d = 2,
-  docx = NA,
   ci = FALSE,
   show_single_row = NULL,
-  tab_width = 0.9,
   breaks = c(0.05, 0.01, 0.001),
   symbols = c("*", "**", "***")
 )
@@ -27,6 +27,10 @@ tab_lmer(
 
 \item{caption}{Optional: Text. Caption for the table}
 
+\item{docx}{Optional: filename. must end with ".docx"}
+
+\item{tab_width}{Optional: numberic value (default is .9) \% of available width}
+
 \item{general_note}{Optional: Text. General note for footer of APA table}
 
 \item{p_note}{Optional: Text. (default = NULL) Significance note for APA table, If \code{p_note = "apa123"} then the standard \code{"* p < .05. ** p < .01. *** p < .001."} will be used}
@@ -35,13 +39,9 @@ tab_lmer(
 
 \item{d}{Optional: Number. Digits after the decimal place}
 
-\item{docx}{Optional: filename. must end with ".docx"}
-
 \item{ci}{Optional: logical. (default = FALSE) Include a confidence interval for the estimated beta}
 
 \item{show_single_row}{Optional: If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.}
-
-\item{tab_width}{Optional: numberic value (default is .9) \% of available width}
 
 \item{breaks}{Optional: numeric vector of p-value cut-points}
 

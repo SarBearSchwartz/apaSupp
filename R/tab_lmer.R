@@ -3,14 +3,14 @@
 #' @param x REQUIRED: 1 lm model, bare name
 #' @param var_labels Optional: Vector. Text replacements for model terms, "old" = "new"
 #' @param caption Optional: Text. Caption for the table
+#' @param docx Optional: filename. must end with ".docx"
+#' @param tab_width Optional: numberic value (default is .9) % of available width
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa123"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
 #' @param no_notes REQUIRED: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `general_note` and `p_note`
 #' @param d Optional: Number. Digits after the decimal place
-#' @param docx Optional: filename. must end with ".docx"
 #' @param ci Optional: logical. (default = FALSE) Include a confidence interval for the estimated beta
 #' @param show_single_row  Optional: If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.
-#' @param tab_width Optional: numberic value (default is .9) % of available width
 #' @param breaks Optional: numeric vector of p-value cut-points
 #' @param symbols Optional: character vector for symbols denoting p-value cut-points
 #'
@@ -45,14 +45,14 @@
 tab_lmer <- function(x,
                      var_labels      = NULL,
                      caption         = "Parameter Estimates for Mixed Effects Regression",
+                     docx            = NA,
+                     tab_width       = .9,
                      general_note    = NA,
                      p_note          = "apa123",
                      no_notes        = FALSE,
                      d               = 2,
-                     docx            = NA,
                      ci              = FALSE,
                      show_single_row = NULL,
-                     tab_width       = .9,
                      breaks          = c(.05, .01, .001),
                      symbols         = c("*", "**", "***")){
 
@@ -72,7 +72,7 @@ tab_lmer <- function(x,
   get <- x %>%
     gtsummary::tbl_regression(intercept = TRUE,
                               conf.int = ci,
-                              estimate_fun = function(x) apaSupp::p_num(x, d = d),
+                              estimate_fun = function(x) apaSupp::apan(x, d = d),
                               pvalue_fun = function(x) apaSupp::p_num(x, d = d + 1),
                               tidy_fun = function(x, ...) broom.mixed::tidy(x, scales = c("vcov", "sdcor"), ...),
                               show_single_row = show_single_row) %>%
@@ -86,9 +86,6 @@ tab_lmer <- function(x,
                              p.value   = "p") %>%
     gtsummary::modify_table_body(~.x %>%
                                    dplyr::arrange(row_type == "glance_statistic"))
-
-
-
 
 
   table <- get %>%

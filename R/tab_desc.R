@@ -2,6 +2,8 @@
 #'
 #' @param df REQUIRED: Data frame
 #' @param caption REQUIRED: Text. Caption for the table
+#' @param docx Optional: filename. must end with ".docx"
+#' @param tab_width Optional: numberic value (default is .9) % of available width
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param d Optional: Number. Digits after the decimal place
 #'
@@ -28,6 +30,8 @@
 #'
 tab_desc <- function(df,
                      caption      = "Summary of Quantiatative Variables",
+                     docx         = NA,
+                     tab_width    = .9,
                      general_note = NA,
                      d            = 2){
 
@@ -88,7 +92,14 @@ tab_desc <- function(df,
     flextable::width(j = 5,   width = 0.75) %>%
     flextable::line_spacing(part = "header", space = 1.5) %>%
     flextable::line_spacing(part = "body",   space = 0.5) %>%
-    flextable::line_spacing(part = "footer", space = 1.5)
+    flextable::line_spacing(part = "footer", space = 1.5) %>%
+    flextable::set_table_properties(layout = "autofit",
+                                    width = tab_width)
+
+  if (!is.na(docx)){
+    flextable::save_as_docx(table,
+                            path = docx)
+  }
 
   return(table)
 }

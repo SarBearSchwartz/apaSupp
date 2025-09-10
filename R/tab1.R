@@ -3,11 +3,11 @@
 #' @param df (`data.frame`)\cr A data frame.
 #' @param split Optional: Quoted variable name
 #' @param caption Optional: Text. Caption for the table
-#' @param path Optional: Text.  Word file to store the table.  Must end with ".docx"
+#' @param docx Optional: Text.  Word file to store the table.  Must end with ".docx"
+#' @param tab_width Optional: numberic value (default is .9) % of available width
 #' @param no_notes Optional: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `general_note` and `p_note`
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa123"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
-
 #' @param total Optional: Logical. Default = TRUE to include a total column in a split table
 #' @param var_lab Optional: Text. Label to print above the variable names in the header
 #' @param total_lab Optional: Text. Label above the total column in a split table
@@ -99,7 +99,8 @@
 tab1 <- function(df,
                  split        = NULL,
                  caption      = "Summary of Variables",
-                 path         = NA,
+                 docx         = NA,
+                 tab_width    = .9,
                  no_notes     = FALSE,
                  general_note = NA,
                  p_note       = "apa123",
@@ -228,18 +229,21 @@ tab1 <- function(df,
                                       symbols = symbols))
   }
 
-  ft <- gt %>%
+  table <- gt %>%
     gtsummary::remove_footnote_header(columns = everything()) %>%
     gtsummary::as_flex_table() %>%
     apaSupp::theme_apa(caption      = caption,
                        main_note    = main_note,
                        p_note       = p_note,
                        breaks       = breaks,
-                       symbols      = symbols)
+                       symbols      = symbols) %>%
+    flextable::set_table_properties(layout = "autofit",
+                                    width = tab_width)
 
-  if (!is.na(path)){
-    flextable::save_as_docx(ft, path = path)
+  if (!is.na(docx)){
+    flextable::save_as_docx(table,
+                            path = docx)
   }
 
-  return(ft)
+  return(table)
 }

@@ -2,6 +2,8 @@
 #'
 #' @param x REQUIRED: A dataframe with selected numeric variables
 #' @param caption REQUIRED: Text. Caption for the table
+#' @param docx Optional: filename. must end with ".docx"
+#' @param tab_width Optional: numberic value (default is .9) % of available width
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
 #' @param d Optional: Number. Digits after the decimal place
@@ -22,6 +24,8 @@
 #'
 tab_cor <- function(x,
                     caption      = "Pairwise Correlations",
+                    docx         = NA,
+                    tab_width    = .9,
                     general_note = NA,
                     p_note       = "apa123",
                     d            = 2,
@@ -62,7 +66,13 @@ tab_cor <- function(x,
     flextable::line_spacing(part = "header", space = 1.5) %>%
     flextable::line_spacing(part = "body",   space = 0.5) %>%
     flextable::line_spacing(part = "footer", space = 1.5) %>%
-    flextable::autofit()
+    flextable::set_table_properties(layout = "autofit",
+                                    width = tab_width)
+
+  if (!is.na(docx)){
+    flextable::save_as_docx(table,
+                            path = docx)
+  }
 
   return(table)
 

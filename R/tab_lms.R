@@ -3,6 +3,8 @@
 #' @param x REQUIRED: List. at least 2 lm models, bare names
 #' @param var_labels Optional: Vector. Text replacements for model terms, "old" = "new"
 #' @param caption Optional: Text. Caption for the table
+#' @param docx Optional: filename. must end with ".docx"
+#' @param tab_width Optional: numberic value (default is .9) % of available width
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If p_note = "apa" then the standard "* p < .05. ** p < .01. *** p < .001." will be used
 #' @param no_notes REQUIRED: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `general_note` and `p_note`
@@ -30,6 +32,8 @@
 tab_lms <- function(x,
                     var_labels      = NULL,
                     caption         = "Compare Regression Models",
+                    docx            = NA,
+                    tab_width       = .9,
                     general_note    = NA,
                     p_note          = "apa123",
                     no_notes        = FALSE,
@@ -143,7 +147,14 @@ tab_lms <- function(x,
     flextable::width(j = 1, width = 1.55) %>%
     flextable::line_spacing(part = "header", space = 1.5) %>%
     flextable::line_spacing(part = "body",   space = 0.5) %>%
-    flextable::line_spacing(part = "footer", space = 1.5)
+    flextable::line_spacing(part = "footer", space = 1.5) %>%
+    flextable::set_table_properties(layout = "autofit",
+                                    width = tab_width)
+
+  if (!is.na(docx)){
+    flextable::save_as_docx(table,
+                            path = docx)
+  }
 
   return(table)
 

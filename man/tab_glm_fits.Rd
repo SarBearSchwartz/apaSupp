@@ -7,6 +7,8 @@
 tab_glm_fits(
   x,
   caption = "Comparison of Generalized Linear Model Performane Metrics",
+  docx = NA,
+  tab_width = 0.9,
   general_note = NA,
   d = 2
 )
@@ -15,6 +17,10 @@ tab_glm_fits(
 \item{x}{REQUIRED: List. at least 2 glm models, bare names, If named list, then names appear in the table}
 
 \item{caption}{Optional: Text. Caption for the table}
+
+\item{docx}{Optional: filename. must end with ".docx"}
+
+\item{tab_width}{Optional: numberic value (default is .9) \% of available width}
 
 \item{general_note}{Optional: Text. General note for footer of APA table}
 

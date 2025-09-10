@@ -7,6 +7,8 @@
 #'
 #' @param x REQUIRED: List. at least 2 lm models, bare names, If named list, then names appear in the table
 #' @param caption Optional: Text. Caption for the table
+#' @param docx Optional: filename. must end with ".docx"
+#' @param tab_width Optional: numberic value (default is .9) % of available width
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param d Optional: Number. Digits after the decimal place
 #'
@@ -28,6 +30,8 @@
 #'
 tab_lm_fits <- function(x,
                         caption      = "Comparison of Linear Model Performane Metrics",
+                        docx         = NA,
+                        tab_width    = .9,
                         general_note = NA,
                         d            = 2){
 
@@ -68,7 +72,13 @@ tab_lm_fits <- function(x,
     flextable::align(  part = "all",    j = c("N", "mult","AIC"), align = "right") %>%
     flextable::align(  part = "all",    j = c("k", "adj", "BIC"), align = "left") %>%
     flextable::align(  part = "header", i = 1,                    align = "center") %>%
-    flextable::autofit()
+    flextable::set_table_properties(layout = "autofit",
+                                    width = tab_width)
+
+  if (!is.na(docx)){
+    flextable::save_as_docx(table,
+                            path = docx)
+  }
 
   return(table)
 }

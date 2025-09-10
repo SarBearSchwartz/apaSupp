@@ -8,7 +8,8 @@ tab1(
   df,
   split = NULL,
   caption = "Summary of Variables",
-  path = NA,
+  docx = NA,
+  tab_width = 0.9,
   no_notes = FALSE,
   general_note = NA,
   p_note = "apa123",
@@ -40,7 +41,9 @@ tab1(
 
 \item{caption}{Optional: Text. Caption for the table}
 
-\item{path}{Optional: Text.  Word file to store the table.  Must end with ".docx"}
+\item{docx}{Optional: Text.  Word file to store the table.  Must end with ".docx"}
+
+\item{tab_width}{Optional: numberic value (default is .9) \% of available width}
 
 \item{no_notes}{Optional: Logical.  Defaults to \code{FALSE}, if \code{TRUE} will ignore \code{general_note} and \code{p_note}}
 
@@ -101,7 +104,7 @@ Must be one of \code{c("column", "row", "cell")}. Default is \code{"column"}.
 
 In rarer cases, you may need to define/override the typical denominators.
 In these cases, pass an integer or a data frame. Refer to the
-\code{\link[cards:ard_categorical]{?cards::ard_categorical(denominator)}} help file for details.}
+\code{\link[cards:deprecated]{?cards::ard_categorical(denominator)}} help file for details.}
 
 \item{include}{(\code{\link[dplyr:dplyr_tidy_select]{tidy-select}})\cr
 Variables to include in the summary table. Default is \code{everything()}.}

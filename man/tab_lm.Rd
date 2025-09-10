@@ -8,6 +8,8 @@ tab_lm(
   x,
   var_labels = NULL,
   caption = "Parameter Estimates for Linear Regression",
+  docx = NA,
+  tab_width = 0.9,
   general_note = NA,
   p_note = "apa123",
   no_notes = FALSE,
@@ -18,7 +20,6 @@ tab_lm(
   eta2 = TRUE,
   ci = FALSE,
   show_single_row = NULL,
-  tab_width = 0.9,
   breaks = c(0.05, 0.01, 0.001),
   symbols = c("*", "**", "***")
 )
@@ -29,6 +30,10 @@ tab_lm(
 \item{var_labels}{Optional: Vector. Text replacements for model terms, "old" = "new"}
 
 \item{caption}{Optional: Text. Caption for the table}
+
+\item{docx}{Optional: filename. must end with ".docx"}
+
+\item{tab_width}{Optional: numberic value (default is .9) \% of available width}
 
 \item{general_note}{Optional: Text. General note for footer of APA table}
 
@@ -49,8 +54,6 @@ tab_lm(
 \item{ci}{Optional: logical. (default = FALSE) Include a confidence interval for the estimated beta}
 
 \item{show_single_row}{Optional: If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.}
-
-\item{tab_width}{Optional: numberic value (default is .9) \% of available width}
 
 \item{breaks}{Optional: numeric vector of p-value cut-points}
 

@@ -7,6 +7,8 @@
 #' @param value REQUIRED: Bare variable name. Values or rating of each item
 #' @param id REQUIRED: Bare variable name. Identify cases/subjects
 #' @param caption REQUIRED: Text. Caption for the table
+#' @param docx Optional: filename. must end with ".docx"
+#' @param tab_width Optional: numberic value (default is .9) % of available width
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param d Optional: Number. Digits after the decimal place
 #'
@@ -44,14 +46,16 @@
 #'              general_note = "Scales are for example only.")
 #'
 tab_xalpha <- function(df,
-                       measure = NULL,
-                       domain = NULL,
+                       measure      = NULL,
+                       domain       = NULL,
                        item,
                        value,
                        id,
-                       caption = "Internal Consistency",
+                       caption      = "Internal Consistency",
+                       docx         = NA,
+                       tab_width    = .9,
                        general_note = NA,
-                       d = 2){
+                       d            = 2){
 
   measure <- rlang::enquo(measure)
   domain  <- rlang::enquo(domain)
@@ -160,7 +164,14 @@ tab_xalpha <- function(df,
     flextable::width(j = 2:9, width = 0.50, unit = "in") %>%
     flextable::line_spacing(part = "header", space = 1.5) %>%
     flextable::line_spacing(part = "body",   space = 0.5) %>%
-    flextable::line_spacing(part = "footer", space = 1.5)
+    flextable::line_spacing(part = "footer", space = 1.5) %>%
+    flextable::set_table_properties(layout = "autofit",
+                                    width = tab_width)
+
+  if (!is.na(docx)){
+    flextable::save_as_docx(table,
+                            path = docx)
+  }
 
   return(table)
 

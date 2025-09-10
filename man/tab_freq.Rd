@@ -8,6 +8,8 @@ tab_freq(
   df,
   split = NULL,
   caption = "Summary of Categorical Variables",
+  docx = NA,
+  tab_width = 0.9,
   general_note = NA,
   d = 2
 )
@@ -18,6 +20,10 @@ tab_freq(
 \item{split}{Optional: Quoted variable name}
 
 \item{caption}{REQUIRED: Text. Caption for the table}
+
+\item{docx}{Optional: filename. must end with ".docx"}
+
+\item{tab_width}{Optional: numberic value (default is .9) \% of available width}
 
 \item{general_note}{Optional: Text. General note for footer of APA table}
 

@@ -3,6 +3,8 @@
 #' @param df REQUIRED: Data frame
 #' @param split Optional: Quoted variable name
 #' @param caption REQUIRED: Text. Caption for the table
+#' @param docx Optional: filename. must end with ".docx"
+#' @param tab_width Optional: numberic value (default is .9) % of available width
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param d Optional: Number. Digits after the decimal place
 #'
@@ -42,6 +44,8 @@
 tab_freq <- function(df,
                      split        = NULL,
                      caption      = "Summary of Categorical Variables",
+                     docx         = NA,
+                     tab_width    = .9,
                      general_note = NA,
                      d            = 2){
 
@@ -67,7 +71,13 @@ tab_freq <- function(df,
     flextable::align(  part = "all", j = 1:2, align = "left") %>%
     flextable::padding(j =  1, padding.left = 0, padding.right = 0) %>%
     flextable::padding(j = -1, padding.left = 5, padding.right = 0) %>%
-    flextable::autofit()
+    flextable::set_table_properties(layout = "autofit",
+                                    width = tab_width)
+
+  if (!is.na(docx)){
+    flextable::save_as_docx(table,
+                            path = docx)
+  }
 
   return(table)
 }
