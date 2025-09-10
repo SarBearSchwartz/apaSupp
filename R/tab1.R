@@ -236,9 +236,8 @@ tab1 <- function(df,
                        main_note    = main_note,
                        p_note       = p_note,
                        breaks       = breaks,
-                       symbols      = symbols) %>%
-    flextable::set_table_properties(layout = "autofit",
-                                    width = tab_width)
+                       symbols      = symbols,
+                       tab_width    = tab_width)
 
   if (!is.na(docx)){
     flextable::save_as_docx(table,

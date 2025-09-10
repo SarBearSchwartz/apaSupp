@@ -85,7 +85,6 @@ tab_desc <- function(df,
     flextable::bold(   part = "all", j = c(3, 4, 7)) %>%
     flextable::italic( part = "header") %>%
     flextable::compose(part = "header", i = 1, j = 1, value = flextable::as_paragraph(NA)) %>%
-    flextable::autofit() %>%
     flextable::width(j = 1,   width = 1.75) %>%
     flextable::width(j = 2,   width = 0.25) %>%
     flextable::width(j = 2:9, width = 0.50) %>%
