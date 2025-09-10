@@ -17,7 +17,7 @@ tab1(
   var_lab = " ",
   test = TRUE,
   total_lab = "Total\\nN = {N}",
-  total_last = TRUE,
+  total_last = FALSE,
   na.rm = FALSE,
   breaks = c(0.05, 0.01, 0.001),
   symbols = c("*", "**", "***"),
@@ -59,7 +59,7 @@ tab1(
 
 \item{total_lab}{Optional: Text. Label above the total column in a split table}
 
-\item{total_last}{Optional: Logical. Default = TRUE to include the total column last vs first}
+\item{total_last}{Optional: Logical. Default = FALSE to include the total column last vs first}
 
 \item{na.rm}{Optional: Logical. Default = FALSE, do not remove instances with a missing value from the entire table}
 

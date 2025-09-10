@@ -2,7 +2,7 @@
 % Please edit documentation in R/tab_lm.R
 \name{tab_lm}
 \alias{tab_lm}
-\title{APA: flextable for ONElinear models}
+\title{APA: flextable for ONE linear models}
 \usage{
 tab_lm(
   x,
@@ -63,7 +63,7 @@ tab_lm(
 a flextable object
 }
 \description{
-APA: flextable for ONElinear models
+APA: flextable for ONE linear models
 }
 \examples{
 

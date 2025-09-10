@@ -1,4 +1,4 @@
-#' APA: flextable for ONElinear models
+#' APA: flextable for ONE linear models
 #'
 #' @param x REQUIRED: 1 lm model, bare name
 #' @param var_labels Optional: Vector. Text replacements for model terms, "old" = "new"
@@ -106,6 +106,12 @@ tab_lm <- function(x,
                              estimate  = "b",
                              std.error = "(SE)",
                              p.value   = "p")
+
+  if (ci == TRUE){
+    table <- table %>%
+      gtsummary::modify_fmt_fun(conf.low  ~ gtsummary::label_style_number(digits = d, prefix = "[", suffix = "")) %>%
+      gtsummary::modify_fmt_fun(conf.high ~ gtsummary::label_style_number(digits = d, prefix = " ", suffix = "]"))
+  }
 
   if(std == TRUE){
     get <- get %>%

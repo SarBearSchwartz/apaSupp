@@ -1,6 +1,6 @@
-#' APA: flextable for ONElinear models
+#' APA: flextable for ONE linear mixed effects models
 #'
-#' @param x REQUIRED: 1 lm model, bare name
+#' @param x REQUIRED: 1 lmer model, bare name
 #' @param var_labels Optional: Vector. Text replacements for model terms, "old" = "new"
 #' @param caption Optional: Text. Caption for the table
 #' @param docx Optional: filename. must end with ".docx"
@@ -72,13 +72,14 @@ tab_lmer <- function(x,
   get <- x %>%
     gtsummary::tbl_regression(intercept = TRUE,
                               conf.int = ci,
-                              estimate_fun = function(x) apaSupp::apan(x, d = d),
                               pvalue_fun = function(x) apaSupp::p_num(x, d = d + 1),
                               tidy_fun = function(x, ...) broom.mixed::tidy(x, scales = c("vcov", "sdcor"), ...),
                               show_single_row = show_single_row) %>%
     gtsummary::modify_column_unhide(column = std.error)   %>%
     gtsummary::remove_footnote_header() %>%
     gtsummary::remove_abbreviation("SE = Standard Error")  %>%
+    gtsummary::modify_fmt_fun(estimate  ~ gtsummary::label_style_number(digits = d),
+                              rows = (row_type %in% c("label", "level"))) %>%
     gtsummary::modify_fmt_fun(std.error ~ gtsummary::label_style_number(digits = d, prefix = "(", suffix = ")")) %>%
     gtsummary::modify_header(label     = "Variable",
                              estimate  = "Est",
@@ -86,6 +87,12 @@ tab_lmer <- function(x,
                              p.value   = "p") %>%
     gtsummary::modify_table_body(~.x %>%
                                    dplyr::arrange(row_type == "glance_statistic"))
+
+  if (ci == TRUE){
+    table <- table %>%
+      gtsummary::modify_fmt_fun(conf.low  ~ gtsummary::label_style_number(digits = d, prefix = "[", suffix = "")) %>%
+      gtsummary::modify_fmt_fun(conf.high ~ gtsummary::label_style_number(digits = d, prefix = " ", suffix = "]"))
+  }
 
 
   table <- get %>%

@@ -2,7 +2,7 @@
 % Please edit documentation in R/gt_lmer.R
 \name{gt_lmer}
 \alias{gt_lmer}
-\title{APA: gtsummary for a single linear model}
+\title{APA: gtsummary for a single linear mixed effects model}
 \usage{
 gt_lmer(
   x,
@@ -13,7 +13,7 @@ gt_lmer(
 )
 }
 \arguments{
-\item{x}{REQUIRED: bare name. a single 'lm' object'}
+\item{x}{REQUIRED: bare name. a single 'lmer' object'}
 
 \item{narrow}{Optional. Logical. Default = FALSE, but TRUE will exclude p-vlaues from the table to make it narrower}
 
@@ -27,7 +27,7 @@ gt_lmer(
 a gtsummary object
 }
 \description{
-APA: gtsummary for a single linear model
+APA: gtsummary for a single linear mixed effects model
 }
 \examples{
 

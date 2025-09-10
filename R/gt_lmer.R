@@ -1,6 +1,6 @@
-#' APA: gtsummary for a single linear model
+#' APA: gtsummary for a single linear mixed effects model
 #'
-#' @param x REQUIRED: bare name. a single 'lm' object'
+#' @param x REQUIRED: bare name. a single 'lmer' object'
 #' @param narrow  Optional. Logical. Default = FALSE, but TRUE will exclude p-vlaues from the table to make it narrower
 #' @param fit Optional: Character vector. Default  = c("AIC", "BIC", "logLik).  May include quoted names of fit statistics listed from broom::glimpse(x)
 #' @param d Optional: number. digits after the decimal, default = 2
@@ -9,7 +9,7 @@
 #' @return a gtsummary object
 #' @import gtsummary
 #' @import tidyverse
-#' @import broom.helpers
+#' @import broom.mixed
 #' @import stringr
 #' @export
 #'

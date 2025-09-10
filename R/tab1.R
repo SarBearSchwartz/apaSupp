@@ -11,7 +11,7 @@
 #' @param total Optional: Logical. Default = TRUE to include a total column in a split table
 #' @param var_lab Optional: Text. Label to print above the variable names in the header
 #' @param total_lab Optional: Text. Label above the total column in a split table
-#' @param total_last Optional: Logical. Default = TRUE to include the total column last vs first
+#' @param total_last Optional: Logical. Default = FALSE to include the total column last vs first
 #' @param test Optional: Logical. Default = TRUE to run comparisons in a split table
 #' @param na.rm Optional: Logical. Default = FALSE, do not remove instances with a missing value from the entire table
 #' @param breaks Optional: numeric vector of p-value cut-points
@@ -108,7 +108,7 @@ tab1 <- function(df,
                  var_lab      = " ",
                  test         = TRUE,
                  total_lab    = "Total\nN = {N}",
-                 total_last   = TRUE,
+                 total_last   = FALSE,
                  na.rm        = FALSE,
                  breaks       = c(.05, .01, .001),
                  symbols      = c("*", "**", "***"),
@@ -166,7 +166,7 @@ tab1 <- function(df,
   main_note <- flextable::as_paragraph(
     flextable::as_i("Note. "),
     flextable::as_chunk(ifelse(n_numeric > 0,
-                               "Continuous variables are summarised with means ",
+                               "Continuous variables are summarized with means ",
                                NA)),
     flextable::as_i(ifelse(n_numeric > 0,
                            "(SD)",
@@ -179,7 +179,7 @@ tab1 <- function(df,
                                n_numeric > 0 & test == TRUE & n_grps == 2
                                ~ "independent t-tests. ")),
     flextable::as_chunk(ifelse(n_numeric > 0,
-                               "Categorical variables are summarised with counts ",
+                               "Categorical variables are summarized with counts ",
                                NA)),
     flextable::as_i(ifelse(n_numeric > 0,
                            "(%)",

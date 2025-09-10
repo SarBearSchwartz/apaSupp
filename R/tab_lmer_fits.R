@@ -1,0 +1,102 @@
+#' @title
+#' APA: flextable for Comparing the Performance of Linear Mixed Effects models
+#'
+#' @description
+#' Create a flextable for Comparing the Performance of MLMs via Several Metrics
+#'
+#'
+#' @param x REQUIRED: List. at least 2 lm models, bare names, If named list, then names appear in the table
+#' @param caption Optional: Text. Caption for the table
+#' @param docx Optional: filename. must end with ".docx"
+#' @param tab_width Optional: numberic value (default is .9) % of available width
+#' @param general_note Optional: Text. General note for footer of APA table
+#' @param d Optional: Number. Digits after the decimal place
+#'
+#' @returns a flextable object
+#' @import gtsummary
+#' @import flextable
+#' @import tidyverse
+#' @import lme4
+#' @import broom.mixed
+#' @import performance
+#' @export
+#'
+#' @examples
+#'
+#'library(tidyverse)
+#'library(lme4)
+#'library(lmerTest)
+#'
+#'fm1 <- lmerTest::lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
+#'fm2 <- lmerTest::lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+#'fm3 <- lmerTest::lmer(Reaction ~ Days + (1 | Subject), sleepstudy %>% dplyr::mutate(Days = factor(Days)))
+#'fm4 <- lmerTest::lmer(Reaction ~ Days + I(Days^2) + (1|Subject), sleepstudy)
+#'
+#'
+#'apaSupp::tab_lmer_fits(list(fm1, fm2, fm3, fm4))
+#'
+#'
+#'
+tab_lmer_fits <- function(x,
+                        caption      = "Comparison of MLM Performane Metrics",
+                        docx         = NA,
+                        tab_width    = .9,
+                        general_note = NA,
+                        d            = 2){
+
+  ns <- sapply(x, function(y) length(resid(y)))
+
+  n_fix_param <- x %>%
+    purrr::map(fixef) %>%
+    purrr::map(length) %>%
+    unlist() %>%
+    max()
+
+  n_rand_param <- x %>%
+    purrr::map(VarCorr) %>%
+    purrr::map(data.frame) %>%
+    purrr::map(nrow) %>%
+    unlist() %>%
+    max()
+
+
+  main_note <- flextable::as_paragraph(
+    flextable::as_i("Note. "),
+    flextable::as_chunk(ifelse(length(unique(ns)) == 1, NA, "Models fit to different samples. ")),
+    "Larger ", flextable::as_equation("R^2")," values indicated better performance. ",
+    "Smaller values indicated better performance for Akaike's Information Criteria (AIC), Bayesian information criteria (BIC), and Root Mean Squared Error (RMSE).",
+    flextable::as_chunk(general_note)
+  )
+
+  table <- performance::compare_performance(x) %>%
+    data.frame() %>%
+    dplyr::select(Model = Name,
+                  AIC, BIC, RMSE,
+                  R2_Conditional = R2_conditional,
+                  R2_Marginal = R2_marginal) %>%
+    dplyr::mutate(across(c(AIC, BIC, RMSE), ~ apaSupp::apan(., d = d))) %>%
+    dplyr::mutate(across(c(R2_Conditional, R2_Marginal), ~ apaSupp::p_num(., d = d + 1, stars = FALSE)))  %>%
+    flextable::flextable() %>%
+    apaSupp::theme_apa(caption   = caption,
+                       main_note = main_note,
+                       d         = d) %>%
+    flextable::colformat_double(j = c("AIC", "BIC", "RMSE"), big.mark = "", digits = d) %>%
+    flextable::separate_header(opts = "span-top") %>%
+    flextable::hline(  part = "header", i = 1 ,border = flextable::fp_border_default(width = 0)) %>%
+    flextable::hline(  part = "header", i = 1, j = 4:5) %>%
+    flextable::compose(part = "header", i = 1, j = 5, value = flextable::as_paragraph(flextable::as_equation("R^2"))) %>%
+    flextable::align(  part = "all",    j = c(2, 5), align = "right") %>%
+    flextable::align(  part = "all",    j = c(3, 6), align = "left") %>%
+    flextable::align(  part = "header", i = 1, j = 5,                align = "center") %>%
+    flextable::set_table_properties(layout = "autofit",
+                                    width = tab_width)
+
+  if (!is.na(docx)){
+    flextable::save_as_docx(table,
+                            path = docx)
+  }
+
+  return(table)
+}
+
+
