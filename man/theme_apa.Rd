@@ -7,6 +7,8 @@
 theme_apa(
   x,
   caption = "Table Caption",
+  docx = NA,
+  tab_width = 0.9,
   general_note = NA,
   main_note = NA,
   p_note = NA,
@@ -21,6 +23,10 @@ theme_apa(
 
 \item{caption}{REQUIRED: Text. Caption for the table}
 
+\item{docx}{Optional: filename. must end with ".docx"}
+
+\item{tab_width}{Optional: numberic value (default is .9) \% of available width}
+
 \item{general_note}{Optional: Text. General note for footer of APA table}
 
 \item{main_note}{Optional: alternative to \code{general_note} already in paragraph form}
@@ -34,10 +40,6 @@ theme_apa(
 \item{breaks}{Optional: numeric vector of p-value cut-points}
 
 \item{symbols}{Optional: character vector for symbols denoting p-value cut-points}
-
-\item{docx}{Optional: filename. must end with ".docx"}
-
-\item{tab_width}{Optional: numberic value (default is .9) \% of available width}
 }
 \value{
 table

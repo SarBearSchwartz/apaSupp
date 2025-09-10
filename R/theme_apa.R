@@ -30,6 +30,8 @@
 
 theme_apa <- function(x,
                       caption      = "Table Caption",
+                      docx         = NA,
+                      tab_width    = .9,
                       general_note = NA,
                       main_note    = NA,
                       p_note       = NA,
