@@ -79,16 +79,13 @@ tab_desc <- function(df,
     flextable::flextable() %>%
     apaSupp::theme_apa(caption   = caption,
                        main_note = main_note,
-                       d         = d) %>%
+                       d         = d,
+                       tab_width = tab_width) %>%
     flextable::align(  part = "all", j = 1,   align = "left") %>%
     flextable::align(  part = "all", j = 2:9, align = "right") %>%
     flextable::bold(   part = "all", j = c(3, 4, 7)) %>%
     flextable::italic( part = "header") %>%
     flextable::compose(part = "header", i = 1, j = 1, value = flextable::as_paragraph(NA)) %>%
-    flextable::width(j = 1,   width = 1.75) %>%
-    flextable::width(j = 2,   width = 0.25) %>%
-    flextable::width(j = 2:9, width = 0.50) %>%
-    flextable::width(j = 5,   width = 0.75) %>%
     flextable::line_spacing(part = "header", space = 1.5) %>%
     flextable::line_spacing(part = "body",   space = 0.5) %>%
     flextable::line_spacing(part = "footer", space = 1.5) %>%
