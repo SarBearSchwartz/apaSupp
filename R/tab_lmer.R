@@ -117,9 +117,7 @@ tab_lmer <- function(x,
     flextable::compose(part = "header", i = 1, j = 1, value = flextable::as_paragraph(NA)) %>%
     flextable::italic( part = "header") %>%
     flextable::hline(  part = "body",  i = (n_rows - rand_var)) %>%
-    flextable::italic( part = "body",  i = (n_rows - rand_var + 1):(n_rows)) %>%
-    flextable::set_table_properties(layout = "autofit",
-                                    width = tab_width)
+    flextable::italic( part = "body",  i = (n_rows - rand_var + 1):(n_rows))
 
   if (!is.na(docx)){
     flextable::save_as_docx(table,

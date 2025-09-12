@@ -88,9 +88,7 @@ tab_desc <- function(df,
     flextable::compose(part = "header", i = 1, j = 1, value = flextable::as_paragraph(NA)) %>%
     flextable::line_spacing(part = "header", space = 1.5) %>%
     flextable::line_spacing(part = "body",   space = 0.5) %>%
-    flextable::line_spacing(part = "footer", space = 1.5) %>%
-    flextable::set_table_properties(layout = "autofit",
-                                    width = tab_width)
+    flextable::line_spacing(part = "footer", space = 1.5)
 
   if (!is.na(docx)){
     flextable::save_as_docx(table,

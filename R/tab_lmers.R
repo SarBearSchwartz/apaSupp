@@ -118,7 +118,8 @@ tab_lmers <- function(x,
                        p_note       = p_note,
                        d            = d,
                        breaks       = breaks,
-                       symbols      = symbols) %>%
+                       symbols      = symbols,
+                       tab_width    = tab_width) %>%
     flextable::bold(  part = "header", i = 1) %>%
     flextable::italic(part = "header", i = 2) %>%
     flextable::italic(part = "body",   i = rows_fit) %>%
@@ -173,9 +174,7 @@ tab_lmers <- function(x,
     flextable::width(j = 1, width = 1.55) %>%
     flextable::line_spacing(part = "header", space = 1.5) %>%
     flextable::line_spacing(part = "body",   space = 0.5) %>%
-    flextable::line_spacing(part = "footer", space = 1.5) %>%
-    flextable::set_table_properties(layout = "autofit",
-                                    width = tab_width)
+    flextable::line_spacing(part = "footer", space = 1.5)
 
   if (!is.na(docx)){
     flextable::save_as_docx(table,
