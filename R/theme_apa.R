@@ -102,10 +102,10 @@ theme_apa <- function(x,
       flextable::compose(part = "footer", i = f + 1, j = 1, value = sig_note)
   }
 
-
-  table <- table %>%
-    flextable::set_table_properties(layout = "autofit",
-                                    width = tab_width)
+#
+#   table <- table %>%
+#     flextable::set_table_properties(layout = "autofit",
+#                                     width = tab_width)
 
   if (!is.na(docx)){
     flextable::save_as_docx(table,
