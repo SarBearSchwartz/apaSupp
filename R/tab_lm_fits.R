@@ -31,7 +31,6 @@
 tab_lm_fits <- function(x,
                         caption      = "Comparison of Linear Model Performane Metrics",
                         docx         = NA,
-                        tab_width    = .9,
                         general_note = NA,
                         d            = 2){
 
@@ -61,8 +60,7 @@ tab_lm_fits <- function(x,
     flextable::flextable() %>%
     apaSupp::theme_apa(caption   = caption,
                        main_note = main_note,
-                       d         = d,
-                       tab_width = tab_width) %>%
+                       d         = d) %>%
     flextable::colformat_double(j = c("N", "k"),             big.mark = "", digits = 0) %>%
     flextable::colformat_double(j = c("AIC", "BIC", "RMSE"), big.mark = "", digits = d) %>%
     flextable::add_header_row(values = c(NA, "R2",NA), colwidths = c(3, 2, 3)) %>%
@@ -72,7 +70,8 @@ tab_lm_fits <- function(x,
     flextable::compose(part = "header", i = 1, j = 4, value = flextable::as_paragraph(flextable::as_equation("R^2"))) %>%
     flextable::align(  part = "all",    j = c("N", "mult","AIC"), align = "right") %>%
     flextable::align(  part = "all",    j = c("k", "adj", "BIC"), align = "left") %>%
-    flextable::align(  part = "header", i = 1,                    align = "center")
+    flextable::align(  part = "header", i = 1,                    align = "center") %>%
+    flextable::autofit()
 
   if (!is.na(docx)){
     flextable::save_as_docx(table,

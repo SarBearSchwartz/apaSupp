@@ -9,7 +9,6 @@ tab_lmer(
   var_labels = NULL,
   caption = "Parameter Estimates for Mixed Effects Regression",
   docx = NA,
-  tab_width = 0.9,
   general_note = NA,
   p_note = "apa123",
   no_notes = FALSE,
@@ -28,8 +27,6 @@ tab_lmer(
 \item{caption}{Optional: Text. Caption for the table}
 
 \item{docx}{Optional: filename. must end with ".docx"}
-
-\item{tab_width}{Optional: numberic value (default is .9) \% of available width}
 
 \item{general_note}{Optional: Text. General note for footer of APA table}
 

@@ -4,7 +4,6 @@
 #' @param split Optional: Quoted variable name
 #' @param caption Optional: Text. Caption for the table
 #' @param docx Optional: Text.  Word file to store the table.  Must end with ".docx"
-#' @param tab_width Optional: numberic value (default is .9) % of available width
 #' @param no_notes Optional: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `general_note` and `p_note`
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa123"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
@@ -100,7 +99,6 @@ tab1 <- function(df,
                  split        = NULL,
                  caption      = "Summary of Variables",
                  docx         = NA,
-                 tab_width    = .9,
                  no_notes     = FALSE,
                  general_note = NA,
                  p_note       = "apa123",
@@ -236,8 +234,7 @@ tab1 <- function(df,
                        main_note    = main_note,
                        p_note       = p_note,
                        breaks       = breaks,
-                       symbols      = symbols,
-                       tab_width    = tab_width)
+                       symbols      = symbols)
 
   if (!is.na(docx)){
     flextable::save_as_docx(table,

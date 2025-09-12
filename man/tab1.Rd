@@ -9,7 +9,6 @@ tab1(
   split = NULL,
   caption = "Summary of Variables",
   docx = NA,
-  tab_width = 0.9,
   no_notes = FALSE,
   general_note = NA,
   p_note = "apa123",
@@ -42,8 +41,6 @@ tab1(
 \item{caption}{Optional: Text. Caption for the table}
 
 \item{docx}{Optional: Text.  Word file to store the table.  Must end with ".docx"}
-
-\item{tab_width}{Optional: numberic value (default is .9) \% of available width}
 
 \item{no_notes}{Optional: Logical.  Defaults to \code{FALSE}, if \code{TRUE} will ignore \code{general_note} and \code{p_note}}
 

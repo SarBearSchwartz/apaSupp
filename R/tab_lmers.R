@@ -4,7 +4,6 @@
 #' @param var_labels Optional: Vector. Text replacements for model terms, "old" = "new"
 #' @param caption Optional: Text. Caption for the table
 #' @param docx Optional: filename. must end with ".docx"
-#' @param tab_width Optional: numberic value (default is .9) % of available width
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If p_note = "apa" then the standard "* p < .05. ** p < .01. *** p < .001." will be used
 #' @param no_notes REQUIRED: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `general_note` and `p_note`
@@ -40,7 +39,6 @@ tab_lmers <- function(x,
                       var_labels      = NULL,
                       caption         = "Compare MLM Models",
                       docx            = NA,
-                      tab_width       = .9,
                       general_note    = NA,
                       p_note          = "apa123",
                       no_notes        = FALSE,
@@ -118,8 +116,7 @@ tab_lmers <- function(x,
                        p_note       = p_note,
                        d            = d,
                        breaks       = breaks,
-                       symbols      = symbols,
-                       tab_width    = tab_width) %>%
+                       symbols      = symbols) %>%
     flextable::bold(  part = "header", i = 1) %>%
     flextable::italic(part = "header", i = 2) %>%
     flextable::italic(part = "body",   i = rows_fit) %>%
@@ -171,10 +168,10 @@ tab_lmers <- function(x,
     flextable::hline( part = "body",   i = rows_rand[1] - 1) %>%
     flextable::hline( part = "header", i = 1,
                       border = flextable::fp_border_default(width = 0)) %>%
-    flextable::width(j = 1, width = 1.55) %>%
     flextable::line_spacing(part = "header", space = 1.5) %>%
     flextable::line_spacing(part = "body",   space = 0.5) %>%
-    flextable::line_spacing(part = "footer", space = 1.5)
+    flextable::line_spacing(part = "footer", space = 1.5) %>%
+    flextable::autofit()
 
   if (!is.na(docx)){
     flextable::save_as_docx(table,

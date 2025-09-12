@@ -8,7 +8,6 @@ tab_lm_fits(
   x,
   caption = "Comparison of Linear Model Performane Metrics",
   docx = NA,
-  tab_width = 0.9,
   general_note = NA,
   d = 2
 )
@@ -20,11 +19,11 @@ tab_lm_fits(
 
 \item{docx}{Optional: filename. must end with ".docx"}
 
-\item{tab_width}{Optional: numberic value (default is .9) \% of available width}
-
 \item{general_note}{Optional: Text. General note for footer of APA table}
 
 \item{d}{Optional: Number. Digits after the decimal place}
+
+\item{tab_width}{Optional: numberic value (default is .9) \% of available width}
 }
 \value{
 a flextable object

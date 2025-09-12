@@ -3,7 +3,6 @@
 #' @param df REQUIRED: Data frame
 #' @param caption REQUIRED: Text. Caption for the table
 #' @param docx Optional: filename. must end with ".docx"
-#' @param tab_width Optional: numberic value (default is .9) % of available width
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param d Optional: Number. Digits after the decimal place
 #'
@@ -31,7 +30,6 @@
 tab_desc <- function(df,
                      caption      = "Summary of Quantiatative Variables",
                      docx         = NA,
-                     tab_width    = .9,
                      general_note = NA,
                      d            = 2){
 
@@ -79,8 +77,7 @@ tab_desc <- function(df,
     flextable::flextable() %>%
     apaSupp::theme_apa(caption   = caption,
                        main_note = main_note,
-                       d         = d,
-                       tab_width = tab_width) %>%
+                       d         = d) %>%
     flextable::align(  part = "all", j = 1,   align = "left") %>%
     flextable::align(  part = "all", j = 2:9, align = "right") %>%
     flextable::bold(   part = "all", j = c(3, 4, 7)) %>%
