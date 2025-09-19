@@ -76,9 +76,6 @@ theme_apa <- function(x,
     flextable::hline_bottom(part = "header", border = border.thin) %>%
     flextable::hline_bottom(part = "body",   border = border.thick) %>%
     flextable::fix_border_issues() %>%
-    flextable::line_spacing(part = "header", space = 1.5) %>%
-    flextable::line_spacing(part = "body",   space = 0.5) %>%
-    flextable::line_spacing(part = "footer", space = 1.5) %>%
     flextable::valign(part = "all",       valign = "center") %>%
     flextable::align( part = "all",        align = "center", ) %>%
     flextable::align( part = "all", j = 1, align = "left") %>%
@@ -101,7 +98,10 @@ theme_apa <- function(x,
   }
 
   table <- table %>%
-     flextable::autofit()
+    flextable::line_spacing(part = "header", space = 1.2) %>%
+    flextable::line_spacing(part = "body",   space = 0.1) %>%
+    flextable::line_spacing(part = "footer", space = 1.2) %>%
+    flextable::autofit()
 
   if (!is.na(docx)){
     flextable::save_as_docx(table,
@@ -110,3 +110,6 @@ theme_apa <- function(x,
 
   return(table)
 }
+
+
+

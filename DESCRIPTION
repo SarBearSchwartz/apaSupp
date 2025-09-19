@@ -1,7 +1,7 @@
 Type: Package
 Package: apaSupp
 Title: APA Formatted Supplemental Materials
-Version: 0.0.1.1
+Version: 0.0.2.1
 Authors@R: person("Sarah", "Schwartz", email = "sarah.schwartz@usu.edu", role = c("aut", "cre"))
 Description: Prepare supplemental material documents for publications.
 License: MIT + file LICENSE
@@ -21,6 +21,7 @@ Imports:
     glue,
     DescTools,
     broom.helpers,
+    broom.mixed,
     car,
     gtsummary,
     cardx,
@@ -36,7 +37,8 @@ Imports:
     patchwork,
     furniture,
     lavaan,
-    equatags
+    equatags,
+    merDeriv
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
