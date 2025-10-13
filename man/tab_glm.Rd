@@ -2,7 +2,7 @@
 % Please edit documentation in R/tab_glm.R
 \name{tab_glm}
 \alias{tab_glm}
-\title{APA: flextable for a GLM models (specifically logisitc right now)}
+\title{APA: flextable for a GLM models (specifically logisitic right now)}
 \usage{
 tab_glm(
   x,
@@ -32,7 +32,7 @@ tab_glm(
 
 \item{docx}{Optional: filename. must end with ".docx"}
 
-\item{tab_width}{Optional: numberic value (default is .9) \% of available width}
+\item{tab_width}{Optional: numeric value (default is .9) \% of available width}
 
 \item{general_note}{Optional: Text. General note for footer of APA table}
 
@@ -60,7 +60,7 @@ tab_glm(
 a flextable object
 }
 \description{
-APA: flextable for a GLM models (specifically logisitc right now)
+APA: flextable for a GLM models (specifically logisitic right now)
 }
 \examples{
 

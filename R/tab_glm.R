@@ -1,10 +1,10 @@
-#' APA: flextable for a GLM models (specifically logisitc right now)
+#' APA: flextable for a GLM models (specifically logisitic right now)
 #'
 #' @param x REQUIRED: a glm models, bare name
 #' @param var_labels Optional: Vector. Text replacements for model terms, "old" = "new"
 #' @param caption Optional: Text. Caption for the table
 #' @param docx Optional: filename. must end with ".docx"
-#' @param tab_width Optional: numberic value (default is .9) % of available width
+#' @param tab_width Optional: numeric value (default is .9) % of available width
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa123"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
 #' @param no_notes REQUIRED: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `general_note` and `p_note`
