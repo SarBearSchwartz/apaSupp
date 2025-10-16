@@ -1,4 +1,4 @@
-#' APA: gtsummary for a single linear model
+#' APA: gtsummary for a single generalized linear model
 #'
 #' @param x REQUIRED: bare name. a single 'glm' object'
 #' @param narrow  Optional. Logical. Default = FALSE, but TRUE will exclude p-vlaues from the table to make it narrower

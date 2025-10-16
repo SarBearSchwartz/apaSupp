@@ -2,9 +2,10 @@
 #'
 #' @param x REQUIRED: a gee models, bare name
 #' @param var_labels Optional: Vector. Text replacements for model terms, "old" = "new"
+#' @param clusters Optional: Text. name of macrounits, default = "participants"
+#' @param obs Optional: Text. name of microunits, default = "observations"
 #' @param caption Optional: Text. Caption for the table
 #' @param docx Optional: filename. must end with ".docx"
-#' @param tab_width Optional: numeric value (default is .9) % of available width
 #' @param general_note Optional: Text. General note for footer of APA table
 #' @param p_note Optional: Text. (default = NULL) Significance note for APA table, If `p_note = "apa123"` then the standard `"* p < .05. ** p < .01. *** p < .001."` will be used
 #' @param no_notes REQUIRED: Logical.  Defaults to `FALSE`, if `TRUE` will ignore `general_note` and `p_note`
@@ -25,7 +26,6 @@
 #'
 #'library(HSAUR)
 #'library(tidyverse)
-#'library(gee)
 #'library(geepack)
 #'
 #'data("respiratory", package = "HSAUR")
@@ -72,9 +72,39 @@
 #'tab_gee(resp_geeglm2_ex)
 #'
 #'
+#'data(BtheB, package = "HSAUR")
+#'
+#'btb_wide <- BtheB %>%
+#'  dplyr::mutate(id = row_number()) %>%           # create a new variable to ID participants
+#'  dplyr::select(id, treatment,                    # specify that ID variable is first
+#'                drug, length,
+#'                bdi.pre, bdi.2m, bdi.4m, bdi.6m, bdi.8m)
+#'
+#'btb_long <- btb_wide %>%
+#'  tidyr::pivot_longer(cols = c(bdi.2m, bdi.4m, bdi.6m, bdi.8m),  # all existing variables (not quoted)
+#'                      names_to = "month",
+#'                      names_pattern = "bdi.(.)m",
+#'                      values_to = "bdi") %>%
+#'  dplyr::mutate(month = as.numeric(month)) %>%
+#'  dplyr::filter(complete.cases(id, bdi, treatment, month)) %>%
+#'  dplyr::arrange(id, month) %>%
+#'  dplyr::select(id, treatment, drug, length, bdi.pre, month, bdi)
+#'
+#'btb_geeglm_ex_1 <- geepack::geeglm(bdi ~ bdi.pre*length + drug + treatment + month,
+#'                                   data = btb_long,
+#'                                   id = id,
+#'                                   wave = month,
+#'                                   family = gaussian,
+#'                                   corstr = 'exchangeable')
+#'
+#'
+#'tab_gee(btb_geeglm_ex_1)
+#'
 #'
 tab_gee <- function(x,
                     var_labels      = NULL,
+                    obs             = "observations",
+                    clusters        = "participants",
                     caption         = "Parameter Estimates for GEE",
                     docx            = NA,
                     general_note    = NA,
@@ -105,12 +135,12 @@ tab_gee <- function(x,
     int <- TRUE
   }
 
-
+  n_clust <- length(unique(x$id))
   n_obs   <- length(x$resid)
 
   main_note <- flextable::as_paragraph(
     flextable::as_i("Note. "),
-    flextable::as_chunk(glue::glue("N = {n_obs} observations. ")),
+    flextable::as_chunk(glue::glue("N = {n_obs} {obs} on {n_clust} {clusters}. Correlation structure: {x$corstr}")),
     flextable::as_chunk(general_note)
   )
 
@@ -132,7 +162,7 @@ tab_gee <- function(x,
                                      dplyr::mutate(estimate = ifelse(variable == "(Intercept)" & int == FALSE, NA, estimate)) %>%
                                      dplyr::mutate(conf.low = ifelse(variable == "(Intercept)" & int == FALSE, NA, conf.low))) %>%
       gtsummary::modify_table_body(~.x %>% dplyr::mutate(bk = NA)) %>%
-      gtsummary::modify_header(label = "Variable",
+      gtsummary::modify_header(label = "",
                                estimate = sym[1],
                                conf.low = "95% CI",
                                bk = "blank")
@@ -237,9 +267,8 @@ tab_gee <- function(x,
     flextable::align( part = "footer",                     align = "left") %>%
     flextable::hline( part = "header", i = 1, border = flextable::fp_border_default(width = 0)) %>%
     flextable::hline( part = "header", i = 1, j = 2:3) %>%
-    flextable::hline( part = "header", i = 1, j = 5:6)%>%
-    flextable::set_table_properties(layout = "autofit",
-                                    width = tab_width)
+    flextable::hline( part = "header", i = 1, j = 5:6) %>%
+    flextable::autofit()
   } else {
     n_rows <- flextable::nrow_part(table, part = "body")
 
@@ -270,25 +299,24 @@ tab_gee <- function(x,
 
 
 
+
 library(HSAUR)
 library(tidyverse)
-library(gee)
 library(geepack)
-
 
 data("respiratory", package = "HSAUR")
 
 data_wide <- respiratory %>%
   tidyr::spread(key = month,
-                value = status,
-                sep = "_") %>%
+              value = status,
+              sep = "_") %>%
   dplyr::rename("BL_status" = "month_0") %>%
   dplyr::arrange(subject) %>%
   dplyr::select(subject, centre,
                 sex, age, treatment,
                 BL_status, starts_with("month"))
 
-data_long <- data_wide %>%
+data_long <- data_wide%>%
   tidyr::gather(key = month,
                 value = status,
                 starts_with("month")) %>%
@@ -307,7 +335,7 @@ resp_geeglm_ex <- geepack::geeglm(status ~ centre + treatment + sex + BL_status 
                                   waves = month,
                                   corstr = "exchangeable")
 
-tab_gee(resp_geeglm_ex)
+gt_gee(resp_geeglm_ex)
 
 
 resp_geeglm2_ex <- geepack::geeglm(status ~ treatment + sex + BL_status,
@@ -317,9 +345,9 @@ resp_geeglm2_ex <- geepack::geeglm(status ~ treatment + sex + BL_status,
                                    waves = month,
                                    corstr = "exchangeable")
 
-tab_gee(resp_geeglm2_ex)
+gt_gee(resp_geeglm2_ex)
 
-library(HSAUR)
+
 data(BtheB, package = "HSAUR")
 
 btb_wide <- BtheB %>%
@@ -346,5 +374,6 @@ btb_geeglm_ex_1 <- geepack::geeglm(bdi ~ bdi.pre*length + drug + treatment + mon
                                    corstr = 'exchangeable')
 
 
-tab_gee(btb_geeglm_ex_1)
+gt_gee(btb_geeglm_ex_1)
+
 

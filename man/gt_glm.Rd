@@ -2,7 +2,7 @@
 % Please edit documentation in R/gt_glm.R
 \name{gt_glm}
 \alias{gt_glm}
-\title{APA: gtsummary for a single linear model}
+\title{APA: gtsummary for a single generalized linear model}
 \usage{
 gt_glm(x, narrow = FALSE, fit = NA, d = 2, show_single_row = NULL)
 }
@@ -21,7 +21,7 @@ gt_glm(x, narrow = FALSE, fit = NA, d = 2, show_single_row = NULL)
 a gtsummary object
 }
 \description{
-APA: gtsummary for a single linear model
+APA: gtsummary for a single generalized linear model
 }
 \examples{
 
