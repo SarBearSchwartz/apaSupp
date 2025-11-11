@@ -2,7 +2,7 @@
 #'
 #' @param x REQUIRED: bare name. a single 'glmer' object'
 #' @param narrow  Optional. Logical. Default = FALSE, but TRUE will exclude p-vlaues from the table to make it narrower
-#' @param fit Optional: vector. quoted names of fit statistics to include, can be: "r.squared", "adj.r.squared", "sigma", "statistic","p.value", "df", "logLik", "AIC", "BIC", "deviance", "df.residual", and "nobs"
+#' @param fit Optional: vector. quoted names of fit statistics to include, can be: "AIC", "BIC", "logLik"
 #' @param d Optional: number. digits after the decimal, default = 2
 #' @param show_single_row	(tidy-select) By default categorical variables are printed on multiple rows. If a variable is dichotomous (e.g. Yes/No) and you wish to print the regression coefficient on a single row, include the variable name(s) here.
 #'
@@ -31,7 +31,7 @@
 #'
 gt_glmer <- function(x,
                      narrow          = FALSE,
-                     fit             = NA,
+                     fit             = c("AIC", "BIC", "logLik"),
                      d               = 2,
                      show_single_row = NULL){
 
@@ -57,11 +57,9 @@ gt_glmer <- function(x,
                               conf.int        = TRUE,
                               exponentiate    = TRUE,
                               pvalue_fun      = ~ p_fun(.x, d = d),
-                              tidy_fun = broom.helpers::tidy_with_broom_or_parameters,
-                              show_single_row = all_of(show_single_row))
-
-
-  table <- table %>%
+                              tidy_fun = function(x, ...) broom.mixed::tidy(x, scales = c("vcov", "sdcor"), ...),
+                              show_single_row = all_of(show_single_row)) %>%
+    gtsummary::add_glance_table(include = all_of(fit)) %>%
     gtsummary::modify_column_hide(column = std.error) %>%
     gtsummary::modify_fmt_fun(estimate  ~ gtsummary::label_style_number(digits = d, rows = (row_type == "label"))) %>%
     gtsummary::modify_fmt_fun(conf.low  ~ gtsummary::label_style_number(digits = d, prefix = "[")) %>%
