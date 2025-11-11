@@ -58,6 +58,7 @@ tab_lmers <- function(x,
     unlist() %>%
     max()
 
+  n_models <- length(x)
 
   k     <- ifelse(narrow == TRUE, 2, 3)
   n_col <- 1 + k*n_models
