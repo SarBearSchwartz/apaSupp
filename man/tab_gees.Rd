@@ -54,7 +54,6 @@ APA: flextable for 2-3 GEE models
 
 library(tidyverse)
 library(HSAUR)
-library(tidyverse)
 library(geepack)
 
 data("respiratory", package = "HSAUR")

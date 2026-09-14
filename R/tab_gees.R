@@ -26,7 +26,6 @@
 #'
 #'library(tidyverse)
 #'library(HSAUR)
-#'library(tidyverse)
 #'library(geepack)
 #'
 #'data("respiratory", package = "HSAUR")

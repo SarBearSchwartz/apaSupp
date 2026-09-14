@@ -30,6 +30,8 @@ Imports:
     parameters,
     flextable,
     lme4,
+    geepack,
+    HSAUR,
     MOTE,
     psych,
     naniar,
@@ -41,4 +43,4 @@ Imports:
     merDeriv
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+Config/roxygen2/version: 8.1.0

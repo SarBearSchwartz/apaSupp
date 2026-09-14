@@ -25,7 +25,7 @@ tab1(
     "{n}    ({p}\%)"),
   value = NULL,
   type = NULL,
-  missing = c("ifany", "no", "always"),
+  missing = "always",
   missing_text = "Unknown",
   missing_stat = "{N_miss}",
   sort = all_categorical(FALSE) ~ "alphanumeric",
@@ -66,17 +66,17 @@ tab1(
 
 \item{d}{Optional: Number. Digits after the decimal place}
 
-\item{statistic}{(\code{\link[=syntax]{formula-list-selector}})\cr
+\item{statistic}{(\code{\link[gtsummary:syntax]{formula-list-selector}})\cr
 Used to specify the summary statistics for each variable.
 The default is
 \code{list(all_continuous()  ~ "{mean} ({sd})", all_categorical() ~ "{n}    ({p}\%)")}.}
 
-\item{value}{(\code{\link[=syntax]{formula-list-selector}})\cr
+\item{value}{(\code{\link[gtsummary:syntax]{formula-list-selector}})\cr
 Specifies the level of a variable to display on a single row.
 The gtsummary type selectors, e.g. \code{all_dichotomous()}, cannot be used
 with this argument. Default is \code{NULL}.}
 
-\item{type}{(\code{\link[=syntax]{formula-list-selector}})\cr
+\item{type}{(\code{\link[gtsummary:syntax]{formula-list-selector}})\cr
 Specifies the summary type. Accepted value are
 \code{c("continuous", "continuous2", "categorical", "dichotomous")}.
 If not specified, default type is assigned via
@@ -90,7 +90,7 @@ If not specified, default type is assigned via
 Possible values are \code{N_miss}, \code{N_obs}, \code{N_nonmiss}, \code{p_miss}, \code{p_nonmiss}.
 }}
 
-\item{sort}{(\code{\link[=syntax]{formula-list-selector}})\cr
+\item{sort}{(\code{\link[gtsummary:syntax]{formula-list-selector}})\cr
 Specifies sorting to perform for categorical variables.
 Values must be one of \code{c("alphanumeric", "frequency")}.
 Default is \code{all_categorical(FALSE) ~ "alphanumeric"}.}
@@ -101,7 +101,7 @@ Must be one of \code{c("column", "row", "cell")}. Default is \code{"column"}.
 
 In rarer cases, you may need to define/override the typical denominators.
 In these cases, pass an integer or a data frame. Refer to the
-\code{\link[cards:deprecated]{?cards::ard_categorical(denominator)}} help file for details.}
+\code{\link[cards:ard_categorical]{?cards::ard_categorical(denominator)}} help file for details.}
 
 \item{include}{(\code{\link[dplyr:dplyr_tidy_select]{tidy-select}})\cr
 Variables to include in the summary table. Default is \code{everything()}.}
